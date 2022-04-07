@@ -86,9 +86,9 @@ std::vector<std::shared_ptr<Camera>>* Environment::loadCameraVector(const std::s
 }
 
 
-CamParameters* Environment::loadCamParameters(const std::string& path_name, const std::string& dataset_name){
+std::shared_ptr<CamParameters> Environment::loadCamParameters(const std::string& path_name, const std::string& dataset_name){
 
-  CamParameters* cam_parameters_out = nullptr;
+  std::shared_ptr<CamParameters> cam_parameters_out(nullptr);
 
   const char* path_name_ = path_name.c_str(); // dataset name
 
@@ -129,7 +129,7 @@ CamParameters* Environment::loadCamParameters(const std::string& path_name, cons
     const int resolution_x = environment.at("resolution_x");
     const int resolution_y = environment.at("resolution_y");
 
-    cam_parameters_out = new CamParameters(
+    cam_parameters_out = std::make_shared<CamParameters>(
       resolution_x, resolution_y, width,
       lens, min_depth, max_depth);
 

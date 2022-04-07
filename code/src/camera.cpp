@@ -55,7 +55,7 @@ void Camera::clearImgs(){
   invdepth_map_->setAllPixels(1.0);
 }
 
-Eigen::Matrix3f* Camera::compute_K(){
+std::shared_ptr<Eigen::Matrix3f> Camera::compute_K(){
 
   float lens = cam_parameters_->lens;
   float width = cam_parameters_->width;
@@ -65,7 +65,7 @@ Eigen::Matrix3f* Camera::compute_K(){
   assert(width>0);
   assert(height>0);
 
-  Eigen::Matrix3f* K = new Eigen::Matrix3f;
+  std::shared_ptr<Eigen::Matrix3f> K (new Eigen::Matrix3f);
   *K <<
       lens ,  0   , width/2,
       0    ,  lens, height/2,
@@ -224,9 +224,9 @@ void Camera::saveDepthMap(const std::string& path) const {
 
 }
 
-Image<pixelIntensity>* Camera::returnIntensityImgFromPath(const std::string& path_rgb){
+std::shared_ptr<Image<pixelIntensity>> Camera::returnIntensityImgFromPath(const std::string& path_rgb){
 
-  Image<pixelIntensity>* img = new Image<pixelIntensity>(name_);
+  std::shared_ptr<Image<pixelIntensity>> img (new Image<pixelIntensity>(name_));
   img->image_=cv::imread(path_rgb,cv::IMREAD_GRAYSCALE);
   img->image_.convertTo(img->image_, pixelIntensity_CODE, pixelIntensity_maxval/255.0);
   return img;
@@ -250,11 +250,11 @@ void Camera::loadPoseFromJsonVal(nlohmann::basic_json<>::value_type f){
     f[6], f[7], f[8];
 
   Eigen::Vector3f t(f[9],f[10],f[11]);
-  frame_camera_wrt_world_ = new Eigen::Isometry3f;
+  frame_camera_wrt_world_ = std::make_shared<Eigen::Isometry3f>();
   frame_camera_wrt_world_->linear()=R;
   frame_camera_wrt_world_->translation()=t;
 
-  frame_world_wrt_camera_ = new Eigen::Isometry3f;
+  frame_world_wrt_camera_ = std::make_shared<Eigen::Isometry3f>();
   *frame_world_wrt_camera_=frame_camera_wrt_world_->inverse();
 
 }
@@ -272,44 +272,4 @@ void Camera::showRGB(int image_scale) const {
 
 void Camera::showDepthMap(int image_scale) const {
   invdepth_map_->show(image_scale);
-}
-
-
-colorRGB Camera::invdepthToRgb(float invdepth){
-
-  float min_depth = cam_parameters_->min_depth;
-  float invdepth_normalized = min_depth*invdepth;
-
-  float H = 230*(1-invdepth_normalized);
-
-  float s = 1;
-  float v = 0.7;
-  float C = s*v;
-  float X = C*(1-abs(fmod(H/60.0, 2)-1));
-  float m = v-C;
-  float r,g,b;
-  if(H >= 0 && H < 60){
-      r = C,g = X,b = 0;
-  }
-  else if(H >= 60 && H < 120){
-      r = X,g = C,b = 0;
-  }
-  else if(H >= 120 && H < 180){
-      r = 0,g = C,b = X;
-  }
-  else if(H >= 180 && H < 240){
-      r = 0,g = X,b = C;
-  }
-  else if(H >= 240 && H < 300){
-      r = X,g = 0,b = C;
-  }
-  else{
-      r = C,g = 0,b = X;
-  }
-  int R = (r+m);
-  int G = (g+m);
-  int B = (b+m);
-
-  colorRGB color = colorRGB(b,g,r);
-  return color;
 }

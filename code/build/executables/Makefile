@@ -178,6 +178,78 @@ __/src/CamerasContainer.cpp.s:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CamerasContainer.cpp.s
 .PHONY : __/src/CamerasContainer.cpp.s
 
+__/src/KeyframeHandler.o: __/src/KeyframeHandler.cpp.o
+.PHONY : __/src/KeyframeHandler.o
+
+# target to build an object file
+__/src/KeyframeHandler.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o
+.PHONY : __/src/KeyframeHandler.cpp.o
+
+__/src/KeyframeHandler.i: __/src/KeyframeHandler.cpp.i
+.PHONY : __/src/KeyframeHandler.i
+
+# target to preprocess a source file
+__/src/KeyframeHandler.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.i
+.PHONY : __/src/KeyframeHandler.cpp.i
+
+__/src/KeyframeHandler.s: __/src/KeyframeHandler.cpp.s
+.PHONY : __/src/KeyframeHandler.s
+
+# target to generate assembly for a file
+__/src/KeyframeHandler.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.s
+.PHONY : __/src/KeyframeHandler.cpp.s
+
+__/src/Pyramid.o: __/src/Pyramid.cpp.o
+.PHONY : __/src/Pyramid.o
+
+# target to build an object file
+__/src/Pyramid.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o
+.PHONY : __/src/Pyramid.cpp.o
+
+__/src/Pyramid.i: __/src/Pyramid.cpp.i
+.PHONY : __/src/Pyramid.i
+
+# target to preprocess a source file
+__/src/Pyramid.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.i
+.PHONY : __/src/Pyramid.cpp.i
+
+__/src/Pyramid.s: __/src/Pyramid.cpp.s
+.PHONY : __/src/Pyramid.s
+
+# target to generate assembly for a file
+__/src/Pyramid.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.s
+.PHONY : __/src/Pyramid.cpp.s
+
+__/src/Tracker.o: __/src/Tracker.cpp.o
+.PHONY : __/src/Tracker.o
+
+# target to build an object file
+__/src/Tracker.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/Tracker.cpp.o
+.PHONY : __/src/Tracker.cpp.o
+
+__/src/Tracker.i: __/src/Tracker.cpp.i
+.PHONY : __/src/Tracker.i
+
+# target to preprocess a source file
+__/src/Tracker.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/Tracker.cpp.i
+.PHONY : __/src/Tracker.cpp.i
+
+__/src/Tracker.s: __/src/Tracker.cpp.s
+.PHONY : __/src/Tracker.s
+
+# target to generate assembly for a file
+__/src/Tracker.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/Tracker.cpp.s
+.PHONY : __/src/Tracker.cpp.s
+
 __/src/camera.o: __/src/camera.cpp.o
 .PHONY : __/src/camera.o
 
@@ -274,6 +346,30 @@ __/src/image.cpp.s:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/image.cpp.s
 .PHONY : __/src/image.cpp.s
 
+__/src/initializer.o: __/src/initializer.cpp.o
+.PHONY : __/src/initializer.o
+
+# target to build an object file
+__/src/initializer.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o
+.PHONY : __/src/initializer.cpp.o
+
+__/src/initializer.i: __/src/initializer.cpp.i
+.PHONY : __/src/initializer.i
+
+# target to preprocess a source file
+__/src/initializer.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.i
+.PHONY : __/src/initializer.cpp.i
+
+__/src/initializer.s: __/src/initializer.cpp.s
+.PHONY : __/src/initializer.s
+
+# target to generate assembly for a file
+__/src/initializer.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.s
+.PHONY : __/src/initializer.cpp.s
+
 __/src/utils.o: __/src/utils.cpp.o
 .PHONY : __/src/utils.o
 
@@ -337,6 +433,15 @@ help:
 	@echo "... __/src/CamerasContainer.o"
 	@echo "... __/src/CamerasContainer.i"
 	@echo "... __/src/CamerasContainer.s"
+	@echo "... __/src/KeyframeHandler.o"
+	@echo "... __/src/KeyframeHandler.i"
+	@echo "... __/src/KeyframeHandler.s"
+	@echo "... __/src/Pyramid.o"
+	@echo "... __/src/Pyramid.i"
+	@echo "... __/src/Pyramid.s"
+	@echo "... __/src/Tracker.o"
+	@echo "... __/src/Tracker.i"
+	@echo "... __/src/Tracker.s"
 	@echo "... __/src/camera.o"
 	@echo "... __/src/camera.i"
 	@echo "... __/src/camera.s"
@@ -349,6 +454,9 @@ help:
 	@echo "... __/src/image.o"
 	@echo "... __/src/image.i"
 	@echo "... __/src/image.s"
+	@echo "... __/src/initializer.o"
+	@echo "... __/src/initializer.i"
+	@echo "... __/src/initializer.s"
 	@echo "... __/src/utils.o"
 	@echo "... __/src/utils.i"
 	@echo "... __/src/utils.s"

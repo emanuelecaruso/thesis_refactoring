@@ -734,7 +734,7 @@ class PoseNormError{
 
 };
 
-class CameraForMapping: public Camera{
+class CameraForMapping : public Camera{
 
   public:
 

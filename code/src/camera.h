@@ -9,18 +9,33 @@ class Camera{
   public:
 
     const std::string name_;
-    const CamParameters* cam_parameters_;
-    const Eigen::Matrix3f* K_;
-    const Eigen::Matrix3f* Kinv_;
-    const Image<pixelIntensity>* image_intensity_;
-    Image<float>* invdepth_map_;
-    Eigen::Isometry3f* frame_camera_wrt_world_;
-    Eigen::Isometry3f* frame_world_wrt_camera_;
+    const std::shared_ptr<CamParameters> cam_parameters_;
+    const std::shared_ptr<Eigen::Matrix3f> K_;
+    const std::shared_ptr<Eigen::Matrix3f> Kinv_;
+    const std::shared_ptr<Image<pixelIntensity>> image_intensity_;
+    std::shared_ptr<Image<float>> invdepth_map_;
+    std::shared_ptr<Eigen::Isometry3f> frame_camera_wrt_world_;
+    std::shared_ptr<Eigen::Isometry3f> frame_world_wrt_camera_;
     std::mutex mu_access_pose;
 
+    // clone camera
+    Camera(std::shared_ptr<Camera> cam):
+      name_(cam->name_),
+      cam_parameters_(cam->cam_parameters_),
+      K_(cam->K_),
+      Kinv_(cam->Kinv_),
+      image_intensity_(cam->image_intensity_),
+      invdepth_map_(cam->invdepth_map_ ),
+      frame_camera_wrt_world_(new Eigen::Isometry3f ),
+      frame_world_wrt_camera_(new Eigen::Isometry3f )
+      {
 
-    Camera(const std::string& name, const CamParameters* cam_parameters,
-           const Image<pixelIntensity>* image_intensity):
+        *frame_camera_wrt_world_=(*(cam->frame_camera_wrt_world_));
+        *frame_world_wrt_camera_=(*(cam->frame_world_wrt_camera_));
+      }
+
+    Camera(const std::string& name, const std::shared_ptr<CamParameters> cam_parameters,
+           const std::shared_ptr<Image<pixelIntensity>> image_intensity):
            name_(name),
            cam_parameters_(cam_parameters),
            K_(compute_K()),
@@ -30,9 +45,9 @@ class Camera{
            frame_world_wrt_camera_(new Eigen::Isometry3f)
            { };
 
-    Camera(const std::string& name, const CamParameters* cam_parameters,
-            const Image<pixelIntensity>* image_intensity,
-            Image<float>* invdepth_map ):
+    Camera(const std::string& name, const std::shared_ptr<CamParameters> cam_parameters,
+            const std::shared_ptr<Image<pixelIntensity>> image_intensity,
+            std::shared_ptr<Image<float>> invdepth_map ):
             name_(name),
             cam_parameters_(cam_parameters),
             K_(compute_K()),
@@ -43,7 +58,7 @@ class Camera{
             frame_world_wrt_camera_(new Eigen::Isometry3f)
             { };
 
-     Camera(const std::string& name, const CamParameters* cam_parameters,
+     Camera(const std::string& name, const std::shared_ptr<CamParameters> cam_parameters,
             const std::string& path_rgb):
             name_(name),
             cam_parameters_(cam_parameters),
@@ -54,26 +69,26 @@ class Camera{
             frame_world_wrt_camera_(new Eigen::Isometry3f)
             { };
 
-    Camera(const std::string& name, const CamParameters* cam_parameters,
-           const Image<pixelIntensity>* image_intensity, Eigen::Isometry3f* frame_world_wrt_camera,
-               Eigen::Isometry3f* frame_camera_wrt_world ):
+    Camera(const std::string& name, const std::shared_ptr<CamParameters> cam_parameters,
+           const std::shared_ptr<Image<pixelIntensity>> image_intensity, std::shared_ptr<Eigen::Isometry3f> frame_world_wrt_camera,
+               std::shared_ptr<Eigen::Isometry3f> frame_camera_wrt_world ):
            Camera(name, cam_parameters, image_intensity )
            {
              frame_world_wrt_camera_=frame_world_wrt_camera;
              frame_camera_wrt_world_=frame_camera_wrt_world;
            };
 
-    Camera(const std::string& name, const CamParameters* cam_parameters,
+    Camera(const std::string& name, const std::shared_ptr<CamParameters> cam_parameters,
            nlohmann::basic_json<>::value_type f,
            const std::string& path_rgb):
     Camera( name,cam_parameters, path_rgb )
     {
       loadPoseFromJsonVal(f);
-      invdepth_map_ = new Image< float >("invdepth_"+name_);
+      invdepth_map_ = std::make_shared<Image< float >>("invdepth_"+name_);
       loadWhiteDepth();
     };
 
-    Camera(const std::string& name, const CamParameters* cam_parameters,
+    Camera(const std::string& name, const std::shared_ptr<CamParameters> cam_parameters,
            nlohmann::basic_json<>::value_type f,
            const std::string& path_rgb,  const std::string& path_depth ):
     Camera( name,cam_parameters, f, path_rgb )
@@ -138,8 +153,8 @@ class Camera{
     //   return new_cam;
     // }
   protected:
-    Eigen::Matrix3f* compute_K();
-    Image<pixelIntensity>* returnIntensityImgFromPath(const std::string& path_rgb);
+    std::shared_ptr<Eigen::Matrix3f> compute_K();
+    std::shared_ptr<Image<pixelIntensity>> returnIntensityImgFromPath(const std::string& path_rgb);
     void loadWhiteDepth();
     void loadDepthMap(const std::string& path);
     void loadPoseFromJsonVal(nlohmann::basic_json<>::value_type f);

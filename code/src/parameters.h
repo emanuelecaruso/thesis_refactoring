@@ -34,8 +34,9 @@ static bool show_spectator_=true;
 static bool get_current_frame_=false;
 
 // candidate selection
-static int coarsest_level_= 2; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
-static int reg_level_=3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
+static int candidate_level = 0;
+static int coarsest_level_= candidate_level+2; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
+static int reg_level_=candidate_level+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static float grad_threshold_=0.06;
 static int num_candidates_=700;
 

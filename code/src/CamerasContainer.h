@@ -4,11 +4,14 @@
 #include <vector>
 #include <memory>
 
+class Dso;
 class CameraForMapping;
 
 class CamerasContainer{
   public:
     // ********** members **********
+    Dso* dso_;
+
     // cam vectors
     std::vector<std::shared_ptr<CameraForMapping>> frames_;
     std::vector<std::shared_ptr<CameraForMapping>> keyframes_active_;
@@ -16,7 +19,8 @@ class CamerasContainer{
     std::vector<std::shared_ptr<CameraForMapping>> keyframes_marginalized_;
 
     // ********** constructor **********
-    CamerasContainer(){}
+    CamerasContainer(Dso* dso):
+    dso_(dso){}
     ~CamerasContainer(){}
 
     // ********** methods **********
@@ -25,6 +29,10 @@ class CamerasContainer{
     void addActiveKeyframe(std::shared_ptr<CameraForMapping> keyframe);
     void addKeyframeToMarginalize(std::shared_ptr<CameraForMapping> keyframe);
     void addKeyframeMarginalized(std::shared_ptr<CameraForMapping> keyframe);
+    void removeFrame(std::shared_ptr<Camera> frame);
+    void removeActiveKeyframe(std::shared_ptr<CameraForMapping> keyframe);
+    void removeKeyframeToMarginalize(std::shared_ptr<CameraForMapping> keyframe);
+    void removeKeyframeMarginalized(std::shared_ptr<CameraForMapping> keyframe);
 
   protected:
     // check functions

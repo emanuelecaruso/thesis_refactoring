@@ -2,7 +2,6 @@ executables/CMakeFiles/test_dso.dir/__/src/dso.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/dso.cpp \
  /usr/include/stdc-predef.h \
  /home/manu/Desktop/thesis_refactoring/code/src/dso.h \
- /home/manu/Desktop/thesis_refactoring/code/src/CamerasContainer.h \
  /home/manu/Desktop/thesis_refactoring/code/src/camera.h \
  /usr/include/c++/7/string \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++config.h \
@@ -510,7 +509,11 @@ executables/CMakeFiles/test_dso.dir/__/src/dso.cpp.o: \
  /usr/include/c++/7/bits/mask_array.h \
  /usr/include/c++/7/bits/indirect_array.h \
  /home/manu/Desktop/thesis_refactoring/code/src/image.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CamerasContainer.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/initializer.h \
  /home/manu/Desktop/thesis_refactoring/code/src/environment.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/Tracker.h \
  /usr/include/c++/7/condition_variable \
  /home/manu/Desktop/thesis_refactoring/code/src/utils.h \
  /usr/include/c++/7/future /usr/include/c++/7/thread \

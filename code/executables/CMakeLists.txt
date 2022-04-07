@@ -61,16 +61,18 @@ add_executable(test_dso test_dso.cpp
 ../src/CameraForMapping.cpp
 ../src/dso.cpp
 ../src/camera.cpp
+../src/Pyramid.cpp
 #../src/spectator.cpp
 ../src/environment.cpp
+../src/Tracker.cpp
 #../src/dtam.cpp
 ../src/utils.cpp
 #../src/epline.cpp
-#../src/keyframe.cpp
+../src/KeyframeHandler.cpp
 #../src/mapper.cpp
 #../src/tracker.cpp
 #../src/bundleadj.cpp
-#../src/initializer.cpp
+../src/initializer.cpp
 #../src/wavelet.cpp
 )
 target_link_libraries(test_dso ${PYTHON_LIBRARIES})

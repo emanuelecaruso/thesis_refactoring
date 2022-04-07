@@ -1,6 +1,6 @@
+#include "parameters.h"
 #include "environment.h"
 #include "dso.h"
-#include "parameters.h"
 #include <stdio.h>
 #include <cassert>
 #include <memory>
@@ -22,10 +22,7 @@ int main (int argc, char * argv[]) {
 
   Dso* dso = new Dso( environment, parameters); // dense mapper and tracker
 
-  //############################################################################
-  // compute depth map
-  //############################################################################
-
+  dso->startSequential();
   // dtam->test_dso();
   // dtam->test_dso_sequential();
   // dtam->test_optimization_pose();

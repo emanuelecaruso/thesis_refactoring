@@ -2,11 +2,60 @@
 #include "utils.h"
 
 void Dso::startSequential(){
+  std::thread update_cameras_thread_(&Dso::updateCamerasFromEnvironment, this);
+  update_cameras_thread_.detach();
+
   while(true){
+
+    loadFrameCurrent();
+
+    if(first_frame_to_set_){
+      setFirstKeyframe();
+    }
+    else if(to_initialize_){
+
+    }
+    else{
+
+    }
 
   }
 }
 
+void Dso::loadFrameCurrent(){
+
+  std::cout << frame_current_idx_ << " " << int(cameras_container_.frames_.size())-1 << "\n";
+  if(frame_current_idx_==int(cameras_container_.frames_.size())-1){
+    waitForNewFrame();
+  }
+
+  if(parameters_->get_current_frame){
+    frame_current_idx_=cameras_container_.frames_.size();
+    frame_current_=cameras_container_.frames_.back();
+  }
+  else{
+    frame_current_idx_++;
+    frame_current_=cameras_container_.frames_[frame_current_idx_];
+  }
+}
+
+void Dso::setFirstKeyframe(){
+
+  tracker_.trackCam(true); //groundtruth
+  keyframe_handler_.addKeyframe(true);  // add fixed keyframe
+  initializer_.extractCorners();
+  if(parameters_->debug_initialization){
+    initializer_.showCornersTrackCurr();
+  }
+  // mapper_->selectNewCandidates();
+  first_frame_to_set_=false;
+}
+
+void Dso::waitForNewFrame(){
+  std::unique_lock<std::mutex> locker(mu_frame_);
+  frame_updated_.wait(locker);
+  locker.unlock();
+}
 
 void Dso::updateCamerasFromEnvironment(){
 
@@ -48,6 +97,6 @@ void Dso::updateCamerasFromEnvironment(){
   }
   // update_cameras_thread_finished_=true;
   // frame_updated_.notify_all();
-  // sharedCout("\nVideo stream ended");
+  sharedCout("\nVideo stream ended");
 
 }
