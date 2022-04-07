@@ -449,6 +449,11 @@ inline Eigen::Isometry3f v2t_inv(Vector6f& t){
 #define GRADIENT_ID 1
 #define PHASE_ID 2
 
+#define CAND_MODE 0
+#define ACT_MODE 1
+
+
+
 
 
 inline int lowerBound(std::vector<int> const& vec, int value) {
@@ -577,4 +582,19 @@ inline float randZeroMeanNoise(float range){
 
 inline float getEuclideanDistance(Eigen::Vector2f& uv1, Eigen::Vector2f& uv2){
   return (uv2-uv1).norm();
+}
+
+
+inline pxl cvpoint2pxl(cv::Point2i& point ){
+  pxl pixel;
+  pixel.x()=(float)(point.x)+0.5; // point.y is col
+  pixel.y()=(float)(point.y)+0.5; // point.x is row
+  return pixel;
+}
+
+inline pxl cvpoint2pxl(cv::Point2f& point ){
+  pxl pixel;
+  pixel.x()=point.x; // point.y is col
+  pixel.y()=point.y; // point.x is row
+  return pixel;
 }

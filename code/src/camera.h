@@ -137,8 +137,8 @@ class Camera{
     bool projectPoint(const Eigen::Vector3f& p, Eigen::Vector2f& uv, float& p_cam_z ) const;
     bool projectPoint(const Eigen::Vector3f& p, Eigen::Vector2f& uv) const;
     bool projectPointInCamFrame(const Eigen::Vector3f& p, Eigen::Vector2f& uv) const;
-    bool projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv) const;
-    bool projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv, float& p_cam_z) const;
+    bool projectCam(std::shared_ptr<Camera> cam_to_be_projected, Eigen::Vector2f& uv) const;
+    bool projectCam(std::shared_ptr<Camera> cam_to_be_projected, Eigen::Vector2f& uv, float& p_cam_z) const;
 
     // functions for images
     void clearImgs();
@@ -148,8 +148,8 @@ class Camera{
     void showDepthMap(int image_scale=1) const;
 
 
-    // inline Camera* clone(){
-    //   Camera* new_cam = new Camera(*this);
+    // inline std::shared_ptr<Camera> clone(){
+    //   std::shared_ptr<Camera> new_cam = new Camera(*this);
     //   return new_cam;
     // }
   protected:

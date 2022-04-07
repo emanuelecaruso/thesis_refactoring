@@ -6,7 +6,7 @@ class Dso;
 class Tracker{
   public:
     // ********** members **********
-    Dso* dso_;
+    std::shared_ptr<Dso> dso_;
 
     // ********** constructor **********
     Tracker(Dso* dso):

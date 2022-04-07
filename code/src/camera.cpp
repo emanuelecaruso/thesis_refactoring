@@ -75,12 +75,12 @@ std::shared_ptr<Eigen::Matrix3f> Camera::compute_K(){
 }
 
 void Camera::pixelCoords2uv(const pxl& pixel_coords, Eigen::Vector2f& uv, int level) const {
-  assert(level>=-1);
+  assert(level>=0);
   int res_x = cam_parameters_->resolution_x;
   int res_y = cam_parameters_->resolution_y;
 
-  int resolution_x=res_x/(pow(2,level+1));
-  int resolution_y=res_y/(pow(2,level+1));
+  int resolution_x=res_x/(pow(2,level));
+  int resolution_y=res_y/(pow(2,level));
   assert( pixel_coords.x()>=0 || pixel_coords.y()>=0);
   assert( pixel_coords.x()<res_x || pixel_coords.y()<res_y );
 
@@ -93,19 +93,19 @@ void Camera::pixelCoords2uv(const pxl& pixel_coords, Eigen::Vector2f& uv, int le
 }
 
 void Camera::pixelCoords2uv(const pxl& pixel_coords, Eigen::Vector2f& uv) const {
-  pixelCoords2uv( pixel_coords, uv, -1);
+  pixelCoords2uv( pixel_coords, uv, 0);
 }
 
 Eigen::Vector2f Camera::pixelCoords2uv(const pxl& pixel_coords) const {
   Eigen::Vector2f uv;
-  pixelCoords2uv( pixel_coords, uv, -1);
+  pixelCoords2uv( pixel_coords, uv, 0);
   return uv;
 }
 
 void Camera::uv2pixelCoords(const Eigen::Vector2f& uv, pxl& pixel_coords, int level) const {
 
-  int resolution_x=cam_parameters_->resolution_x/(pow(2,level+1));
-  int resolution_y=cam_parameters_->resolution_y/(pow(2,level+1));
+  int resolution_x=cam_parameters_->resolution_x/(pow(2,level));
+  int resolution_y=cam_parameters_->resolution_y/(pow(2,level));
 
   float ratio_x = (uv.x()/cam_parameters_->width);
   float ratio_y = (uv.y()/cam_parameters_->height);
@@ -116,7 +116,7 @@ void Camera::uv2pixelCoords(const Eigen::Vector2f& uv, pxl& pixel_coords, int le
 }
 
 void Camera::uv2pixelCoords(const Eigen::Vector2f& uv, pxl& pixel_coords) const {
-  uv2pixelCoords(uv, pixel_coords, -1);
+  uv2pixelCoords(uv, pixel_coords, 0);
 }
 
 
@@ -195,7 +195,7 @@ bool Camera::projectPointInCamFrame(const Eigen::Vector3f& p_incamframe, Eigen::
   return true;
 }
 
-bool Camera::projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv ) const {
+bool Camera::projectCam(std::shared_ptr<Camera> cam_to_be_projected, Eigen::Vector2f& uv ) const {
 
   Eigen::Vector3f p = cam_to_be_projected->frame_camera_wrt_world_->translation();
 
@@ -204,7 +204,7 @@ bool Camera::projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv ) const
 
 }
 
-bool Camera::projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv, float& p_cam_z  ) const {
+bool Camera::projectCam(std::shared_ptr<Camera> cam_to_be_projected, Eigen::Vector2f& uv, float& p_cam_z  ) const {
 
   Eigen::Vector3f p = cam_to_be_projected->frame_camera_wrt_world_->translation();
 

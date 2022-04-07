@@ -10,7 +10,7 @@ class CameraForMapping;
 class CamerasContainer{
   public:
     // ********** members **********
-    Dso* dso_;
+    std::shared_ptr<Dso> dso_;
 
     // cam vectors
     std::vector<std::shared_ptr<CameraForMapping>> frames_;
@@ -20,7 +20,7 @@ class CamerasContainer{
 
     // ********** constructor **********
     CamerasContainer(Dso* dso):
-    dso_(dso){}
+    dso_( dso ){}
     ~CamerasContainer(){}
 
     // ********** methods **********

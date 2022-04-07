@@ -130,6 +130,30 @@ test_dso/fast:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/build
 .PHONY : test_dso/fast
 
+__/src/CamCouple.o: __/src/CamCouple.cpp.o
+.PHONY : __/src/CamCouple.o
+
+# target to build an object file
+__/src/CamCouple.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.o
+.PHONY : __/src/CamCouple.cpp.o
+
+__/src/CamCouple.i: __/src/CamCouple.cpp.i
+.PHONY : __/src/CamCouple.i
+
+# target to preprocess a source file
+__/src/CamCouple.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.i
+.PHONY : __/src/CamCouple.cpp.i
+
+__/src/CamCouple.s: __/src/CamCouple.cpp.s
+.PHONY : __/src/CamCouple.s
+
+# target to generate assembly for a file
+__/src/CamCouple.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.s
+.PHONY : __/src/CamCouple.cpp.s
+
 __/src/CameraForMapping.o: __/src/CameraForMapping.cpp.o
 .PHONY : __/src/CameraForMapping.o
 
@@ -201,6 +225,54 @@ __/src/KeyframeHandler.s: __/src/KeyframeHandler.cpp.s
 __/src/KeyframeHandler.cpp.s:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.s
 .PHONY : __/src/KeyframeHandler.cpp.s
+
+__/src/PointsContainer.o: __/src/PointsContainer.cpp.o
+.PHONY : __/src/PointsContainer.o
+
+# target to build an object file
+__/src/PointsContainer.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o
+.PHONY : __/src/PointsContainer.cpp.o
+
+__/src/PointsContainer.i: __/src/PointsContainer.cpp.i
+.PHONY : __/src/PointsContainer.i
+
+# target to preprocess a source file
+__/src/PointsContainer.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.i
+.PHONY : __/src/PointsContainer.cpp.i
+
+__/src/PointsContainer.s: __/src/PointsContainer.cpp.s
+.PHONY : __/src/PointsContainer.s
+
+# target to generate assembly for a file
+__/src/PointsContainer.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.s
+.PHONY : __/src/PointsContainer.cpp.s
+
+__/src/PointsHandler.o: __/src/PointsHandler.cpp.o
+.PHONY : __/src/PointsHandler.o
+
+# target to build an object file
+__/src/PointsHandler.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o
+.PHONY : __/src/PointsHandler.cpp.o
+
+__/src/PointsHandler.i: __/src/PointsHandler.cpp.i
+.PHONY : __/src/PointsHandler.i
+
+# target to preprocess a source file
+__/src/PointsHandler.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.i
+.PHONY : __/src/PointsHandler.cpp.i
+
+__/src/PointsHandler.s: __/src/PointsHandler.cpp.s
+.PHONY : __/src/PointsHandler.s
+
+# target to generate assembly for a file
+__/src/PointsHandler.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.s
+.PHONY : __/src/PointsHandler.cpp.s
 
 __/src/Pyramid.o: __/src/Pyramid.cpp.o
 .PHONY : __/src/Pyramid.o
@@ -427,6 +499,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... test_dso"
+	@echo "... __/src/CamCouple.o"
+	@echo "... __/src/CamCouple.i"
+	@echo "... __/src/CamCouple.s"
 	@echo "... __/src/CameraForMapping.o"
 	@echo "... __/src/CameraForMapping.i"
 	@echo "... __/src/CameraForMapping.s"
@@ -436,6 +511,12 @@ help:
 	@echo "... __/src/KeyframeHandler.o"
 	@echo "... __/src/KeyframeHandler.i"
 	@echo "... __/src/KeyframeHandler.s"
+	@echo "... __/src/PointsContainer.o"
+	@echo "... __/src/PointsContainer.i"
+	@echo "... __/src/PointsContainer.s"
+	@echo "... __/src/PointsHandler.o"
+	@echo "... __/src/PointsHandler.i"
+	@echo "... __/src/PointsHandler.s"
 	@echo "... __/src/Pyramid.o"
 	@echo "... __/src/Pyramid.i"
 	@echo "... __/src/Pyramid.s"

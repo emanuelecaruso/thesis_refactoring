@@ -8,9 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/manu/Desktop/thesis_refactoring/code/src/CamCouple.cpp" "executables/CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/CameraForMapping.cpp" "executables/CMakeFiles/test_dso.dir/__/src/CameraForMapping.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/CameraForMapping.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/CamerasContainer.cpp" "executables/CMakeFiles/test_dso.dir/__/src/CamerasContainer.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/CamerasContainer.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.cpp" "executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o.d"
+  "/home/manu/Desktop/thesis_refactoring/code/src/PointsContainer.cpp" "executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o.d"
+  "/home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.cpp" "executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/Pyramid.cpp" "executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/Tracker.cpp" "executables/CMakeFiles/test_dso.dir/__/src/Tracker.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/Tracker.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/camera.cpp" "executables/CMakeFiles/test_dso.dir/__/src/camera.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/camera.cpp.o.d"

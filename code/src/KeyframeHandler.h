@@ -6,7 +6,7 @@ class Dso;
 class KeyframeHandler{
   public:
     // ********** members **********
-    Dso* dso_;
+    std::shared_ptr<Dso> dso_;
 
     // ********** constructor **********
     KeyframeHandler(Dso* dso):

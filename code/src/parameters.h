@@ -34,11 +34,11 @@ static bool show_spectator_=true;
 static bool get_current_frame_=false;
 
 // candidate selection
-static int candidate_level = 0;
-static int coarsest_level_= candidate_level+2; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
-static int reg_level_=candidate_level+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
+static int candidate_level_ = 0;
+static int coarsest_level_= candidate_level_+2; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
+static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static float grad_threshold_=0.06;
-static int num_candidates_=700;
+static int num_candidates_=2000;
 
 // mapping
 static float cost_threshold_=0.07;
@@ -76,7 +76,7 @@ static int robustifier_dofs_=2;
 static float ratio_for_convergence_ = 0.001;
 
 //  video streaming
-static int end_frame_=120;
+static int end_frame_=5;
 static int fps_=30;
 
 // initializer parameters
@@ -117,7 +117,7 @@ struct Params{
   bool show_spectator=show_spectator_;
   bool get_current_frame=get_current_frame_;
 
-
+  int candidate_level=candidate_level_;
   int coarsest_level=coarsest_level_;
   int reg_level=reg_level_;
   float grad_threshold=grad_threshold_;

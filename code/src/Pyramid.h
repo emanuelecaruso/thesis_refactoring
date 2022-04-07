@@ -12,10 +12,10 @@ class PyramidLevel{
     std::shared_ptr<Image<pixelIntensity>> c_;
     std::shared_ptr<Image<pixelIntensity>> c_dx_;
     std::shared_ptr<Image<pixelIntensity>> c_dy_;
-    std::shared_ptr<Image<float>> magn_cd_;
-    std::shared_ptr<Image<float>> magn_cd_dx_;
-    std::shared_ptr<Image<float>> magn_cd_dy_;
-    std::shared_ptr<Image<float>> phase_cd_;
+    std::shared_ptr<Image<pixelIntensity>> magn_cd_;
+    std::shared_ptr<Image<pixelIntensity>> magn_cd_dx_;
+    std::shared_ptr<Image<pixelIntensity>> magn_cd_dy_;
+    std::shared_ptr<Image<pixelIntensity>> phase_cd_;
 
     // ********** constructor **********
     PyramidLevel(std::shared_ptr<Image<pixelIntensity>> img){
@@ -37,7 +37,6 @@ class Pyramid{
     std::vector< std::shared_ptr<PyramidLevel> > pyramid_levels_;
 
     // ********** constructor **********
-    Pyramid(){}
     Pyramid(std::shared_ptr<Camera> cam, const int levels):
     levels_(levels){
       init(levels, cam->image_intensity_);
@@ -47,6 +46,14 @@ class Pyramid{
 
     // ********** methods **********
     void init(const int levels, std::shared_ptr<Image<pixelIntensity>> image_intensity);
+    std::shared_ptr<Image<pixelIntensity>> getC(int level);
+    std::shared_ptr<Image<pixelIntensity>> getCDX(int level);
+    std::shared_ptr<Image<pixelIntensity>> getCDY(int level);
+    std::shared_ptr<Image<pixelIntensity>> getMagn(int level);
+    std::shared_ptr<Image<pixelIntensity>> getMagnDX(int level);
+    std::shared_ptr<Image<pixelIntensity>> getMagnDY(int level);
+    std::shared_ptr<Image<pixelIntensity>> getPhase(int level);
+
 
   protected:
 

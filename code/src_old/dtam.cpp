@@ -559,7 +559,7 @@ void Dso::doDSOSequential(){
       setFirstKeyframe();
     }
     else if(to_initialize_){
-      // initialize();
+      initialize();
     }
     else{
       // doDso();

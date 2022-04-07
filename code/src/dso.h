@@ -1,26 +1,29 @@
 #pragma once
 #include "camera.h"
 #include "CamerasContainer.h"
+#include "PointsContainer.h"
 #include "initializer.h"
 #include "environment.h"
 #include "KeyframeHandler.h"
+#include "PointsHandler.h"
 #include "Tracker.h"
 #include <memory>
 #include <condition_variable>
 
 class CameraForMapping;
 
-class Dso{
+class Dso : public std::enable_shared_from_this<Dso>{
   public:
     // ********** members **********
 
     // main objects
     std::shared_ptr<Params> parameters_;
     std::shared_ptr<Environment> environment_;
-    CamerasContainer cameras_container_;
-    Tracker tracker_;
-    KeyframeHandler keyframe_handler_;
-    Initializer initializer_;
+    std::shared_ptr<CamerasContainer> cameras_container_;
+    std::shared_ptr<PointsHandler> points_handler_;
+    std::shared_ptr<Tracker> tracker_;
+    std::shared_ptr<KeyframeHandler> keyframe_handler_;
+    std::shared_ptr<Initializer> initializer_;
 
     // flags for dso phases
     bool first_frame_to_set_ = true;
@@ -45,10 +48,11 @@ class Dso{
     Dso(std::shared_ptr<Environment> environment, std::shared_ptr<Params> parameters):
       parameters_(parameters)
       ,environment_(environment)
-      ,cameras_container_(this)
-      ,tracker_(this)
-      ,keyframe_handler_(this)
-      ,initializer_(this)
+      ,cameras_container_( new CamerasContainer(this) )
+      ,points_handler_( new PointsHandler(this) )
+      ,tracker_( new Tracker(this) )
+      ,keyframe_handler_( new KeyframeHandler(this) )
+      ,initializer_( new Initializer(this) )
       ,cam_parameters_(environment_->cam_parameters_)
       {};
 
@@ -65,7 +69,9 @@ class Dso{
     void updateCamerasFromEnvironment(); // load camera objects at fps rate
     void loadFrameCurrent();
     void setFirstKeyframe();
-    // note weak_ptr
+    void initialize();
+
   private:
-    std::list<std::weak_ptr<CamerasContainer>> children;
+
+    // note weak_ptr
 };
