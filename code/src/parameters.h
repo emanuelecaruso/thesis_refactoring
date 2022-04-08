@@ -14,7 +14,7 @@
 // code parameters
 static bool use_fast_cam_coupling_ = false;
 static bool debug_initialization_=true;
-static bool debug_mapping_=false;
+static bool debug_mapping_=true;
 static bool debug_tracking_=true;
 static bool debug_optimization_= true;
 static bool take_gt_poses_=false;
@@ -39,9 +39,11 @@ static int coarsest_level_= candidate_level_+2; // e.g. level = 3 -> 0,1,2,*3* (
 static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static float grad_threshold_=0.06;
 static int num_candidates_=2000;
+static float der_threshold_=0.01;
 
 // mapping
-static float cost_threshold_=0.07;
+static float cost_threshold_=0.05;
+// static float cost_threshold_=0.07;
 static float cost_grad_threshold_=0.08;
 static float cost_grad_threshold_DSO_=0.01; // for DSO
 static int max_num_mins_ = 3;
@@ -122,6 +124,7 @@ struct Params{
   int reg_level=reg_level_;
   float grad_threshold=grad_threshold_;
   int num_candidates=num_candidates_;
+  int der_threshold=der_threshold_;
 
   float cost_threshold=cost_threshold_;
   float cost_grad_threshold=cost_grad_threshold_;

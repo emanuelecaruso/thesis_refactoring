@@ -1,332 +1,332 @@
 #include "CamCouple.h"
 
 
-// void CamCouple::getSlopeParameters(){
+void CamCouple::getSlopeParameters(){
+
+  A_s=2*r(1,0)*t(2) - 2*r(2,0)*t(1);
+  B_s=2*r(1,1)*t(2) - 2*r(1,2)*t(1);
+  C_s=2*f*r(1,2)*t(2) - 2*f*r(2,2)*t(1) - h*r(1,1)*t(2) + h*r(1,2)*t(1) - r(1,0)*t(2)*w + r(2,0)*t(1)*w;
+  D_s=2*r(0,0)*t(2) - 2*r(2,0)*t(0);
+  E_s=2*r(0,1)*t(2) - 2*r(1,2)*t(0);
+  F_s=2*f*r(0,2)*t(2) - 2*f*r(2,2)*t(0) - h*r(0,1)*t(2) + h*r(1,2)*t(0) - r(0,0)*t(2)*w + r(2,0)*t(0)*w;
+}
+
+void CamCouple::getBoundsParameters(){
+
+  A_bu=4*f*r(0,0) + 2*r(2,0)*w;
+  B_bu=4*f*r(0,1) + 2*r(1,2)*w;
+  C_bu=4*f2*r(0,2) - r(2,0)*w2 - 2*f*h*r(0,1) - 2*f*r(0,0)*w + 2*f*r(2,2)*w - h*r(1,2)*w;
+  D_bu=4*t(0)*f2 + 2*t(2)*w*f;
+  E_bu=4*r(2,0);
+  F_bu=4*r(1,2);
+  G_bu=4*f*r(2,2) - 2*h*r(1,2) - 2*r(2,0)*w;
+  H_bu= 4*f*t(2);
+
+  A_bv=4*f*r(1,0) + 2*h*r(2,0);
+  B_bv=4*f*r(1,1) + 2*h*r(1,2);
+  C_bv=4*f2*r(1,2) - h2*r(1,2) - 2*f*h*r(1,1) + 2*f*h*r(2,2) - 2*f*r(1,0)*w - h*r(2,0)*w;
+  D_bv=4*t(1)*f2 + 2*h*t(2)*f;
+  E_bv=4*r(2,0);
+  F_bv=4*r(1,2);
+  G_bv=4*f*r(2,2) - 2*h*r(1,2) - 2*r(2,0)*w;
+  H_bv=4*f*t(2);
+
+}
+
+// void CamCouple::getJmParameters(){
+//   //Parameters for Jmu
+//   P1=t(2);
+//   P2=r(2,2);
+//   P3=r(1,2);
+//   P4=r(2,0);
 //
-//   A_s=2*r(1,0)*t(2) - 2*r(2,0)*t(1);
-//   B_s=2*r(1,1)*t(2) - 2*r(1,2)*t(1);
-//   C_s=2*f*r(1,2)*t(2) - 2*f*r(2,2)*t(1) - h*r(1,1)*t(2) + h*r(1,2)*t(1) - r(1,0)*t(2)*w + r(2,0)*t(1)*w;
-//   D_s=2*r(0,0)*t(2) - 2*r(2,0)*t(0);
-//   E_s=2*r(0,1)*t(2) - 2*r(1,2)*t(0);
-//   F_s=2*f*r(0,2)*t(2) - 2*f*r(2,2)*t(0) - h*r(0,1)*t(2) + h*r(1,2)*t(0) - r(0,0)*t(2)*w + r(2,0)*t(0)*w;
-// }
+//   A1=f*t(0);
+//   A2=f*r(0,2);
+//   A3=f*r(0,1);
+//   A4=f*r(0,0);
 //
-// void CamCouple::getBoundsParameters(){
+//   B1= -f*t(1);
+//   B2=-f*r(1,2);
+//   B3=-f*r(1,1);
+//   B4=-f*r(1,0);
 //
-//   A_bu=4*f*r(0,0) + 2*r(2,0)*w;
-//   B_bu=4*f*r(0,1) + 2*r(1,2)*w;
-//   C_bu=4*f2*r(0,2) - r(2,0)*w2 - 2*f*h*r(0,1) - 2*f*r(0,0)*w + 2*f*r(2,2)*w - h*r(1,2)*w;
-//   D_bu=4*t(0)*f2 + 2*t(2)*w*f;
-//   E_bu=4*r(2,0);
-//   F_bu=4*r(1,2);
-//   G_bu=4*f*r(2,2) - 2*h*r(1,2) - 2*r(2,0)*w;
-//   H_bu= 4*f*t(2);
+//   K1=pow(t(2),2);
+//   K2=2*r(2,2)*t(2);
+//   K3=pow(r(2,2),2);
+//   K4=2*r(1,2)*t(2);
+//   K5=2*r(1,2)*r(2,2);
+//   K6=pow(r(1,2),2);
+//   K7=2*r(2,0)*t(2);
+//   K8=2*r(2,0)*r(2,2);
+//   K9=2*r(1,2)*r(2,0);
+//   K10=pow(r(2,0),2);
 //
-//   A_bv=4*f*r(1,0) + 2*h*r(2,0);
-//   B_bv=4*f*r(1,1) + 2*h*r(1,2);
-//   C_bv=4*f2*r(1,2) - h2*r(1,2) - 2*f*h*r(1,1) + 2*f*h*r(2,2) - 2*f*r(1,0)*w - h*r(2,0)*w;
-//   D_bv=4*t(1)*f2 + 2*h*t(2)*f;
-//   E_bv=4*r(2,0);
-//   F_bv=4*r(1,2);
-//   G_bv=4*f*r(2,2) - 2*h*r(1,2) - 2*r(2,0)*w;
-//   H_bv=4*f*t(2);
+//   L1=f*t(0)*t(1);
+//   L2=f*r(0,2)*t(1) + f*r(1,2)*t(0);
+//   L3=f*r(0,2)*r(1,2);
+//   L4=f*r(0,1)*t(1) + f*r(1,1)*t(0);
+//   L5=f*r(0,1)*r(1,2) + f*r(0,2)*r(1,1);
+//   L6=f*r(0,1)*r(1,1);
+//   L7=f*r(0,0)*t(1) + f*r(1,0)*t(0);
+//   L8=f*r(0,0)*r(1,2) + f*r(0,2)*r(1,0);
+//   L9=f*r(0,0)*r(1,1) + f*r(0,1)*r(1,0);
+//   L10=f*r(0,0)*r(1,0);
 //
-// }
+//   Z1=f*pow(t(0),2) + f*pow(t(2),2);
+//   Z2=2*f*r(0,2)*t(0) + 2*f*r(2,2)*t(2);
+//   Z3=f*pow(r(0,2),2) + f*pow(r(2,2),2);
+//   Z4=2*f*r(0,1)*t(0) + 2*f*r(1,2)*t(2);
+//   Z5=2*f*r(0,1)*r(0,2) + 2*f*r(1,2)*r(2,2);
+//   Z6=f*pow(r(0,1),2) + f*pow(r(1,2),2);
+//   Z7=2*f*r(0,0)*t(0) + 2*f*r(2,0)*t(2);
+//   Z8=2*f*r(0,0)*r(0,2) + 2*f*r(2,0)*r(2,2);
+//   Z9=2*f*r(0,0)*r(0,1) + 2*f*r(1,2)*r(2,0);
+//   Z10=f*pow(r(0,0),2) + f*pow(r(2,0),2);
 //
-// // void CamCouple::getJmParameters(){
-// //   //Parameters for Jmu
-// //   P1=t(2);
-// //   P2=r(2,2);
-// //   P3=r(1,2);
-// //   P4=r(2,0);
-// //
-// //   A1=f*t(0);
-// //   A2=f*r(0,2);
-// //   A3=f*r(0,1);
-// //   A4=f*r(0,0);
-// //
-// //   B1= -f*t(1);
-// //   B2=-f*r(1,2);
-// //   B3=-f*r(1,1);
-// //   B4=-f*r(1,0);
-// //
-// //   K1=pow(t(2),2);
-// //   K2=2*r(2,2)*t(2);
-// //   K3=pow(r(2,2),2);
-// //   K4=2*r(1,2)*t(2);
-// //   K5=2*r(1,2)*r(2,2);
-// //   K6=pow(r(1,2),2);
-// //   K7=2*r(2,0)*t(2);
-// //   K8=2*r(2,0)*r(2,2);
-// //   K9=2*r(1,2)*r(2,0);
-// //   K10=pow(r(2,0),2);
-// //
-// //   L1=f*t(0)*t(1);
-// //   L2=f*r(0,2)*t(1) + f*r(1,2)*t(0);
-// //   L3=f*r(0,2)*r(1,2);
-// //   L4=f*r(0,1)*t(1) + f*r(1,1)*t(0);
-// //   L5=f*r(0,1)*r(1,2) + f*r(0,2)*r(1,1);
-// //   L6=f*r(0,1)*r(1,1);
-// //   L7=f*r(0,0)*t(1) + f*r(1,0)*t(0);
-// //   L8=f*r(0,0)*r(1,2) + f*r(0,2)*r(1,0);
-// //   L9=f*r(0,0)*r(1,1) + f*r(0,1)*r(1,0);
-// //   L10=f*r(0,0)*r(1,0);
-// //
-// //   Z1=f*pow(t(0),2) + f*pow(t(2),2);
-// //   Z2=2*f*r(0,2)*t(0) + 2*f*r(2,2)*t(2);
-// //   Z3=f*pow(r(0,2),2) + f*pow(r(2,2),2);
-// //   Z4=2*f*r(0,1)*t(0) + 2*f*r(1,2)*t(2);
-// //   Z5=2*f*r(0,1)*r(0,2) + 2*f*r(1,2)*r(2,2);
-// //   Z6=f*pow(r(0,1),2) + f*pow(r(1,2),2);
-// //   Z7=2*f*r(0,0)*t(0) + 2*f*r(2,0)*t(2);
-// //   Z8=2*f*r(0,0)*r(0,2) + 2*f*r(2,0)*r(2,2);
-// //   Z9=2*f*r(0,0)*r(0,1) + 2*f*r(1,2)*r(2,0);
-// //   Z10=f*pow(r(0,0),2) + f*pow(r(2,0),2);
-// //
-// //   X1=- f*pow(t(1),2) - f*pow(t(2),2);
-// //   X2=- 2*f*r(1,2)*t(1) - 2*f*r(2,2)*t(2);
-// //   X3=- f*pow(r(1,2),2) - f*pow(r(2,2),2);
-// //   X4=- 2*f*r(1,1)*t(1) - 2*f*r(1,2)*t(2);
-// //   X5=- 2*f*r(1,1)*r(1,2) - 2*f*r(1,2)*r(2,2);
-// //   X6=- f*pow(r(1,1),2) - f*pow(r(1,2),2);
-// //   X7=- 2*f*r(1,0)*t(1) - 2*f*r(2,0)*t(2);
-// //   X8=- 2*f*r(1,0)*r(1,2) - 2*f*r(2,0)*r(2,2);
-// //   X9=- 2*f*r(1,0)*r(1,1) - 2*f*r(1,2)*r(2,0);
-// //   X10=- f*pow(r(1,0),2) - f*pow(r(2,0),2);
-// //
-// // }
-//
-// void CamCouple::getJrParameters(){
-//   C1 = f*r(0,0)*r(1,2);
-//   C2 = f*r(2,0)*t(0);
-//   C3 = f*r(0,0)*t(2);
-//   C4 = f*r(0,2)*r(2,0);
-//   C5 = f*r(0,0)*r(2,2);
-//   C6 = f*r(0,1)*r(2,0);
-//   C7 = f*r(1,2)*t(0);
-//   C8 = f*r(0,1)*t(2);
-//   C9 = f*r(0,2)*r(1,2);
-//   C10 = f*r(0,1)*r(2,2);
-//   C11 = f*r(2,2)*t(0);
-//   C12 = f*r(0,2)*t(2);
-//
-//   D1 = f*r(1,1)*r(2,0);
-//   D2 = f*r(1,0)*r(1,2);
-//   D3 = f*r(1,2)*r(2,0);
-//   D4 = f*r(1,0)*r(2,2);
-//   D5 = f*r(2,0)*t(1);
-//   D6 = f*r(1,0)*t(2);
-//   D7 = f*r(1,2)*r(1,2);
-//   D8 = f*r(1,1)*r(2,2);
-//   D9 = f*r(1,2)*t(1);
-//   D10 = f*r(1,1)*t(2);
-//   D11 = f*r(2,2)*t(1);
-//   D12 = f*r(1,2)*t(2);
-// }
-//
-// Eigen::Matrix<float,2,1> CamCouple::getJd_(ActivePoint* active_pt ){
-//   float u1 = active_pt->uv_.x();
-//   float v1 = active_pt->uv_.y();
-//   float invd1 = active_pt->invdepth_;
-//
-//   float du = -(C_bu*H_bu - D_bu*G_bu + A_bu*H_bu*u1 - D_bu*E_bu*u1 + B_bu*H_bu*v1 - D_bu*F_bu*v1)/pow( (H_bu*invd1 + G_bu + E_bu*u1 + F_bu*v1) ,2);
-//   float dv = -(C_bv*H_bv - D_bv*G_bv + A_bv*H_bv*u1 - D_bv*E_bv*u1 + B_bv*H_bv*v1 - D_bv*F_bv*v1)/pow( (H_bv*invd1 + G_bv + E_bv*u1 + F_bv*v1), 2);
-//   Eigen::Matrix<float,2,1> Jd;
-//
-//   Jd << du,
-//         dv;
-//
-//   float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
-//   Jd *= (pixels_meter_ratio/pow(2,active_pt->level_+1));
-//
-//   return Jd;
-// }
-//
-// Eigen::Matrix<float,2,6> CamCouple::getJr_(ActivePoint* active_pt ){
-//   Eigen::Vector3f pb = (*(active_pt->p_incamframe_));
-//   float pbx2 = pb.x()*pb.x();
-//   float pby2 = pb.x()*pb.y();
-//   float pbz2 = pb.z()*pb.z();
-//
-//   float den=pbx2*pow(r(2,0),2) + 2*pb.x()*pb.y()*r(1,2)*r(2,0) + 2*pb.x()*pb.z()*r(2,0)*r(2,2) + 2*pb.x()*r(2,0)*t(2) + pby2*pow(r(1,2),2) + 2*pb.y()*pb.z()*r(1,2)*r(2,2) + 2*pb.y()*r(1,2)*t(2) + pbz2*pow(r(2,2),2) + 2*pb.z()*r(2,2)*t(2) + pow(t(2),2);
-//
-//   float num_Jru1 = (C6 - C1)*pb.y() + (C4 - C5)*pb.z() + C2 - C3;
-//   float Jru1 = num_Jru1/den;
-//
-//   float num_Jru2 = (C1 - C6)*pb.x() + (C9 - C10)*pb.z() + C7 - C8;
-//   float Jru2 = num_Jru2/den;
-//
-//   float num_Jru3 = (C5 - C4)*pb.x() + (C10 - C9)*pb.y() + C11 - C12;
-//   float Jru3 = num_Jru3/den;
-//
-//   float num_Jru4 = (C5 - C4)*pb.x()*pb.y() + (C6 - C1)*pb.x()*pb.z() + (C10 - C9)*pby2 + (C11 - C12)*pb.y() + (C10 - C9)*pbz2 + (C8 - C7)*pb.z();
-//   float Jru4 = num_Jru4/den;
-//
-//   float num_Jru5 = (C4 - C5)*pbx2 + (C9 - C10)*pb.x()*pb.y() + (C12 - C11)*pb.x() + (C6 - C1)*pb.y()*pb.z() + (C4 - C5)*pbz2 + (C2 - C3)*pb.z();
-//   float Jru5 = num_Jru5/den;
-//
-//   float num_Jru6 = (C1 - C6)*pbx2 + (C9 - C10)*pb.x()*pb.z() + (C7 - C8)*pb.x() + (C1 - C6)*pby2 + (C5 - C4)*pb.y()*pb.z() + (C3 - C2)*pb.y();
-//   float Jru6 = num_Jru6/den;
-//
-//
-//
-//   float num_Jrv1 = (D1 - D2)*pb.y() + (D3 - D4)*pb.z() + D5 - D6;
-//   float Jrv1 = num_Jrv1/den;
-//
-//   float num_Jrv2 = (D2 - D1)*pb.x() + (D7 - D8)*pb.z() + D9 - D10;
-//   float Jrv2 = num_Jrv2/den;
-//
-//   float num_Jrv3 = (D4 - D3)*pb.x() + (D8 - D7)*pb.y() + D11 - D12;
-//   float Jrv3 = num_Jrv3/den;
-//
-//   float num_Jrv4 = (D4 - D3)*pb.x()*pb.y() + (D1 - D2)*pb.x()*pb.z() + (D8 - D7)*pby2 + (D11 - D12)*pb.y() + (D8 - D7)*pbz2 + (D10 - D9)*pb.z();
-//   float Jrv4 = num_Jrv4/den;
-//
-//   float num_Jrv5 = (D3 - D4)*pbx2 + (D7 - D8)*pb.x()*pb.y() + (D12 - D11)*pb.x() + (D1 - D2)*pb.y()*pb.z() + (D3 - D4)*pbz2 + (D5 - D6)*pb.z();
-//   float Jrv5 = num_Jrv5/den;
-//
-//   float num_Jrv6 = (D2 - D1)*pbx2 + (D7 - D8)*pb.x()*pb.z() + (D9 - D10)*pb.x() + (D2 - D1)*pby2 + (D4 - D3)*pb.y()*pb.z() + (D6 - D5)*pb.y();
-//   float Jrv6 = num_Jrv6/den;
-//
-//
-//   Eigen::Matrix<float,2,6> Jr;
-//   Jr << Jru1, Jru2, Jru3, Jru4, Jru5, Jru6,
-//         Jrv1, Jrv2, Jrv3, Jrv4, Jrv5, Jrv6;
-//
-//   float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
-//   Jr *= (pixels_meter_ratio/pow(2,active_pt->level_+1));
-//
-//   return Jr;
-// }
-//
-// Eigen::Matrix<float,2,6> CamCouple::getJm_(ActivePoint* active_pt ){
-//   Eigen::Vector3f pb = T*(*(active_pt->p_incamframe_));
-//   float pbx2 = pb.x()*pb.x();
-//   float pby2 = pb.x()*pb.y();
-//   float pbz2 = pb.z()*pb.z();
-//
-//   float Jmu1 =f/pb.z();
-//   float Jmu2 =0;
-//   float Jmu3 =((-f)*pb.x())/pbz2;
-//   float Jmu4 =((-f)*pb.x()*pb.y())/pbz2;
-//   float Jmu5 =(f*pbx2 + f*pbz2)/pbz2;
-//   float Jmu6 =((-f)*pb.y())/pb.z();
-//
-//   float Jmv1 = 0;
-//   float Jmv2 = f/pb.z();
-//   float Jmv3 = ((-f)*pb.y())/pbz2;
-//   float Jmv4 = (- f*pby2 - f*pbz2)/pbz2;
-//   float Jmv5 = (f*pb.x()*pb.y())/pbz2;
-//   float Jmv6 = (f*pb.x())/pb.z();
-//
-//   Eigen::Matrix<float,2,6> Jm;
-//   Jm << Jmu1, Jmu2, Jmu3, Jmu4, Jmu5, Jmu6,
-//         Jmv1, Jmv2, Jmv3, Jmv4, Jmv5, Jmv6;
-//
-//   float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
-//   Jm *= (pixels_meter_ratio/pow(2,active_pt->level_+1));
-//
-//   return Jm;
-// }
-//
-//
-// void CamCouple::getDepthParameters(){
-//   A_d=r(2,0)/f;
-//   B_d=r(1,2)/f;
-//   C_d=r(2,2) - (h*r(1,2) - r(2,0)*w)/(2*f);
-//   D_d=t(2);
-// }
-//
-// bool CamCouple::getSlope(float u1, float v1, float& slope_m){
-//   slope_m=(A_s*u1+B_s*v1+C_s)/(D_s*u1+E_s*v1+F_s);
-//   // assert(!std::isnan(slope_m));
-//   if (std::isnan(slope_m) || std::isinf(slope_m)){
-//     return false;
-//   }
-//   return true;
-// }
-//
-// bool CamCouple::getBounds(float u1, float v1, float min_depth, float max_depth, float& bound_low, float& bound_up , bool u_or_v){
-//
-//   bool c1 = getCoord(u1, v1, min_depth, bound_low, u_or_v);
-//   bool c2 = getCoord(u1, v1, max_depth, bound_up, u_or_v);
-//   if (!c1 || !c2)
-//     return false;
-//   return true;
-// }
-//
-// bool CamCouple::getCoord(float u1, float v1, float d1, float& coord, bool u_or_v){
-//   // u2
-//   if (u_or_v){
-//     coord=(A_bu*u1*d1+B_bu*v1*d1+C_bu*d1+D_bu)/(E_bu*u1*d1+F_bu*v1*d1+G_bu*d1+H_bu);
-//   }
-//   // v2
-//   else{
-//     coord=(A_bv*u1*d1+B_bv*v1*d1+C_bv*d1+D_bv)/(E_bv*u1*d1+F_bv*v1*d1+G_bv*d1+H_bv);
-//   }
-//   assert(!std::isnan(coord));
-//   if (std::isnan(coord) || std::isinf(coord)){
-//     return false;
-//   }
-//   return true;
-// }
-//
-// bool CamCouple::getUv(float u1, float v1, float d1, float& u2, float& v2 ){
-//   u2=(A_bu*u1*d1+B_bu*v1*d1+C_bu*d1+D_bu)/(E_bu*u1*d1+F_bu*v1*d1+G_bu*d1+H_bu);
-//   v2=(A_bv*u1*d1+B_bv*v1*d1+C_bv*d1+D_bv)/(E_bv*u1*d1+F_bv*v1*d1+G_bv*d1+H_bv);
-//   // assert(!std::isnan(u2));
-//   // assert(!std::isnan(v2));
-//   if (std::isnan(u2) || std::isnan(v2) || std::isinf(u2) || std::isinf(v2) ){
-//     return false;
-//   }
-//   return true;
+//   X1=- f*pow(t(1),2) - f*pow(t(2),2);
+//   X2=- 2*f*r(1,2)*t(1) - 2*f*r(2,2)*t(2);
+//   X3=- f*pow(r(1,2),2) - f*pow(r(2,2),2);
+//   X4=- 2*f*r(1,1)*t(1) - 2*f*r(1,2)*t(2);
+//   X5=- 2*f*r(1,1)*r(1,2) - 2*f*r(1,2)*r(2,2);
+//   X6=- f*pow(r(1,1),2) - f*pow(r(1,2),2);
+//   X7=- 2*f*r(1,0)*t(1) - 2*f*r(2,0)*t(2);
+//   X8=- 2*f*r(1,0)*r(1,2) - 2*f*r(2,0)*r(2,2);
+//   X9=- 2*f*r(1,0)*r(1,1) - 2*f*r(1,2)*r(2,0);
+//   X10=- f*pow(r(1,0),2) - f*pow(r(2,0),2);
 //
 // }
-//
-// bool CamCouple::getD1(float u1, float v1, float& d1, float coord, bool u_or_v){
-//   // u2
-//   if (u_or_v){
-//     d1=((-H_bu)*coord + D_bu)/(E_bu*coord*u1 + F_bu*coord*v1 + G_bu*coord + (-A_bu)*u1 + (-B_bu)*v1 - C_bu);
-//
-//   }
-//   // v2
-//   else{
-//     d1=((-H_bv)*coord + D_bv)/(E_bv*coord*u1 + F_bv*coord*v1 + G_bv*coord + (-A_bv)*u1 + (-B_bv)*v1 - C_bv);
-//   }
-//   // assert(!std::isnan(d1));
-//   if (std::isnan(d1) || std::isinf(d1) ){
-//     return false;
-//   }
-//   return true;
-//
-// }
-//
-// bool CamCouple::getD1(float u1, float v1, float& d1, float u2, float v2){
-//   float slope = (v2-v1)/(u2-u1);
-//   bool u_or_v = (slope<1 && slope>-1);
-//   bool out;
-//   // u2
-//   if (u_or_v){
-//     out = getD1( u1, v1, d1, u2, u_or_v);
-//   }
-//   // v2
-//   else{
-//     out = getD1( u1, v1, d1, v2, u_or_v);
-//   }
-//
-//   return out;
-//
-// }
-//
-// bool CamCouple::getD2(float u1, float v1, float d1, float& d2){
-//   d2=(A_d*u1*d1+B_d*v1*d1+C_d*d1+D_d);
-//   // assert(!std::isnan(d2));
-//   if (std::isnan(d2) || std::isinf(d2) ){
-//     return false;
-//   }
-//   return true;
-//
-// }
+
+void CamCouple::getJrParameters(){
+  C1 = f*r(0,0)*r(1,2);
+  C2 = f*r(2,0)*t(0);
+  C3 = f*r(0,0)*t(2);
+  C4 = f*r(0,2)*r(2,0);
+  C5 = f*r(0,0)*r(2,2);
+  C6 = f*r(0,1)*r(2,0);
+  C7 = f*r(1,2)*t(0);
+  C8 = f*r(0,1)*t(2);
+  C9 = f*r(0,2)*r(1,2);
+  C10 = f*r(0,1)*r(2,2);
+  C11 = f*r(2,2)*t(0);
+  C12 = f*r(0,2)*t(2);
+
+  D1 = f*r(1,1)*r(2,0);
+  D2 = f*r(1,0)*r(1,2);
+  D3 = f*r(1,2)*r(2,0);
+  D4 = f*r(1,0)*r(2,2);
+  D5 = f*r(2,0)*t(1);
+  D6 = f*r(1,0)*t(2);
+  D7 = f*r(1,2)*r(1,2);
+  D8 = f*r(1,1)*r(2,2);
+  D9 = f*r(1,2)*t(1);
+  D10 = f*r(1,1)*t(2);
+  D11 = f*r(2,2)*t(1);
+  D12 = f*r(1,2)*t(2);
+}
+
+Eigen::Matrix<float,2,1> CamCouple::getJd_(ActivePoint* active_pt ){
+  float u1 = active_pt->uv_.x();
+  float v1 = active_pt->uv_.y();
+  float invd1 = active_pt->invdepth_;
+
+  float du = -(C_bu*H_bu - D_bu*G_bu + A_bu*H_bu*u1 - D_bu*E_bu*u1 + B_bu*H_bu*v1 - D_bu*F_bu*v1)/pow( (H_bu*invd1 + G_bu + E_bu*u1 + F_bu*v1) ,2);
+  float dv = -(C_bv*H_bv - D_bv*G_bv + A_bv*H_bv*u1 - D_bv*E_bv*u1 + B_bv*H_bv*v1 - D_bv*F_bv*v1)/pow( (H_bv*invd1 + G_bv + E_bv*u1 + F_bv*v1), 2);
+  Eigen::Matrix<float,2,1> Jd;
+
+  Jd << du,
+        dv;
+
+  float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
+  Jd *= (pixels_meter_ratio/pow(2,active_pt->level_+1));
+
+  return Jd;
+}
+
+Eigen::Matrix<float,2,6> CamCouple::getJr_(ActivePoint* active_pt ){
+  Eigen::Vector3f pb = active_pt->p_incamframe_;
+  float pbx2 = pb.x()*pb.x();
+  float pby2 = pb.x()*pb.y();
+  float pbz2 = pb.z()*pb.z();
+
+  float den=pbx2*pow(r(2,0),2) + 2*pb.x()*pb.y()*r(1,2)*r(2,0) + 2*pb.x()*pb.z()*r(2,0)*r(2,2) + 2*pb.x()*r(2,0)*t(2) + pby2*pow(r(1,2),2) + 2*pb.y()*pb.z()*r(1,2)*r(2,2) + 2*pb.y()*r(1,2)*t(2) + pbz2*pow(r(2,2),2) + 2*pb.z()*r(2,2)*t(2) + pow(t(2),2);
+
+  float num_Jru1 = (C6 - C1)*pb.y() + (C4 - C5)*pb.z() + C2 - C3;
+  float Jru1 = num_Jru1/den;
+
+  float num_Jru2 = (C1 - C6)*pb.x() + (C9 - C10)*pb.z() + C7 - C8;
+  float Jru2 = num_Jru2/den;
+
+  float num_Jru3 = (C5 - C4)*pb.x() + (C10 - C9)*pb.y() + C11 - C12;
+  float Jru3 = num_Jru3/den;
+
+  float num_Jru4 = (C5 - C4)*pb.x()*pb.y() + (C6 - C1)*pb.x()*pb.z() + (C10 - C9)*pby2 + (C11 - C12)*pb.y() + (C10 - C9)*pbz2 + (C8 - C7)*pb.z();
+  float Jru4 = num_Jru4/den;
+
+  float num_Jru5 = (C4 - C5)*pbx2 + (C9 - C10)*pb.x()*pb.y() + (C12 - C11)*pb.x() + (C6 - C1)*pb.y()*pb.z() + (C4 - C5)*pbz2 + (C2 - C3)*pb.z();
+  float Jru5 = num_Jru5/den;
+
+  float num_Jru6 = (C1 - C6)*pbx2 + (C9 - C10)*pb.x()*pb.z() + (C7 - C8)*pb.x() + (C1 - C6)*pby2 + (C5 - C4)*pb.y()*pb.z() + (C3 - C2)*pb.y();
+  float Jru6 = num_Jru6/den;
+
+
+
+  float num_Jrv1 = (D1 - D2)*pb.y() + (D3 - D4)*pb.z() + D5 - D6;
+  float Jrv1 = num_Jrv1/den;
+
+  float num_Jrv2 = (D2 - D1)*pb.x() + (D7 - D8)*pb.z() + D9 - D10;
+  float Jrv2 = num_Jrv2/den;
+
+  float num_Jrv3 = (D4 - D3)*pb.x() + (D8 - D7)*pb.y() + D11 - D12;
+  float Jrv3 = num_Jrv3/den;
+
+  float num_Jrv4 = (D4 - D3)*pb.x()*pb.y() + (D1 - D2)*pb.x()*pb.z() + (D8 - D7)*pby2 + (D11 - D12)*pb.y() + (D8 - D7)*pbz2 + (D10 - D9)*pb.z();
+  float Jrv4 = num_Jrv4/den;
+
+  float num_Jrv5 = (D3 - D4)*pbx2 + (D7 - D8)*pb.x()*pb.y() + (D12 - D11)*pb.x() + (D1 - D2)*pb.y()*pb.z() + (D3 - D4)*pbz2 + (D5 - D6)*pb.z();
+  float Jrv5 = num_Jrv5/den;
+
+  float num_Jrv6 = (D2 - D1)*pbx2 + (D7 - D8)*pb.x()*pb.z() + (D9 - D10)*pb.x() + (D2 - D1)*pby2 + (D4 - D3)*pb.y()*pb.z() + (D6 - D5)*pb.y();
+  float Jrv6 = num_Jrv6/den;
+
+
+  Eigen::Matrix<float,2,6> Jr;
+  Jr << Jru1, Jru2, Jru3, Jru4, Jru5, Jru6,
+        Jrv1, Jrv2, Jrv3, Jrv4, Jrv5, Jrv6;
+
+  float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
+  Jr *= (pixels_meter_ratio/pow(2,active_pt->level_+1));
+
+  return Jr;
+}
+
+Eigen::Matrix<float,2,6> CamCouple::getJm_(ActivePoint* active_pt ){
+  Eigen::Vector3f pb = T*active_pt->p_incamframe_;
+  float pbx2 = pb.x()*pb.x();
+  float pby2 = pb.x()*pb.y();
+  float pbz2 = pb.z()*pb.z();
+
+  float Jmu1 =f/pb.z();
+  float Jmu2 =0;
+  float Jmu3 =((-f)*pb.x())/pbz2;
+  float Jmu4 =((-f)*pb.x()*pb.y())/pbz2;
+  float Jmu5 =(f*pbx2 + f*pbz2)/pbz2;
+  float Jmu6 =((-f)*pb.y())/pb.z();
+
+  float Jmv1 = 0;
+  float Jmv2 = f/pb.z();
+  float Jmv3 = ((-f)*pb.y())/pbz2;
+  float Jmv4 = (- f*pby2 - f*pbz2)/pbz2;
+  float Jmv5 = (f*pb.x()*pb.y())/pbz2;
+  float Jmv6 = (f*pb.x())/pb.z();
+
+  Eigen::Matrix<float,2,6> Jm;
+  Jm << Jmu1, Jmu2, Jmu3, Jmu4, Jmu5, Jmu6,
+        Jmv1, Jmv2, Jmv3, Jmv4, Jmv5, Jmv6;
+
+  float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
+  Jm *= (pixels_meter_ratio/pow(2,active_pt->level_+1));
+
+  return Jm;
+}
+
+
+void CamCouple::getDepthParameters(){
+  A_d=r(2,0)/f;
+  B_d=r(1,2)/f;
+  C_d=r(2,2) - (h*r(1,2) - r(2,0)*w)/(2*f);
+  D_d=t(2);
+}
+
+bool CamCouple::getSlope(float u1, float v1, float& slope_m){
+  slope_m=(A_s*u1+B_s*v1+C_s)/(D_s*u1+E_s*v1+F_s);
+  // assert(!std::isnan(slope_m));
+  if (std::isnan(slope_m) || std::isinf(slope_m)){
+    return false;
+  }
+  return true;
+}
+
+bool CamCouple::getBounds(float u1, float v1, float min_depth, float max_depth, float& bound_low, float& bound_up , bool u_or_v){
+
+  bool c1 = getCoord(u1, v1, min_depth, bound_low, u_or_v);
+  bool c2 = getCoord(u1, v1, max_depth, bound_up, u_or_v);
+  if (!c1 || !c2)
+    return false;
+  return true;
+}
+
+bool CamCouple::getCoord(float u1, float v1, float d1, float& coord, bool u_or_v){
+  // u2
+  if (u_or_v){
+    coord=(A_bu*u1*d1+B_bu*v1*d1+C_bu*d1+D_bu)/(E_bu*u1*d1+F_bu*v1*d1+G_bu*d1+H_bu);
+  }
+  // v2
+  else{
+    coord=(A_bv*u1*d1+B_bv*v1*d1+C_bv*d1+D_bv)/(E_bv*u1*d1+F_bv*v1*d1+G_bv*d1+H_bv);
+  }
+  assert(!std::isnan(coord));
+  if (std::isnan(coord) || std::isinf(coord)){
+    return false;
+  }
+  return true;
+}
+
+bool CamCouple::getUv(float u1, float v1, float d1, float& u2, float& v2 ){
+  u2=(A_bu*u1*d1+B_bu*v1*d1+C_bu*d1+D_bu)/(E_bu*u1*d1+F_bu*v1*d1+G_bu*d1+H_bu);
+  v2=(A_bv*u1*d1+B_bv*v1*d1+C_bv*d1+D_bv)/(E_bv*u1*d1+F_bv*v1*d1+G_bv*d1+H_bv);
+  // assert(!std::isnan(u2));
+  // assert(!std::isnan(v2));
+  if (std::isnan(u2) || std::isnan(v2) || std::isinf(u2) || std::isinf(v2) ){
+    return false;
+  }
+  return true;
+
+}
+
+bool CamCouple::getD1(float u1, float v1, float& d1, float coord, bool u_or_v){
+  // u2
+  if (u_or_v){
+    d1=((-H_bu)*coord + D_bu)/(E_bu*coord*u1 + F_bu*coord*v1 + G_bu*coord + (-A_bu)*u1 + (-B_bu)*v1 - C_bu);
+
+  }
+  // v2
+  else{
+    d1=((-H_bv)*coord + D_bv)/(E_bv*coord*u1 + F_bv*coord*v1 + G_bv*coord + (-A_bv)*u1 + (-B_bv)*v1 - C_bv);
+  }
+  // assert(!std::isnan(d1));
+  if (std::isnan(d1) || std::isinf(d1) ){
+    return false;
+  }
+  return true;
+
+}
+
+bool CamCouple::getD1(float u1, float v1, float& d1, float u2, float v2){
+  float slope = (v2-v1)/(u2-u1);
+  bool u_or_v = (slope<1 && slope>-1);
+  bool out;
+  // u2
+  if (u_or_v){
+    out = getD1( u1, v1, d1, u2, u_or_v);
+  }
+  // v2
+  else{
+    out = getD1( u1, v1, d1, v2, u_or_v);
+  }
+
+  return out;
+
+}
+
+bool CamCouple::getD2(float u1, float v1, float d1, float& d2){
+  d2=(A_d*u1*d1+B_d*v1*d1+C_d*d1+D_d);
+  // assert(!std::isnan(d2));
+  if (std::isnan(d2) || std::isinf(d2) ){
+    return false;
+  }
+  return true;
+
+}
 // //
 // // EpipolarLine* CamCouple::getEpSegment(Candidate* candidate, int bound_idx){
 // //

@@ -119,6 +119,12 @@ void Camera::uv2pixelCoords(const Eigen::Vector2f& uv, pxl& pixel_coords) const 
   uv2pixelCoords(uv, pixel_coords, 0);
 }
 
+pxl Camera::uv2pixelCoords(const Eigen::Vector2f& uv, int level) const{
+  pxl pixel_coords;
+  uv2pixelCoords(uv, pixel_coords, level);
+  return pixel_coords;
+}
+
 
 
 void Camera::pointAtDepthInCamFrame(const Eigen::Vector2f& uv, float depth, Eigen::Vector3f& p_incamframe ) const {

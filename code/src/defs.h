@@ -45,6 +45,7 @@ typedef Eigen::Matrix<float, 6, 3> Matrix6_3f;
 typedef Eigen::Matrix<float, 6, 2> Matrix6_2f;
 typedef Eigen::Matrix<float, 4, 3> Matrix4_3f;
 
+typedef cv::Vec3f colorRGB;
 
 
 template <class T>
@@ -249,7 +250,7 @@ struct CamParameters{
   pixel_width(width/(float)resolution_x), pixel_meter_ratio((float)resolution_x/width)
   { };
 
-  void printMembers() const {
+  inline void printMembers() const {
     std::cout << "lens: " << lens << std::endl;
     std::cout << "aspect: " << aspect << std::endl;
     std::cout << "width: " << width << std::endl;
@@ -258,6 +259,47 @@ struct CamParameters{
     std::cout << "resolution_y: " << resolution_y << std::endl;
     std::cout << "max_depth: " << max_depth << std::endl;
     std::cout << "min_depth: " << min_depth << std::endl;
+  }
+
+
+  inline colorRGB invdepthToRgb(float invdepth){
+
+    float min_depth_ = min_depth;
+    float invdepth_normalized = min_depth_*invdepth;
+
+    float H = 230*(1-invdepth_normalized);
+
+    float s = 1;
+    float v = 0.7;
+    float C = s*v;
+    float X = C*(1-abs(fmod(H/60.0, 2)-1));
+    float m = v-C;
+    float r,g,b;
+    if(H >= 0 && H < 60){
+        r = C,g = X,b = 0;
+    }
+    else if(H >= 60 && H < 120){
+        r = X,g = C,b = 0;
+    }
+    else if(H >= 120 && H < 180){
+        r = 0,g = C,b = X;
+    }
+    else if(H >= 180 && H < 240){
+        r = 0,g = X,b = C;
+    }
+    else if(H >= 240 && H < 300){
+        r = X,g = 0,b = C;
+    }
+    else{
+        r = C,g = 0,b = X;
+    }
+    int R = (r+m);
+    int G = (g+m);
+    int B = (b+m);
+
+    colorRGB color = colorRGB(b,g,r);
+
+    return color;
   }
 
 };
@@ -273,7 +315,6 @@ inline void waitkey(int num){
   cv::waitKey(num);
 }
 
-typedef cv::Vec3f colorRGB;
 const float colorRGB_maxval = 1;
 const int colorRGB_CODE = CV_32FC3;
 

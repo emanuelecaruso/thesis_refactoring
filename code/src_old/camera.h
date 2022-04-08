@@ -121,6 +121,7 @@ class Camera{
     Eigen::Vector2f pixelCoords2uv(const pxl& pixel_coords) const;
     void uv2pixelCoords(const Eigen::Vector2f& uv, pxl& pixel_coords, int level) const;
     void uv2pixelCoords(const Eigen::Vector2f& uv, pxl& pixel_coords) const;
+    pxl& uv2pixelCoords(const Eigen::Vector2f& uv) const;
     void pointAtDepth(const Eigen::Vector2f& uv, float depth, Eigen::Vector3f& p) const;
     void pointAtDepth(const Eigen::Vector2f& uv, float depth, Eigen::Vector3f& p, Eigen::Vector3f& p_incamframe) const;
     void pointAtDepthInCamFrame(const Eigen::Vector2f& uv, float depth, Eigen::Vector3f& p_incamframe) const;

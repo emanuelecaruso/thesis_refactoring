@@ -34,6 +34,8 @@ class CamerasContainer{
     void removeKeyframeToMarginalize(std::shared_ptr<CameraForMapping> keyframe);
     void removeKeyframeMarginalized(std::shared_ptr<CameraForMapping> keyframe);
 
+    std::shared_ptr<CameraForMapping> getLastActiveKeyframe();
+
   protected:
     // check functions
     bool checkFrame(std::shared_ptr<CameraForMapping> frame);

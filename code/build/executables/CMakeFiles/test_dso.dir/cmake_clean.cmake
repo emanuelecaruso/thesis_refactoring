@@ -21,6 +21,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/test_dso.dir/__/src/dso.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/environment.cpp.o"
   "CMakeFiles/test_dso.dir/__/src/environment.cpp.o.d"
+  "CMakeFiles/test_dso.dir/__/src/epline.cpp.o"
+  "CMakeFiles/test_dso.dir/__/src/epline.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/image.cpp.o"
   "CMakeFiles/test_dso.dir/__/src/image.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/initializer.cpp.o"

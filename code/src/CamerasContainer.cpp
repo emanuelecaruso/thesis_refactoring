@@ -6,7 +6,7 @@
 void CamerasContainer::addFrame(std::shared_ptr<Camera> frame){
   // create CameraForMapping
   std::shared_ptr<CameraForMapping> frame_ ( new CameraForMapping(frame,dso_->parameters_));
-  
+
   frames_.push_back(frame_);
 }
 void CamerasContainer::addActiveKeyframe(std::shared_ptr<CameraForMapping> keyframe){
@@ -55,4 +55,8 @@ bool CamerasContainer::checkKeyframeToBeMarginalized( std::shared_ptr<CameraForM
 }
 bool CamerasContainer::checkMarginalizedKeyframe( std::shared_ptr<CameraForMapping> frame ){
   return std::count(keyframes_marginalized_.begin(), keyframes_marginalized_.end(), frame);
+}
+
+std::shared_ptr<CameraForMapping> CamerasContainer::getLastActiveKeyframe(){
+  return keyframes_active_.back();
 }

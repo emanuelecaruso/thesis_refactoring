@@ -223,10 +223,24 @@ executables/CMakeFiles/test_dso.dir/__/src/utils.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_dso.dir/__/src/utils.cpp.s"
 	cd /home/manu/Desktop/thesis_refactoring/code/build/executables && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/manu/Desktop/thesis_refactoring/code/src/utils.cpp -o CMakeFiles/test_dso.dir/__/src/utils.cpp.s
 
+executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o: executables/CMakeFiles/test_dso.dir/flags.make
+executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o: ../src/epline.cpp
+executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o: executables/CMakeFiles/test_dso.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o"
+	cd /home/manu/Desktop/thesis_refactoring/code/build/executables && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o -MF CMakeFiles/test_dso.dir/__/src/epline.cpp.o.d -o CMakeFiles/test_dso.dir/__/src/epline.cpp.o -c /home/manu/Desktop/thesis_refactoring/code/src/epline.cpp
+
+executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test_dso.dir/__/src/epline.cpp.i"
+	cd /home/manu/Desktop/thesis_refactoring/code/build/executables && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/manu/Desktop/thesis_refactoring/code/src/epline.cpp > CMakeFiles/test_dso.dir/__/src/epline.cpp.i
+
+executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_dso.dir/__/src/epline.cpp.s"
+	cd /home/manu/Desktop/thesis_refactoring/code/build/executables && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/manu/Desktop/thesis_refactoring/code/src/epline.cpp -o CMakeFiles/test_dso.dir/__/src/epline.cpp.s
+
 executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o: executables/CMakeFiles/test_dso.dir/flags.make
 executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o: ../src/KeyframeHandler.cpp
 executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o: executables/CMakeFiles/test_dso.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o"
 	cd /home/manu/Desktop/thesis_refactoring/code/build/executables && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o -MF CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o.d -o CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o -c /home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.cpp
 
 executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.i: cmake_force
@@ -240,7 +254,7 @@ executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.s: cmake_force
 executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o: executables/CMakeFiles/test_dso.dir/flags.make
 executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o: ../src/PointsContainer.cpp
 executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o: executables/CMakeFiles/test_dso.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o"
 	cd /home/manu/Desktop/thesis_refactoring/code/build/executables && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o -MF CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o.d -o CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o -c /home/manu/Desktop/thesis_refactoring/code/src/PointsContainer.cpp
 
 executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.i: cmake_force
@@ -254,7 +268,7 @@ executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.s: cmake_force
 executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o: executables/CMakeFiles/test_dso.dir/flags.make
 executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o: ../src/PointsHandler.cpp
 executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o: executables/CMakeFiles/test_dso.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o"
 	cd /home/manu/Desktop/thesis_refactoring/code/build/executables && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o -MF CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o.d -o CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o -c /home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.cpp
 
 executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.i: cmake_force
@@ -268,7 +282,7 @@ executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.s: cmake_force
 executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: executables/CMakeFiles/test_dso.dir/flags.make
 executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: ../src/initializer.cpp
 executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: executables/CMakeFiles/test_dso.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o"
 	cd /home/manu/Desktop/thesis_refactoring/code/build/executables && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o -MF CMakeFiles/test_dso.dir/__/src/initializer.cpp.o.d -o CMakeFiles/test_dso.dir/__/src/initializer.cpp.o -c /home/manu/Desktop/thesis_refactoring/code/src/initializer.cpp
 
 executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.i: cmake_force
@@ -292,6 +306,7 @@ test_dso_OBJECTS = \
 "CMakeFiles/test_dso.dir/__/src/environment.cpp.o" \
 "CMakeFiles/test_dso.dir/__/src/Tracker.cpp.o" \
 "CMakeFiles/test_dso.dir/__/src/utils.cpp.o" \
+"CMakeFiles/test_dso.dir/__/src/epline.cpp.o" \
 "CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o" \
 "CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o" \
 "CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o" \
@@ -311,6 +326,7 @@ executables/test_dso: executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o
 executables/test_dso: executables/CMakeFiles/test_dso.dir/__/src/environment.cpp.o
 executables/test_dso: executables/CMakeFiles/test_dso.dir/__/src/Tracker.cpp.o
 executables/test_dso: executables/CMakeFiles/test_dso.dir/__/src/utils.cpp.o
+executables/test_dso: executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o
 executables/test_dso: executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o
 executables/test_dso: executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o
 executables/test_dso: executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o
@@ -384,7 +400,7 @@ executables/test_dso: /usr/local/lib/libopencv_cudaarithm.so.4.5.2
 executables/test_dso: /usr/local/lib/libopencv_core.so.4.5.2
 executables/test_dso: /usr/local/lib/libopencv_cudev.so.4.5.2
 executables/test_dso: executables/CMakeFiles/test_dso.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Linking CXX executable test_dso"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Linking CXX executable test_dso"
 	cd /home/manu/Desktop/thesis_refactoring/code/build/executables && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_dso.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

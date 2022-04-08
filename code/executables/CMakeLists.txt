@@ -69,7 +69,7 @@ add_executable(test_dso test_dso.cpp
 #../src/Tree.cpp
 #../src/dtam.cpp
 ../src/utils.cpp
-#../src/epline.cpp
+../src/epline.cpp
 ../src/KeyframeHandler.cpp
 ../src/PointsContainer.cpp
 ../src/PointsHandler.cpp

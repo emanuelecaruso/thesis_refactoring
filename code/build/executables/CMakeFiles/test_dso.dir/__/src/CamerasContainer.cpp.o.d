@@ -517,5 +517,7 @@ executables/CMakeFiles/test_dso.dir/__/src/CamerasContainer.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/environment.h \
  /home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.h \
  /home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/epline.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CamCouple.h \
  /home/manu/Desktop/thesis_refactoring/code/src/Tracker.h \
  /usr/include/c++/7/condition_variable

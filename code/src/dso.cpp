@@ -61,6 +61,7 @@ void Dso::initialize(){
 
   // if a good pose is found ...
   if(initializer_->findPose()){
+    tracker_->trackCam(true); //groundtruth
     sharedCoutDebug("   - Pose found");
     if(parameters_->debug_initialization){
       initializer_->showCornersTrackCurr();
@@ -68,10 +69,15 @@ void Dso::initialize(){
 
     // ... add last keyframe
     keyframe_handler_->addKeyframe(true);
+    points_handler_->trackCandidates();
 
-    // // start initializing the model
-    // mapper_->trackExistingCandidates(take_gt_points,debug_mapping);
-    //
+    if(parameters_->debug_mapping){
+      // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
+
+      points_handler_->projectCandidatesOnLastFrame();
+      points_handler_->showProjectedCandidates();
+    }
+
     // bundle_adj_->projectActivePoints_prepMarg(0);
     // bundle_adj_->activateNewPoints();
     // bundle_adj_->collectCoarseActivePoints();
