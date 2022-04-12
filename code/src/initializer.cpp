@@ -137,7 +137,7 @@ bool Initializer::findPose(){
 
     // assign pose
     std::shared_ptr<CameraForMapping> cam = dso_->frame_current_;
-    std::cout << T.translation() << std::endl;
+
     cam->assignPose(T);
     // cam->assignPose0(T);
 

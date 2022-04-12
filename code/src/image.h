@@ -88,8 +88,8 @@ class Image{
     }
 
     inline bool pixelInRange(const pxl& pixel_coords) const{
-      // if (pixel_coords.y()>0.5001 && pixel_coords.y()<(float)(image_.rows)-0.5001 && pixel_coords.x()>0.5001 && pixel_coords.x()<(float)(image_.cols)-0.5001){
-      if (pixel_coords.y()>=0.5 && pixel_coords.y()<=(float)(image_.rows)-0.5 && pixel_coords.x()>=0.5 && pixel_coords.x()<=(float)(image_.cols)-0.5){
+      if (pixel_coords.y()>0.5001 && pixel_coords.y()<(float)(image_.rows)-0.5001 && pixel_coords.x()>0.5001 && pixel_coords.x()<(float)(image_.cols)-0.5001){
+      // if (pixel_coords.y()>=0.5 && pixel_coords.y()<=(float)(image_.rows)-0.5 && pixel_coords.x()>=0.5 && pixel_coords.x()<=(float)(image_.cols)-0.5){
         return true;
       }
       return false;

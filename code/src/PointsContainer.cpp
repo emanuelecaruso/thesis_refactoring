@@ -18,12 +18,12 @@ void PointsContainer::drawPoint(std::shared_ptr<Point> point, std::shared_ptr<Im
 void PointsContainer::showCandidates(){
   double alpha = 1;
 
-  std::string name = cam_->name_+" , "+std::to_string(candidates_.size())+" candidates";
+  std::string name = cam_->name_+" , "+std::to_string(candidates_->size())+" candidates";
   std::shared_ptr<Image<colorRGB>> show_img( cam_->pyramid_->getC(parameters_->candidate_level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through candidates
-  for(int i=0; i<candidates_.size(); i++){
-    std::shared_ptr<Candidate> candidate = candidates_[i];
+  for(int i=0; i<candidates_->size(); i++){
+    std::shared_ptr<Candidate> candidate = candidates_->at(i);
     drawPoint(candidate,show_img);
   }
 
@@ -35,12 +35,12 @@ void PointsContainer::showCandidates(){
 void PointsContainer::showProjectedCandidates(){
   double alpha = 1;
 
-  std::string name = cam_->name_+" , "+std::to_string(candidates_projected_.size())+" projected candidates";
+  std::string name = cam_->name_+" , "+std::to_string(candidates_projected_->size())+" projected candidates";
   std::shared_ptr<Image<colorRGB>> show_img( cam_->pyramid_->getC(parameters_->candidate_level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through candidates
-  for(int i=0; i<candidates_projected_.size(); i++){
-    std::shared_ptr<CandidateProjected> candidate_proj = candidates_projected_[i];
+  for(int i=0; i<candidates_projected_->size(); i++){
+    std::shared_ptr<CandidateProjected> candidate_proj = candidates_projected_->at(i);
     drawPoint(candidate_proj,show_img);
   }
 
@@ -53,12 +53,12 @@ void PointsContainer::showProjectedCandidates(){
 void PointsContainer::showActivePoints(){
   double alpha = 1;
 
-  std::string name = cam_->name_+" , "+std::to_string(active_points_.size())+" active points";
+  std::string name = cam_->name_+" , "+std::to_string(active_points_->size())+" active points";
   std::shared_ptr<Image<colorRGB>> show_img( cam_->pyramid_->getC(parameters_->candidate_level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through candidates
-  for(int i=0; i<active_points_.size(); i++){
-    std::shared_ptr<ActivePoint> active_pt = active_points_[i];
+  for(int i=0; i<active_points_->size(); i++){
+    std::shared_ptr<ActivePoint> active_pt = active_points_->at(i);
     drawPoint(active_pt,show_img);
   }
 
@@ -70,12 +70,12 @@ void PointsContainer::showActivePoints(){
 void PointsContainer::showProjectedActivePoints(){
   double alpha = 1;
 
-  std::string name = cam_->name_+" , "+std::to_string(active_points_projected_.size())+" projected active points";
+  std::string name = cam_->name_+" , "+std::to_string(active_points_projected_->size())+" projected active points";
   std::shared_ptr<Image<colorRGB>> show_img( cam_->pyramid_->getC(parameters_->candidate_level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through candidates
-  for(int i=0; i<active_points_projected_.size(); i++){
-    std::shared_ptr<ActivePointProjected> active_pt_proj = active_points_projected_[i];
+  for(int i=0; i<active_points_projected_->size(); i++){
+    std::shared_ptr<ActivePointProjected> active_pt_proj = active_points_projected_->at(i);
     drawPoint(active_pt_proj,show_img);
   }
 

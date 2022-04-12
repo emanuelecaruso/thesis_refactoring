@@ -13,14 +13,6 @@ class Node{
     std::vector<std::shared_ptr<Node>> children_;
 };
 
-class NodeCandSel : public Node{
-  public:
-    // ********** members **********
-    int max_ = 0;
-    int minmax_ = 0;
-    float h_ = 0;
-};
-
 class NodeActPtAct : public Node{
   public:
     // ********** members **********

@@ -42,7 +42,7 @@ static int num_candidates_=2000;
 static float der_threshold_=0.01;
 
 // mapping
-static float cost_threshold_=0.05;
+static float cost_threshold_=0.02;
 // static float cost_threshold_=0.07;
 static float cost_grad_threshold_=0.08;
 static float cost_grad_threshold_DSO_=0.01; // for DSO

@@ -56,7 +56,7 @@ void PointsHandler::sampleCandidates(){
 
         std::shared_ptr<Candidate> cand(new Candidate(dso_->frame_current_, pixel, dso_->parameters_->candidate_level));
 
-        dso_->frame_current_->points_container_->candidates_.push_back(cand);
+        dso_->frame_current_->points_container_->candidates_->push_back(cand);
         img->setPixel(pixel,0);
 
         delete maxLoc;
@@ -98,6 +98,8 @@ void PointsHandler::showProjectedActivePoints(){
 
 void PointsHandler::projectCandidatesOnLastFrame(){
 
+  dso_->frame_current_->points_container_->candidates_projected_->clear();
+
   // iterate through keyframes (except last)
   for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
     std::shared_ptr<CameraForMapping> keyframe = dso_->cameras_container_->keyframes_active_[i];
@@ -108,24 +110,23 @@ void PointsHandler::projectCandidatesOnLastFrame(){
 void PointsHandler::projectCandidates(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m ){
   std::shared_ptr<CamCouple> cam_couple(new CamCouple(cam_r, cam_m) );
 
-  cam_m->points_container_->candidates_projected_.clear();
-  
   // iterate through candidates
-  for(std::shared_ptr<Candidate> cand : cam_r->points_container_->candidates_){
+  for(std::shared_ptr<Candidate> cand : *(cam_r->points_container_->candidates_)){
     if(cand->invdepth_==-1)
       continue;
     std::shared_ptr<CandidateProjected> cand_proj(new CandidateProjected(cand, cam_couple ));
-    cam_m->points_container_->candidates_projected_.push_back(cand_proj);
+    cam_m->points_container_->candidates_projected_->push_back(cand_proj);
   }
+
 }
 
 void PointsHandler::projectActivePoints(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m ){
   std::shared_ptr<CamCouple> cam_couple(new CamCouple(cam_r, cam_m) );
 
   // iterate through candidates
-  for(std::shared_ptr<ActivePoint> active_pt : cam_r->points_container_->active_points_){
+  for(std::shared_ptr<ActivePoint> active_pt : *(cam_r->points_container_->active_points_)){
     std::shared_ptr<ActivePointProjected> active_pt_proj(new ActivePointProjected(active_pt, cam_couple ));
-    cam_m->points_container_->active_points_projected_.push_back(active_pt_proj);
+    cam_m->points_container_->active_points_projected_->push_back(active_pt_proj);
   }
 }
 
@@ -146,8 +147,8 @@ void PointsHandler::trackCandidates(std::shared_ptr<CameraForMapping> keyframe, 
   std::shared_ptr<CamCouple> cam_couple(new CamCouple(keyframe,last_keyframe));
 
   // iterate through candidates
-  for (int i=0; i<keyframe->points_container_->candidates_.size(); i++){
-    std::shared_ptr<Candidate> cand = keyframe->points_container_->candidates_[i];
+  for (int i=0; i<keyframe->points_container_->candidates_->size(); i++){
+    std::shared_ptr<Candidate> cand = keyframe->points_container_->candidates_->at(i);
     trackCandidate(cand, cam_couple);
 
   }

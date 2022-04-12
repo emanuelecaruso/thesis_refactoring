@@ -139,15 +139,19 @@ class PointsContainer{
     // ********** members **********
     std::shared_ptr<Params> parameters_;
     std::shared_ptr<CameraForMapping> cam_;
-    std::vector<std::shared_ptr<Candidate>> candidates_;
-    std::vector<std::shared_ptr<CandidateProjected>> candidates_projected_;
-    std::vector<std::shared_ptr<ActivePoint>> active_points_;
-    std::vector<std::shared_ptr<ActivePointProjected>> active_points_projected_;
+    std::shared_ptr<std::vector<std::shared_ptr<Candidate>>> candidates_;
+    std::shared_ptr<std::vector<std::shared_ptr<CandidateProjected>>> candidates_projected_;
+    std::shared_ptr<std::vector<std::shared_ptr<ActivePoint>>> active_points_;
+    std::shared_ptr<std::vector<std::shared_ptr<ActivePointProjected>>> active_points_projected_;
 
     // ********** constructor **********
     PointsContainer(CameraForMapping* cam, std::shared_ptr<Params> parameters):
     parameters_(parameters)
     ,cam_(cam)
+    ,candidates_(new std::vector<std::shared_ptr<Candidate>>)
+    ,candidates_projected_(new std::vector<std::shared_ptr<CandidateProjected>>)
+    ,active_points_(new std::vector<std::shared_ptr<ActivePoint>>)
+    ,active_points_projected_(new std::vector<std::shared_ptr<ActivePointProjected>>)
     {};
 
 

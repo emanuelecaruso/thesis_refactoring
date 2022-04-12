@@ -60,6 +60,7 @@ add_executable(test_dso test_dso.cpp
 ../src/CamerasContainer.cpp
 ../src/CameraForMapping.cpp
 ../src/CamCouple.cpp
+../src/CandidatesActivator.cpp
 ../src/dso.cpp
 ../src/camera.cpp
 ../src/Pyramid.cpp

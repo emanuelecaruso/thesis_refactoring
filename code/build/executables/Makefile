@@ -202,6 +202,30 @@ __/src/CamerasContainer.cpp.s:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CamerasContainer.cpp.s
 .PHONY : __/src/CamerasContainer.cpp.s
 
+__/src/CandidatesActivator.o: __/src/CandidatesActivator.cpp.o
+.PHONY : __/src/CandidatesActivator.o
+
+# target to build an object file
+__/src/CandidatesActivator.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.o
+.PHONY : __/src/CandidatesActivator.cpp.o
+
+__/src/CandidatesActivator.i: __/src/CandidatesActivator.cpp.i
+.PHONY : __/src/CandidatesActivator.i
+
+# target to preprocess a source file
+__/src/CandidatesActivator.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.i
+.PHONY : __/src/CandidatesActivator.cpp.i
+
+__/src/CandidatesActivator.s: __/src/CandidatesActivator.cpp.s
+.PHONY : __/src/CandidatesActivator.s
+
+# target to generate assembly for a file
+__/src/CandidatesActivator.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.s
+.PHONY : __/src/CandidatesActivator.cpp.s
+
 __/src/KeyframeHandler.o: __/src/KeyframeHandler.cpp.o
 .PHONY : __/src/KeyframeHandler.o
 
@@ -532,6 +556,9 @@ help:
 	@echo "... __/src/CamerasContainer.o"
 	@echo "... __/src/CamerasContainer.i"
 	@echo "... __/src/CamerasContainer.s"
+	@echo "... __/src/CandidatesActivator.o"
+	@echo "... __/src/CandidatesActivator.i"
+	@echo "... __/src/CandidatesActivator.s"
 	@echo "... __/src/KeyframeHandler.o"
 	@echo "... __/src/KeyframeHandler.i"
 	@echo "... __/src/KeyframeHandler.s"
