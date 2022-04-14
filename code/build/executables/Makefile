@@ -48,10 +48,10 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /snap/cmake/1070/bin/cmake
+CMAKE_COMMAND = /snap/cmake/1082/bin/cmake
 
 # The command to remove a file.
-RM = /snap/cmake/1070/bin/cmake -E rm -f
+RM = /snap/cmake/1082/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -78,7 +78,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/snap/cmake/1070/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/snap/cmake/1082/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -225,6 +225,30 @@ __/src/CandidatesActivator.s: __/src/CandidatesActivator.cpp.s
 __/src/CandidatesActivator.cpp.s:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.s
 .PHONY : __/src/CandidatesActivator.cpp.s
+
+__/src/CoarseRegions.o: __/src/CoarseRegions.cpp.o
+.PHONY : __/src/CoarseRegions.o
+
+# target to build an object file
+__/src/CoarseRegions.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CoarseRegions.cpp.o
+.PHONY : __/src/CoarseRegions.cpp.o
+
+__/src/CoarseRegions.i: __/src/CoarseRegions.cpp.i
+.PHONY : __/src/CoarseRegions.i
+
+# target to preprocess a source file
+__/src/CoarseRegions.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CoarseRegions.cpp.i
+.PHONY : __/src/CoarseRegions.cpp.i
+
+__/src/CoarseRegions.s: __/src/CoarseRegions.cpp.s
+.PHONY : __/src/CoarseRegions.s
+
+# target to generate assembly for a file
+__/src/CoarseRegions.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CoarseRegions.cpp.s
+.PHONY : __/src/CoarseRegions.cpp.s
 
 __/src/KeyframeHandler.o: __/src/KeyframeHandler.cpp.o
 .PHONY : __/src/KeyframeHandler.o
@@ -559,6 +583,9 @@ help:
 	@echo "... __/src/CandidatesActivator.o"
 	@echo "... __/src/CandidatesActivator.i"
 	@echo "... __/src/CandidatesActivator.s"
+	@echo "... __/src/CoarseRegions.o"
+	@echo "... __/src/CoarseRegions.i"
+	@echo "... __/src/CoarseRegions.s"
 	@echo "... __/src/KeyframeHandler.o"
 	@echo "... __/src/KeyframeHandler.i"
 	@echo "... __/src/KeyframeHandler.s"

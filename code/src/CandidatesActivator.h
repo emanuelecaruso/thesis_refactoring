@@ -1,21 +1,32 @@
 #pragma once
 #include "camera.h"
-#include "dso.h"
+// #include "dso.h"
 #include "PointsContainer.h"
 
-// class Dso;
+class Dso;
 
 class Region{
   public:
     // ********** members **********
-    int num_act_pts_;
+    int num_forbid_subregs_;
     int level_;
+    int idx_regvecmat_;
+
     std::vector<std::shared_ptr<CandidateProjected>> candidates_projected_;
+    std::vector<std::shared_ptr<Region>> subregions_;
 
 
     // ********** constructor **********
+    Region(int level, int num_forbid_subregs):
+    num_forbid_subregs_(num_forbid_subregs)
+    ,level_(level)
+    {
+
+    }
 
     // ********** methods **********
+    void pushCandidateProj(std::shared_ptr<CandidateProjected> cand_proj);
+    void pushSubreg(std::shared_ptr<Region> subreg);
 
 };
 
@@ -38,10 +49,41 @@ class RegVecMat{
 
     // ********** methods **********
     void init();
-    void update();
+    void reset();
     void clear();
 };
 
+class CandprojpresenceMat{
+  public:
+
+  // ********** members **********
+    unsigned int nrows_;
+    unsigned int ncols_;
+    bool** mat_;
+
+    // ********** constructor **********
+    CandprojpresenceMat(std::shared_ptr<Dso> dso)
+    {
+      init(dso);
+    }
+
+    ~CandprojpresenceMat(){
+      for( int i = 0; i < nrows_; i++ ) {
+        delete[] mat_[i];
+      }
+      delete[] mat_;
+
+    }
+
+
+    // ********** methods **********
+    void init(std::shared_ptr<Dso> dso);
+    // void clear();
+    // void buildLevel0(std::shared_ptr<std::vector<std::shared_ptr<ActivePointProjected>>> v);
+    // void updateFromLowerLevel(std::shared_ptr<ActptpresenceMat> lower);
+
+
+};
 
 class ActptpresenceMat{
   public:
@@ -60,7 +102,7 @@ class ActptpresenceMat{
       for( int i = 0; i < nrows; i++ ) {
           mat_[i] = new bool[ncols];
           for( int j = 0; j < ncols; j++ ) {
-              mat_[i][j] = 0;
+              mat_[i][j] = false;
           }
       }
     }
@@ -93,14 +135,14 @@ class ActptpresenceMatVec{
     ActptpresenceMatVec(std::shared_ptr<Dso> dso):
     dso_(dso)
     {
-      int res_x = dso->frame_current_->cam_parameters_->resolution_x/2;
-      int res_y = dso->frame_current_->cam_parameters_->resolution_y/2;
-      for(int i=0; i<dso->parameters_->reg_level; i++)
-        actptpresencemat_vec_[i] = std::make_shared<ActptpresenceMat>(res_y/pow(2,i),res_x/pow(2,i));
+      init(dso);
     }
+
+    ~ActptpresenceMatVec(){ }
     // ********** methods **********
+    void init(std::shared_ptr<Dso> dso);
     void clear();
-    void update();
+    void reset();
 
 };
 
@@ -110,27 +152,25 @@ class RegionsMat{
     // ********** members **********
       unsigned int nrows_;
       unsigned int ncols_;
-      Region*** mat_;
+      std::shared_ptr<Region>** mat_;
 
       // ********** constructor **********
       RegionsMat(int nrows, int ncols):
       nrows_(nrows)
       ,ncols_(ncols)
       {
-        mat_=new Region**[nrows];
+        mat_=new std::shared_ptr<Region>*[nrows];
         for( int i = 0; i < nrows; i++ ) {
-            mat_[i] = new Region*[ncols];
-            for( int j = 0; j < ncols; j++ ) {
-                mat_[i][j] = nullptr;
-            }
+          mat_[i] = new std::shared_ptr<Region>[ncols];
+          for( int j = 0; j < ncols; j++ ) {
+              std::shared_ptr<Region> ptr(nullptr);
+              mat_[i][j] = ptr;
+          }
         }
       }
 
       ~RegionsMat(){
         for( int i = 0; i < nrows_; i++ ) {
-            for( int j = 0; j < ncols_; j++ ) {
-                delete mat_[i][j];
-            }
             delete[] mat_[i];
         }
         delete[] mat_;
@@ -141,6 +181,7 @@ class RegionsMat{
       // ********** methods **********
       std::shared_ptr<RegionsMat> getHigherLevel();
       bool checkRegion(int row, int col);
+      void clear();
       // bool pushRegion(int row, int col, Region*);
 
 };
@@ -153,12 +194,10 @@ class RegMatVec{
 
     // ********** constructor **********
     RegMatVec(std::shared_ptr<Dso> dso){
-      int res_x = dso->frame_current_->cam_parameters_->resolution_x/2;
-      int res_y = dso->frame_current_->cam_parameters_->resolution_y/2;
-      for(int i=0; i<dso->parameters_->reg_level; i++)
-        regionsmat_vec_[i] = std::make_shared<RegionsMat>(res_y/pow(2,i),res_x/pow(2,i));
+      init(dso);
     }
     // ********** methods **********
+    void init(std::shared_ptr<Dso> dso);
     void clear();
 
 };
@@ -171,6 +210,9 @@ class CandidatesActivator{
     ActptpresenceMatVec actptpresencemat_vec_;
     RegMatVec regmat_vec_;
     RegVecMat regvec_mat_;
+    int num_current_active_points_;
+    CandprojpresenceMat candprojpresencemat_;
+
 
 
     // ********** constructor **********
@@ -179,10 +221,15 @@ class CandidatesActivator{
     ,actptpresencemat_vec_(dso_)
     ,regmat_vec_(dso_)
     ,regvec_mat_(this)
+    ,num_current_active_points_(0)
+    ,candprojpresencemat_(dso_)
     {};
 
     // ********** methods **********
-    void update();
+    void reset();
+    // void activateCandidateFromRegion();
+    void activateCandidate(std::shared_ptr<CandidateProjected> cand_proj);
+    void activateCandidates();
     // void activateCandidates();
     // void collectRegions();
     // void collectRegion(int level);

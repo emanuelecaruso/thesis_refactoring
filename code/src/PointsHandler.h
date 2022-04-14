@@ -29,6 +29,7 @@ class PointsHandler{
 
     void sampleCandidates();
     void projectCandidatesOnLastFrame();
+    void projectActivePointsOnLastFrame();
     void projectCandidates(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m );
     void projectActivePoints(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m );
 

@@ -515,6 +515,7 @@ executables/CMakeFiles/test_dso.dir/__/src/dso.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/Pyramid.h \
  /home/manu/Desktop/thesis_refactoring/code/src/initializer.h \
  /home/manu/Desktop/thesis_refactoring/code/src/environment.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CandidatesActivator.h \
  /home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.h \
  /home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.h \
  /home/manu/Desktop/thesis_refactoring/code/src/epline.h \

@@ -71,13 +71,17 @@ void Dso::initialize(){
     keyframe_handler_->addKeyframe(true); // fixed
     points_handler_->trackCandidates();
 
+    // project candidates and active points on last frame
+    points_handler_->projectCandidatesOnLastFrame();
+    points_handler_->projectActivePointsOnLastFrame();
+    candidates_activator_->activateCandidates();
+
     if(parameters_->debug_mapping){
       // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
-      points_handler_->sampleCandidates();
-      points_handler_->showCandidates();
-
-      points_handler_->projectCandidatesOnLastFrame();
+      // points_handler_->sampleCandidates();
+      // points_handler_->showCandidates();
       points_handler_->showProjectedCandidates();
+      points_handler_->showProjectedActivePoints();
     }
 
     // bundle_adj_->projectActivePoints_prepMarg(0);

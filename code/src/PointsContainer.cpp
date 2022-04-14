@@ -88,10 +88,13 @@ void PointsContainer::showProjectedActivePoints(){
 void CandidateProjected::init(std::shared_ptr<Candidate> cand, std::shared_ptr<CamCouple> cam_couple_){
   cam_couple_->getUv( cand->uv_.x(),cand->uv_.y(),1./cand->invdepth_,uv_.x(),uv_.y() );
   cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, cand->level_);
+  cam_=cam_couple_->cam_m_;
+  level_=cand->level_;
   float depth;
   cam_couple_->getD2(cand->uv_.x(),cand->uv_.y(),1./cand->invdepth_,depth);
   invdepth_=1./depth;
 }
+
 
 void ActivePointProjected::init(std::shared_ptr<ActivePoint> active_pt, std::shared_ptr<CamCouple> cam_couple_){
   cam_couple_->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_.x(),uv_.y() );

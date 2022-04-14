@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/test_dso.dir/__/src/CamerasContainer.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.o"
   "CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.o.d"
+  "CMakeFiles/test_dso.dir/__/src/CoarseRegions.cpp.o"
+  "CMakeFiles/test_dso.dir/__/src/CoarseRegions.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o"
   "CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o"

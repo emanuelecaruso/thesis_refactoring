@@ -3,6 +3,7 @@
 #include "CamerasContainer.h"
 #include "PointsContainer.h"
 #include "initializer.h"
+#include "CandidatesActivator.h"
 #include "environment.h"
 #include "KeyframeHandler.h"
 #include "PointsHandler.h"
@@ -16,21 +17,21 @@ class Dso : public std::enable_shared_from_this<Dso>{
   public:
     // ********** members **********
 
+
     // main objects
     std::shared_ptr<Params> parameters_;
     std::shared_ptr<Environment> environment_;
+    std::shared_ptr<CamParameters> cam_parameters_;
     std::shared_ptr<CamerasContainer> cameras_container_;
     std::shared_ptr<PointsHandler> points_handler_;
     std::shared_ptr<Tracker> tracker_;
     std::shared_ptr<KeyframeHandler> keyframe_handler_;
     std::shared_ptr<Initializer> initializer_;
+    std::shared_ptr<CandidatesActivator> candidates_activator_;
 
     // flags for dso phases
     bool first_frame_to_set_ = true;
     bool to_initialize_ = true;
-
-    // useful
-    std::shared_ptr<CamParameters> cam_parameters_;
 
     // flow
     std::shared_ptr<CameraForMapping> frame_current_;
@@ -48,12 +49,13 @@ class Dso : public std::enable_shared_from_this<Dso>{
     Dso(std::shared_ptr<Environment> environment, std::shared_ptr<Params> parameters):
       parameters_(parameters)
       ,environment_(environment)
+      ,cam_parameters_(environment_->cam_parameters_)
       ,cameras_container_( new CamerasContainer(this) )
       ,points_handler_( new PointsHandler(this) )
       ,tracker_( new Tracker(this) )
       ,keyframe_handler_( new KeyframeHandler(this) )
       ,initializer_( new Initializer(this) )
-      ,cam_parameters_(environment_->cam_parameters_)
+      ,candidates_activator_( new CandidatesActivator(this) )
       {};
 
     // Dso();

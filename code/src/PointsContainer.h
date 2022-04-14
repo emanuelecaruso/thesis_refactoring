@@ -1,7 +1,9 @@
 #pragma once
+// #include "CoarseRegions.h"
 #include "camera.h"
 #include "CameraForMapping.h"
 
+class CoarseRegions;
 class CamCouple;
 
 class Point{
@@ -24,6 +26,15 @@ class Point{
     ,pixel_(pixel)
     ,invdepth_(-1)
     ,invdepth_var_(-1)
+    {
+      cam->pixelCoords2uv(pixel, uv_, level);
+    }
+    Point(std::shared_ptr<CameraForMapping> cam, pxl& pixel, int level, float invdepth, float invdepth_var):
+    cam_(cam)
+    ,level_(level)
+    ,pixel_(pixel)
+    ,invdepth_(invdepth)
+    ,invdepth_var_(invdepth_var)
     {
       cam->pixelCoords2uv(pixel, uv_, level);
     }
@@ -86,8 +97,8 @@ class ActivePoint : public Point{
 public:
 
   // ********** members **********
-  Eigen::Vector3f p_ ;
-  Eigen::Vector3f p_incamframe_ ;
+  Eigen::Vector3f p_;
+  Eigen::Vector3f p_incamframe_;
   // std::shared_ptr<CameraForMapping> cam_;
   // int level_;
   // pxl pixel_;
@@ -108,6 +119,17 @@ public:
   ActivePoint(std::shared_ptr<CameraForMapping> cam, pxl& pixel, int level):
   Point(cam, pixel, level){}
 
+  // create from activation of candidate
+  ActivePoint(std::shared_ptr<Candidate> cand):
+  Point(cand->cam_, cand->pixel_, cand->level_, cand->invdepth_, cand->invdepth_var_){}
+
+  // used for coarse active points
+  ActivePoint(std::shared_ptr<CameraForMapping> cam, pxl& pixel, int level, float invdepth, float invdepth_var):
+  Point(cam, pixel, level, invdepth, invdepth_var){}
+
+  // create coarse active point from coarse region
+  // ActivePoint(std::shared_ptr<CoarseRegion> coarse_reg):
+  // Point(coarse_reg->cam_, coarse_reg->pixel_, coarse_reg->level_, coarse_reg->invdepth_, coarse_reg->invdepth_var_){}
   // ********** methods **********
 
 };
@@ -127,6 +149,13 @@ public:
     init(active_pt,cam_couple_);
   }
 
+
+  ActivePointProjected(std::shared_ptr<ActivePoint> active_pt, std::shared_ptr<CandidateProjected> cand_proj ):
+  Point(cand_proj->cam_, cand_proj->pixel_, cand_proj->level_, cand_proj->invdepth_, cand_proj->invdepth_var_)
+  ,active_pt_(active_pt){ }
+
+
+
   // ********** methods **********
   void init(std::shared_ptr<ActivePoint> active_pt, std::shared_ptr<CamCouple> cam_couple_);
 
@@ -143,6 +172,10 @@ class PointsContainer{
     std::shared_ptr<std::vector<std::shared_ptr<CandidateProjected>>> candidates_projected_;
     std::shared_ptr<std::vector<std::shared_ptr<ActivePoint>>> active_points_;
     std::shared_ptr<std::vector<std::shared_ptr<ActivePointProjected>>> active_points_projected_;
+    std::shared_ptr<std::vector<std::shared_ptr<Point>>> marginalized_points_;
+    std::shared_ptr<std::vector<std::shared_ptr<Point>>> marginalized_points_projected_;
+    std::shared_ptr<CoarseRegions> coarse_regions_;
+
 
     // ********** constructor **********
     PointsContainer(CameraForMapping* cam, std::shared_ptr<Params> parameters):

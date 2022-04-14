@@ -107,6 +107,17 @@ void PointsHandler::projectCandidatesOnLastFrame(){
   }
 }
 
+void PointsHandler::projectActivePointsOnLastFrame(){
+
+  dso_->frame_current_->points_container_->active_points_projected_->clear();
+
+  // iterate through keyframes (except last)
+  for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
+    std::shared_ptr<CameraForMapping> keyframe = dso_->cameras_container_->keyframes_active_[i];
+    projectActivePoints(keyframe, dso_->frame_current_ );
+  }
+}
+
 void PointsHandler::projectCandidates(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m ){
   std::shared_ptr<CamCouple> cam_couple(new CamCouple(cam_r, cam_m) );
 
@@ -115,7 +126,9 @@ void PointsHandler::projectCandidates(std::shared_ptr<CameraForMapping> cam_r, s
     if(cand->invdepth_==-1)
       continue;
     std::shared_ptr<CandidateProjected> cand_proj(new CandidateProjected(cand, cam_couple ));
-    cam_m->points_container_->candidates_projected_->push_back(cand_proj);
+    if( cam_m->image_intensity_->pixelInRange(cand_proj->pixel_) ){
+      cam_m->points_container_->candidates_projected_->push_back(cand_proj);
+    }
   }
 
 }
@@ -125,8 +138,12 @@ void PointsHandler::projectActivePoints(std::shared_ptr<CameraForMapping> cam_r,
 
   // iterate through candidates
   for(std::shared_ptr<ActivePoint> active_pt : *(cam_r->points_container_->active_points_)){
+    if(active_pt->invdepth_==-1)
+      continue;
     std::shared_ptr<ActivePointProjected> active_pt_proj(new ActivePointProjected(active_pt, cam_couple ));
-    cam_m->points_container_->active_points_projected_->push_back(active_pt_proj);
+    if( cam_m->image_intensity_->pixelInRange(active_pt_proj->pixel_) ){
+      cam_m->points_container_->active_points_projected_->push_back(active_pt_proj);
+    }
   }
 }
 
