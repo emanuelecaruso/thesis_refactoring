@@ -522,6 +522,7 @@ executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/CamCouple.h \
  /home/manu/Desktop/thesis_refactoring/code/src/Tracker.h \
  /usr/include/c++/7/condition_variable \
+ /home/manu/Desktop/thesis_refactoring/code/src/spectator.h \
  /home/manu/Desktop/thesis_refactoring/code/src/utils.h \
  /usr/include/c++/7/future /usr/include/c++/7/thread \
  /usr/include/c++/7/atomic /usr/include/c++/7/bits/atomic_futex.h \

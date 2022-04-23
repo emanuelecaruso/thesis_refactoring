@@ -1,5 +1,23 @@
 #include "CamCouple.h"
+#include "dso.h"
 
+void CamCouple::update(){
+  T=getRelativeTransformation();
+  f=cam_r_->cam_parameters_->lens;
+  f2=f*f;
+  w=cam_r_->cam_parameters_->width;
+  w2=w*w;
+  h=cam_r_->cam_parameters_->height;
+  h2=h*h;
+  r=T.linear();
+  t=T.translation();
+
+  cam_m_->projectCam(cam_r_, cam_r_projected_in_cam_m);
+
+  getSlopeParameters();
+  getBoundsParameters();
+  getDepthParameters();
+}
 
 void CamCouple::getSlopeParameters(){
 
@@ -124,7 +142,7 @@ void CamCouple::getJrParameters(){
   D12 = f*r(1,2)*t(2);
 }
 
-Eigen::Matrix<float,2,1> CamCouple::getJd_(ActivePoint* active_pt ){
+Eigen::Matrix<float,2,1> CamCouple::getJd_(std::shared_ptr<ActivePoint> active_pt ){
   float u1 = active_pt->uv_.x();
   float v1 = active_pt->uv_.y();
   float invd1 = active_pt->invdepth_;
@@ -142,7 +160,7 @@ Eigen::Matrix<float,2,1> CamCouple::getJd_(ActivePoint* active_pt ){
   return Jd;
 }
 
-Eigen::Matrix<float,2,6> CamCouple::getJr_(ActivePoint* active_pt ){
+Eigen::Matrix<float,2,6> CamCouple::getJr_(std::shared_ptr<ActivePoint> active_pt ){
   Eigen::Vector3f pb = active_pt->p_incamframe_;
   float pbx2 = pb.x()*pb.x();
   float pby2 = pb.x()*pb.y();
@@ -199,7 +217,7 @@ Eigen::Matrix<float,2,6> CamCouple::getJr_(ActivePoint* active_pt ){
   return Jr;
 }
 
-Eigen::Matrix<float,2,6> CamCouple::getJm_(ActivePoint* active_pt ){
+Eigen::Matrix<float,2,6> CamCouple::getJm_(std::shared_ptr<ActivePoint> active_pt ){
   Eigen::Vector3f pb = T*active_pt->p_incamframe_;
   float pbx2 = pb.x()*pb.x();
   float pby2 = pb.x()*pb.y();
@@ -373,3 +391,50 @@ bool CamCouple::getD2(float u1, float v1, float d1, float& d2){
 // //   return ep_seg;
 // //
 // // }
+
+void CamCoupleContainer::init(){
+
+   // cam_couple_mat_[cam_m][cam_r]
+   int n_active_kfs = dso_->cameras_container_->keyframes_active_.size();
+  if(type_==ALL_KFS_ON_LAST){
+    std::shared_ptr<CameraForMapping> cam_m = dso_->cameras_container_->getLastActiveKeyframe();
+    cam_couple_mat_.resize(1);  //
+    cam_couple_mat_[0].resize(n_active_kfs-1);
+    // iterate through keyframes (except last)
+    for( int i=0; i<n_active_kfs ; i++){
+      std::shared_ptr<CameraForMapping> cam_r = dso_->cameras_container_->keyframes_active_[i];
+
+      // cam couple keyframe with last keyframe
+      std::shared_ptr<CamCouple> cam_couple ( new CamCouple( cam_r, cam_m ) );
+      cam_couple_mat_[0][i]= cam_couple;
+    }
+  }
+
+  else if(type_==ALL_KFS_ON_ALL_KFS){
+    cam_couple_mat_.resize(n_active_kfs);  //
+    // iterate through keyframes (except last)
+    for( int i=0; i<n_active_kfs ; i++){
+      std::shared_ptr<CameraForMapping> cam_m = dso_->cameras_container_->keyframes_active_[i];
+      cam_couple_mat_[i].resize(n_active_kfs-1);
+      for( int j=0; j<n_active_kfs-1 ; j++){
+        std::shared_ptr<CameraForMapping> cam_r = dso_->cameras_container_->keyframes_active_[j];
+
+        std::shared_ptr<CamCouple> cam_couple ( new CamCouple( cam_r, cam_m ) );
+        cam_couple_mat_[i][j]= cam_couple;
+      }
+    }
+  }
+}
+
+void CamCoupleContainer::update(){
+  for(int i=0; i<cam_couple_mat_.size(); i++){
+    for(int j=0; j<cam_couple_mat_[i].size(); j++){
+      std::shared_ptr<CamCouple> cam_couple = cam_couple_mat_[i][j];
+      cam_couple->update();
+    }
+  }
+}
+
+std::shared_ptr<CamCouple> CamCoupleContainer::get(int cam_r_idx, int cam_m_idx){
+  return cam_couple_mat_[cam_m_idx][cam_r_idx];
+}

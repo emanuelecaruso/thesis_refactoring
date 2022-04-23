@@ -25,11 +25,13 @@ class PointsHandler{
     void showCandidates();
     void showProjectedCandidates();
     void showActivePoints();
+    void showCoarseActivePoints(int level);
     void showProjectedActivePoints();
 
     void sampleCandidates();
     void projectCandidatesOnLastFrame();
     void projectActivePointsOnLastFrame();
+    void generateCoarseActivePoints();
     void projectCandidates(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m );
     void projectActivePoints(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m );
 
@@ -39,7 +41,7 @@ class PointsHandler{
     bool trackCandidate(std::shared_ptr<Candidate> cand, std::shared_ptr<CamCouple> cam_couple);
 };
 
-class Searcher{
+class CandTracker{
   public:
     // ********** members **********
     std::shared_ptr<EpipolarLine> ep_segment_;
@@ -52,7 +54,7 @@ class Searcher{
     pxl pixel_;
 
     // ********** constructor **********
-    Searcher( std::shared_ptr<EpipolarLine> ep_segment,
+    CandTracker( std::shared_ptr<EpipolarLine> ep_segment,
               std::shared_ptr<Candidate> cand,
               std::shared_ptr<CamCouple> cam_couple,
               std::shared_ptr<Params> parameters

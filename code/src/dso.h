@@ -10,7 +10,7 @@
 #include "Tracker.h"
 #include <memory>
 #include <condition_variable>
-
+#include "spectator.h"
 class CameraForMapping;
 
 class Dso : public std::enable_shared_from_this<Dso>{
@@ -28,6 +28,7 @@ class Dso : public std::enable_shared_from_this<Dso>{
     std::shared_ptr<KeyframeHandler> keyframe_handler_;
     std::shared_ptr<Initializer> initializer_;
     std::shared_ptr<CandidatesActivator> candidates_activator_;
+    std::shared_ptr<Spectator> spectator_;
 
     // flags for dso phases
     bool first_frame_to_set_ = true;
@@ -56,6 +57,7 @@ class Dso : public std::enable_shared_from_this<Dso>{
       ,keyframe_handler_( new KeyframeHandler(this) )
       ,initializer_( new Initializer(this) )
       ,candidates_activator_( new CandidatesActivator(this) )
+      ,spectator_( new Spectator(this, white) )
       {};
 
     // Dso();
@@ -72,6 +74,7 @@ class Dso : public std::enable_shared_from_this<Dso>{
     void loadFrameCurrent();
     void setFirstKeyframe();
     void initialize();
+    void doDso();
 
   private:
 

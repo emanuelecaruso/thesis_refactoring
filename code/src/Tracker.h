@@ -1,5 +1,6 @@
 #pragma once
 #include "camera.h"
+#include "PointsContainer.h"
 
 class Dso;
 
@@ -14,4 +15,8 @@ class Tracker{
 
     // ********** methods **********
     void trackCam(bool groundtruth);
+
+  protected:
+    void trackCam();
+
 };

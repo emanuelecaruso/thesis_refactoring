@@ -4,6 +4,7 @@
 #include "CameraForMapping.h"
 // #include "PointsContainer.h"
 
+class Dso;
 
 class CamCouple{
   public:
@@ -14,20 +15,12 @@ class CamCouple{
 
     CamCouple(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m):
     cam_r_(cam_r),
-    cam_m_(cam_m),
-    T(getRelativeTransformation()),
-    f(cam_r->cam_parameters_->lens), f2(f*f), w(cam_r->cam_parameters_->width),
-    w2(w*w), h(cam_r->cam_parameters_->height), h2(h*h)
+    cam_m_(cam_m)
     {
-      r=T.linear();
-      t=T.translation();
-
-      cam_m->projectCam(cam_r, cam_r_projected_in_cam_m);
-
-      getSlopeParameters();
-      getBoundsParameters();
-      getDepthParameters();
+      update();
     }
+
+    void update();
     // EpipolarLine* getEpSegment(Candidate* candidate, int bound_idx);
     // EpipolarLine* getEpSegmentDefaultBounds(float u1, float v1);
 
@@ -40,9 +33,9 @@ class CamCouple{
     bool getSlope(float u1, float v1, float& slope_m);
 
     void getJrParameters();
-    Eigen::Matrix<float,2,1> getJd_(ActivePoint* active_pt);
-    Eigen::Matrix<float,2,6> getJm_(ActivePoint* active_pt);
-    Eigen::Matrix<float,2,6> getJr_(ActivePoint* active_pt);
+    Eigen::Matrix<float,2,1> getJd_(std::shared_ptr<ActivePoint> active_pt);
+    Eigen::Matrix<float,2,6> getJm_(std::shared_ptr<ActivePoint> active_pt);
+    Eigen::Matrix<float,2,6> getJr_(std::shared_ptr<ActivePoint> active_pt);
 
   private:
     Eigen::Matrix3f r;
@@ -81,4 +74,30 @@ class CamCouple{
     inline Eigen::Isometry3f getRelativeTransformation(){
       return (*(cam_m_->frame_world_wrt_camera_))*(*(cam_r_->frame_camera_wrt_world_));
     }
+};
+
+class CamCoupleContainer{
+  public:
+    // ********** members **********
+    std::shared_ptr<Dso> dso_;
+    int type_;
+    std::vector<std::vector<std::shared_ptr<CamCouple>>> cam_couple_mat_; // cam_couple_mat_[cam_m][cam_r]
+
+
+    // ********** constructor **********
+    CamCoupleContainer(std::shared_ptr<Dso> dso, int type):
+    dso_( dso ),
+    type_(type)
+    {
+      init();
+    }
+
+    // ********** methods **********
+    void update();
+    std::shared_ptr<CamCouple> get(int cam_r_idx, int cam_m_idx);
+
+  protected:
+    void init();
+
+
 };

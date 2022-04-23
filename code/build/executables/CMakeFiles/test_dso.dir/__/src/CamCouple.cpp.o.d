@@ -511,4 +511,15 @@ executables/CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/image.h \
  /home/manu/Desktop/thesis_refactoring/code/src/PointsContainer.h \
  /home/manu/Desktop/thesis_refactoring/code/src/CameraForMapping.h \
- /home/manu/Desktop/thesis_refactoring/code/src/Pyramid.h
+ /home/manu/Desktop/thesis_refactoring/code/src/Pyramid.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/dso.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CamerasContainer.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/initializer.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/environment.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CandidatesActivator.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/epline.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/Tracker.h \
+ /usr/include/c++/7/condition_variable \
+ /home/manu/Desktop/thesis_refactoring/code/src/spectator.h

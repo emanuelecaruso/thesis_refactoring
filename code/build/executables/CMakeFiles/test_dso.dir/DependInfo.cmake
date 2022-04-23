@@ -14,6 +14,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/manu/Desktop/thesis_refactoring/code/src/CandidatesActivator.cpp" "executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/CoarseRegions.cpp" "executables/CMakeFiles/test_dso.dir/__/src/CoarseRegions.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/CoarseRegions.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.cpp" "executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o.d"
+  "/home/manu/Desktop/thesis_refactoring/code/src/LinSystem.cpp" "executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/PointsContainer.cpp" "executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.cpp" "executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/Pyramid.cpp" "executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o.d"
@@ -24,6 +25,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/manu/Desktop/thesis_refactoring/code/src/epline.cpp" "executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/image.cpp" "executables/CMakeFiles/test_dso.dir/__/src/image.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/image.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/initializer.cpp" "executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o.d"
+  "/home/manu/Desktop/thesis_refactoring/code/src/spectator.cpp" "executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/utils.cpp" "executables/CMakeFiles/test_dso.dir/__/src/utils.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/utils.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/executables/test_dso.cpp" "executables/CMakeFiles/test_dso.dir/test_dso.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/test_dso.cpp.o.d"
   )

@@ -521,4 +521,6 @@ executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/CandidatesActivator.h \
  /home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.h \
  /home/manu/Desktop/thesis_refactoring/code/src/Tracker.h \
- /usr/include/c++/7/condition_variable
+ /usr/include/c++/7/condition_variable \
+ /home/manu/Desktop/thesis_refactoring/code/src/spectator.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CoarseRegions.h

@@ -1,6 +1,7 @@
 #include "dso.h"
 #include "utils.h"
 #include "PointsContainer.h"
+#include "CoarseRegions.h"
 #include "CameraForMapping.h"
 
 void Dso::startSequential(){
@@ -18,7 +19,7 @@ void Dso::startSequential(){
       initialize();
     }
     else{
-
+      doDso();
     }
 
   }
@@ -43,13 +44,13 @@ void Dso::loadFrameCurrent(){
 
 void Dso::setFirstKeyframe(){
 
-  tracker_->trackCam(true); //groundtruth
+  tracker_->trackCam(true); // fix first frame to groundtruth pose
   keyframe_handler_->addKeyframe(true);  // add fixed keyframe
-  initializer_->extractCorners();
+  initializer_->extractCorners(); // extract corners from image
   if(parameters_->debug_initialization){
     initializer_->showCornersTrackCurr();
   }
-  points_handler_->sampleCandidates();
+  points_handler_->sampleCandidates(); // sample candidates as high gradient points
   if(parameters_->debug_mapping){
     points_handler_->showCandidates();
   }
@@ -57,7 +58,8 @@ void Dso::setFirstKeyframe(){
 }
 
 void Dso::initialize(){
-  initializer_->trackCornersLK();
+
+  initializer_->trackCornersLK(); // track corners in subsequent image
 
   // if a good pose is found ...
   if(initializer_->findPose()){
@@ -68,21 +70,27 @@ void Dso::initialize(){
     }
 
     // ... add last keyframe
-    keyframe_handler_->addKeyframe(true); // fixed
-    points_handler_->trackCandidates();
+    keyframe_handler_->addKeyframe(true); // add fixed keyframe
+    points_handler_->trackCandidates(); // track existing candidates
 
     // project candidates and active points on last frame
     points_handler_->projectCandidatesOnLastFrame();
     points_handler_->projectActivePointsOnLastFrame();
     candidates_activator_->activateCandidates();
+    points_handler_->generateCoarseActivePoints();
 
     if(parameters_->debug_mapping){
-      // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
+      // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
+      cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
       // points_handler_->sampleCandidates();
       // points_handler_->showCandidates();
       points_handler_->showProjectedCandidates();
       points_handler_->showProjectedActivePoints();
     }
+
+
+
+    // to_initialize_=false;
 
     // bundle_adj_->projectActivePoints_prepMarg(0);
     // bundle_adj_->activateNewPoints();
@@ -106,6 +114,48 @@ void Dso::initialize(){
     // }
 
   }
+
+}
+
+
+void Dso::doDso(){
+
+  points_handler_->generateCoarseActivePoints();  // generate coarse active points for tracking
+  // points_handler_->projectCoarseActivePointsOnLastFrame();
+  // points_handler_->projectActivePointsOnLastFrame();
+
+
+  // tracker->track
+  // bool keyframe_taken = keyframe handler -> choose kf
+  // if (keyframe_taken){
+  //  trackCandidates()
+  // points_handler_->projectCandidatesOnLastFrame();
+  // points_handler_->projectActivePointsOnLastFrame();
+  // candidates_activator_->activateCandidates();
+
+  // optimize()
+  // }
+
+
+  // tracker_->trackCam(take_gt_poses,0,guess_type,debug_tracking);
+  //
+  // if(keyframe_handler_->addKeyframe(all_keyframes)){
+  //
+  //   mapper_->trackExistingCandidates(take_gt_points,debug_mapping);
+  //
+  //   bundle_adj_->projectActivePoints_prepMarg(0);
+  //   bundle_adj_->activateNewPoints();
+  //   bundle_adj_->collectCoarseActivePoints();
+  //
+  //   keyframe_handler_->prepareDataForBA();
+  //   bundle_adj_->optimize();
+  //
+  //   mapper_->selectNewCandidates();
+  // }
+  // double t_end=getTime();
+  // int deltaTime=(t_end-t_start);
+  // sharedCoutDebug("FRONT END part of frame: "+std::to_string(frame_current_)+", time: "+ std::to_string(deltaTime)+" ms");
+
 
 }
 

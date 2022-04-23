@@ -16,7 +16,12 @@ class ActptsCoarseVec{
 
     // ********** methods **********
     inline void push(std::shared_ptr<ActivePoint> active_pt){
-      vec_[active_pt->level_].push_back(active_pt);
+      vec_[active_pt->level_-1].push_back(active_pt);
+    }
+
+    inline void clear(){
+      for(int i=0; i<vec_.size() ; i++)
+        vec_[i].clear();
     }
 };
 
@@ -74,12 +79,12 @@ class CoarseRegionMatVec{
 
 
     // ********** constructor **********
-    CoarseRegionMatVec(std::shared_ptr<PointsContainer> points_container, int levels){
+    CoarseRegionMatVec(PointsContainer* points_container, int levels){
       init(points_container, levels);
     }
 
     // ********** methods **********
-    void init(std::shared_ptr<PointsContainer> points_container, int levels);
+    void init(PointsContainer* points_container, int levels);
 
 };
 
@@ -94,17 +99,20 @@ class CoarseRegions{
 
 
     // ********** constructor **********
-    CoarseRegions(std::shared_ptr<PointsContainer> points_container, int levels):
+    CoarseRegions(PointsContainer* points_container, int levels):
     points_container_(points_container)
     ,levels_(levels)
     ,coarseregionsmat_vec_(points_container, levels)
     ,actptscoarse_vec_(levels)
-    { }
+    {
+      coarseregions_vec_.resize(levels);
+    }
 
     // ********** methods **********
     void generateCoarseActivePoints();
     void addActivePoint(std::shared_ptr<ActivePoint> active_pt);
     void removeActivePoint(std::shared_ptr<ActivePoint> active_pt);
+    std::vector<std::shared_ptr<ActivePoint>>& getCoarseActivePoints(int level);
     void showCoarseLevel(int level);
 
   protected:

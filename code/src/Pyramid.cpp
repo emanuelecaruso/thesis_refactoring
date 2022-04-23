@@ -44,29 +44,36 @@ void Pyramid::init(const int levels, std::shared_ptr<Image<pixelIntensity>> imag
 }
 
 std::shared_ptr<Image<pixelIntensity>> Pyramid::getC(int level){
+  assert(level>=0 && level<pyramid_levels_.size());
   return pyramid_levels_[level]->c_;
 }
 
 std::shared_ptr<Image<pixelIntensity>> Pyramid::getCDX(int level){
+  assert(level>=0 && level<pyramid_levels_.size());
   return pyramid_levels_[level]->c_dx_;
 }
 
 std::shared_ptr<Image<pixelIntensity>> Pyramid::getCDY(int level){
+  assert(level>=0 && level<pyramid_levels_.size());
   return pyramid_levels_[level]->c_dy_;
 }
 
 std::shared_ptr<Image<pixelIntensity>> Pyramid::getMagn(int level){
+  assert(level>=0 && level<pyramid_levels_.size());
   return pyramid_levels_[level]->magn_cd_;
 }
 
 std::shared_ptr<Image<pixelIntensity>> Pyramid::getMagnDX(int level){
+  assert(level>=0 && level<pyramid_levels_.size());
   return pyramid_levels_[level]->magn_cd_dx_;
 }
 
 std::shared_ptr<Image<pixelIntensity>> Pyramid::getMagnDY(int level){
+  assert(level>=0 && level<pyramid_levels_.size());
   return pyramid_levels_[level]->magn_cd_dy_;
 }
 
 std::shared_ptr<Image<pixelIntensity>> Pyramid::getPhase(int level){
+  assert(level>=0 && level<pyramid_levels_.size());
   return pyramid_levels_[level]->phase_cd_;
 }

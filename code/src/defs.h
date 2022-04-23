@@ -493,6 +493,8 @@ inline Eigen::Isometry3f v2t_inv(Vector6f& t){
 #define CAND_MODE 0
 #define ACT_MODE 1
 
+#define ALL_KFS_ON_LAST 0
+#define ALL_KFS_ON_ALL_KFS 1
 
 
 

@@ -1,5 +1,6 @@
 #include "CandidatesActivator.h"
 #include "CameraForMapping.h"
+#include "CoarseRegions.h"
 #include "utils.h"
 #include "dso.h"
 
@@ -246,7 +247,6 @@ void CandidatesActivator::reset(){
 
 void CandidatesActivator::activateCandidate(std::shared_ptr<CandidateProjected> cand_proj){
   // remove projected candidate from vector
-  std::shared_ptr<PointsContainer> aaa = cand_proj->cam_->points_container_;
   std::shared_ptr<std::vector<std::shared_ptr<CandidateProjected>>> cp = cand_proj->cam_->points_container_->candidates_projected_;
   cp->erase(std::remove(cp->begin(), cp->end(), cand_proj), cp->end());
 
@@ -260,11 +260,15 @@ void CandidatesActivator::activateCandidate(std::shared_ptr<CandidateProjected> 
   // push active point
   cand_proj->cand_->cam_->points_container_->active_points_->push_back(active_point);
 
+  // add active point in coarse region
+  active_point->cam_->points_container_->coarse_regions_->addActivePoint(active_point);
+
   // create projected active point
   std::shared_ptr<ActivePointProjected> active_pt_proj (new ActivePointProjected(active_point, cand_proj));
 
   // push projected active point
   cand_proj->cam_->points_container_->active_points_projected_->push_back(active_pt_proj);
+
 
 }
 
@@ -328,8 +332,6 @@ void CandidatesActivator::activateCandidates(){
 
         num_current_active_points_++;
         num_candidates_to_activate--;
-        std::cout << num_candidates_to_activate << std::endl;
-
 
       }
 

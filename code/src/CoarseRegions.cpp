@@ -26,12 +26,13 @@ void CoarseRegion::updateFromSubregions(){
 }
 
 std::shared_ptr<ActivePoint> CoarseRegion::generateCoarseActivePoint(){
-  std::shared_ptr<ActivePoint> active_pt(new ActivePoint(cam_, pixel_, level_, invdepth_, invdepth_var_));
+  std::shared_ptr<ActivePoint> active_pt(new ActivePoint(cam_, pixel_, level_+1, invdepth_, invdepth_var_));
+  return active_pt;
 }
 
 
 
-void CoarseRegionMatVec::init(std::shared_ptr<PointsContainer> points_container, int levels){
+void CoarseRegionMatVec::init(PointsContainer* points_container, int levels){
   int rows = points_container->cam_->cam_parameters_->resolution_y/2;
   int cols = points_container->cam_->cam_parameters_->resolution_x/2;
   for(int i=0; i<levels; i++){
@@ -117,6 +118,8 @@ void CoarseRegions::removeActivePoint(std::shared_ptr<ActivePoint> active_pt){
 }
 
 void CoarseRegions::generateCoarseActivePoints(){
+  actptscoarse_vec_.clear();
+
   for(int level=0; level<levels_; level++){
 
     std::vector<std::shared_ptr<CoarseRegion>>& v = coarseregions_vec_[level];
@@ -134,7 +137,28 @@ void CoarseRegions::generateCoarseActivePoints(){
   }
 }
 
+std::vector<std::shared_ptr<ActivePoint>>& CoarseRegions::getCoarseActivePoints(int level){
+  assert(level>0 && level<points_container_->parameters_->coarsest_level);
+  return actptscoarse_vec_.vec_[level-1];  
+}
+
 
 void CoarseRegions::showCoarseLevel(int level){
-  
+
+  assert(level>0);
+  std::vector<std::shared_ptr<ActivePoint>>& vector_of_coarse_active_points = actptscoarse_vec_.vec_[level-1];
+
+  double alpha = 1;
+
+  std::string name = points_container_->cam_->name_+" , "+std::to_string(vector_of_coarse_active_points.size())+" coarse active points";
+  std::shared_ptr<Image<colorRGB>> show_img( points_container_->cam_->pyramid_->getC(level)->returnColoredImgFromIntensityImg(name) );
+
+  // iterate through active points
+  for(int i=0; i<vector_of_coarse_active_points.size(); i++){
+    std::shared_ptr<ActivePoint> coarse_active_pt = vector_of_coarse_active_points.at(i);
+    points_container_->drawPoint(coarse_active_pt,show_img);
+  }
+
+  show_img->show(pow(2,level));
+  cv::waitKey(0);
 }

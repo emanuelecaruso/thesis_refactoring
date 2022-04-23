@@ -74,7 +74,9 @@ add_executable(test_dso test_dso.cpp
 ../src/epline.cpp
 ../src/KeyframeHandler.cpp
 ../src/PointsContainer.cpp
+../src/LinSystem.cpp
 ../src/PointsHandler.cpp
+../src/spectator.cpp
 #../src/mapper.cpp
 #../src/tracker.cpp
 #../src/bundleadj.cpp

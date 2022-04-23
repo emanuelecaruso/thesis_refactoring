@@ -1,6 +1,16 @@
 - pyramid
 - initialization
 
+- tracking
+- spectator
+
+- plan ba
+- come back on mapping
+
+
+
+
+
 
 
 

@@ -11,12 +11,15 @@
 #include <mutex>
 #include "defs.h"
 
-// code parameters
-static bool use_fast_cam_coupling_ = false;
-static bool debug_initialization_=true;
+// debug parameters
+// static bool use_fast_cam_coupling_ = false;
+static bool debug_initialization_=false;
 static bool debug_mapping_=true;
 static bool debug_tracking_=true;
 static bool debug_optimization_= true;
+static bool use_spectator_ = true;
+
+// code parameters
 static bool take_gt_poses_=false;
 static bool take_gt_points_=false;
 static int guess_type_=POSE_CONSTANT;
@@ -35,7 +38,7 @@ static bool get_current_frame_=false;
 
 // candidate selection
 static int candidate_level_ = 0;
-static int coarsest_level_= candidate_level_+2; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
+static int coarsest_level_= candidate_level_+3; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 // static int reg_level_=candidate_level_+4;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static float grad_threshold_=0.06;
@@ -44,9 +47,9 @@ static float der_threshold_=0.01;
 
 // mapping
 static float cost_threshold_=0.02;
-// static float cost_threshold_=0.07;
-static float cost_grad_threshold_=0.08;
-static float cost_grad_threshold_DSO_=0.01; // for DSO
+// static float cost_threshold_=0.1;
+// static float cost_grad_threshold_=0.08;
+// static float cost_grad_threshold_DSO_=0.01; // for DSO
 static int max_num_mins_ = 3;
 
 // keyframe selection
@@ -103,11 +106,13 @@ const float rendered_cams_size_ = 0.01;
 
 
 struct Params{
-  bool use_fast_cam_coupling=use_fast_cam_coupling_;
+  // bool use_fast_cam_coupling=use_fast_cam_coupling_;
   bool debug_initialization=debug_initialization_;
   bool debug_mapping=debug_mapping_;
   bool debug_tracking=debug_tracking_;
   bool debug_optimization=debug_optimization_;
+  bool use_spectator=use_spectator_;
+
   bool take_gt_poses=take_gt_poses_;
   bool take_gt_points=take_gt_points_;
   int guess_type=guess_type_;
@@ -128,8 +133,8 @@ struct Params{
   int der_threshold=der_threshold_;
 
   float cost_threshold=cost_threshold_;
-  float cost_grad_threshold=cost_grad_threshold_;
-  float cost_grad_threshold_DSO=cost_grad_threshold_DSO_;
+  // float cost_grad_threshold=cost_grad_threshold_;
+  // float cost_grad_threshold_DSO=cost_grad_threshold_DSO_;
   int max_iterations_ba=max_iterations_ba_;
   int max_num_active_points=max_num_active_points_;
   int num_active_keyframes=num_active_keyframes_;

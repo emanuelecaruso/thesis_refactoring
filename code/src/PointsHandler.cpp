@@ -2,6 +2,7 @@
 #include "dso.h"
 #include "CamCouple.h"
 #include "epline.h"
+#include "CoarseRegions.h"
 #include <algorithm>    // std::max
 
 void PointsHandler::sampleCandidates(){
@@ -91,6 +92,9 @@ void PointsHandler::showProjectedCandidates(){
 void PointsHandler::showActivePoints(){
   dso_->frame_current_->points_container_->showActivePoints();
 }
+void PointsHandler::showCoarseActivePoints(int level){
+  dso_->frame_current_->points_container_->showCoarseActivePoints(level);
+}
 void PointsHandler::showProjectedActivePoints(){
   dso_->frame_current_->points_container_->showProjectedActivePoints();
 }
@@ -116,6 +120,16 @@ void PointsHandler::projectActivePointsOnLastFrame(){
     std::shared_ptr<CameraForMapping> keyframe = dso_->cameras_container_->keyframes_active_[i];
     projectActivePoints(keyframe, dso_->frame_current_ );
   }
+}
+
+void PointsHandler::generateCoarseActivePoints(){
+
+  // iterate through keyframes (except last)
+  for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
+    std::shared_ptr<CameraForMapping> keyframe = dso_->cameras_container_->keyframes_active_[i];
+    keyframe->points_container_->coarse_regions_->generateCoarseActivePoints();
+  }
+
 }
 
 void PointsHandler::projectCandidates(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m ){
@@ -187,12 +201,12 @@ bool PointsHandler::trackCandidate(std::shared_ptr<Candidate> cand, std::shared_
   std::shared_ptr<EpipolarLine> ep_segment( new EpipolarLine( cam_couple->cam_m_, uv_min, uv_max, cand->level_) );
 
   // search pixel in epipolar line
-  Searcher searcher(ep_segment, cand, cam_couple, dso_->parameters_);
-  bool min_found = searcher.searchMin();
+  CandTracker CandTracker(ep_segment, cand, cam_couple, dso_->parameters_);
+  bool min_found = CandTracker.searchMin();
 
   // if min has been found
   if(min_found){
-    searcher.updateCand();
+    CandTracker.updateCand();
     return true;
   }
   else{
@@ -201,7 +215,7 @@ bool PointsHandler::trackCandidate(std::shared_ptr<Candidate> cand, std::shared_
   }
 }
 
-float Searcher::getStandardDeviation( ){
+float CandTracker::getStandardDeviation( ){
 
 
   // GEOMETRIC DISPARITY ERROR
@@ -240,7 +254,7 @@ float Searcher::getStandardDeviation( ){
 }
 
 
-void Searcher::updateCand(){
+void CandTracker::updateCand(){
 
   float coord;
   if(ep_segment_->u_or_v)
@@ -270,7 +284,7 @@ void Searcher::updateCand(){
 
 }
 
-bool Searcher::searchMin( ){
+bool CandTracker::searchMin( ){
   bool min_segment_reached = false;
   bool min_segment_leaved = false;
   float cost_min = FLT_MAX;
@@ -280,14 +294,21 @@ bool Searcher::searchMin( ){
   // iterate through uvs
   for(int i=0; i<ep_segment_->uvs->size(); i++){
     Eigen::Vector2f uv = ep_segment_->uvs->at(i);
-    pxl pixel = cand_->cam_->uv2pixelCoords( uv, cand_->level_);
+    pxl pixel = cam_couple_->cam_m_->uv2pixelCoords( uv, cand_->level_);
 
     if(!cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->pixelInRange(pixel))
       continue;
 
     float cost_magn = getCostMagn(pixel);
+    // float cost_phase=0;
+    // bool valid = getPhaseCostContribute(pixel, cost_phase);
+    // if(!valid)
+    //   return false;
 
-    if(cost_magn>parameters_->cost_threshold){
+    // float cost=cost_magn+cost_phase;
+    float cost=cost_magn;
+
+    if(cost>parameters_->cost_threshold){
       if(min_segment_reached){
         min_segment_leaved=true;
       }
@@ -296,6 +317,7 @@ bool Searcher::searchMin( ){
       // ep_segment_->showEpipolarWithMin(pixel, blue, cand_->level_, 2);
     }
     else{
+
       if(min_segment_leaved){
         repetitive++;
         return false;
@@ -305,17 +327,14 @@ bool Searcher::searchMin( ){
       // cand_->showCandidate();
       // ep_segment_->showEpipolarWithMin(pixel, red, cand_->level_, 2);
 
-      float cost_phase;
-      bool valid = getPhaseCostContribute(pixel, cost_phase);
-      if(!valid)
-        return false;
 
-      float cost=cost_magn+cost_phase;
+
       if(cost<cost_min){
         cost_min=cost;
         uv_=uv;
         pixel_=pixel;
       }
+
     }
   }
 
@@ -328,7 +347,7 @@ bool Searcher::searchMin( ){
   return true;
 }
 
-float Searcher::getCostMagn(pxl& pixel){
+float CandTracker::getCostMagn(pxl& pixel){
 
   pixelIntensity c_m = cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->evalPixelBilinear(pixel);
   magn_m = cam_couple_->cam_m_->pyramid_->getMagn(cand_->level_)->evalPixelBilinear(pixel);
@@ -344,7 +363,7 @@ float Searcher::getCostMagn(pxl& pixel){
   return cost_c+cost_magn_cd;
 }
 
-bool Searcher::getPhaseCostContribute(pxl& pixel, float& phase_cost){
+bool CandTracker::getPhaseCostContribute(pxl& pixel, float& phase_cost){
 
   phase_m = cam_couple_->cam_m_->pyramid_->getPhase(cand_->level_)->evalPixelBilinear(pixel);
 

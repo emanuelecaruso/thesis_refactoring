@@ -1,11 +1,17 @@
 #include "PointsContainer.h"
 #include "CamCouple.h"
+#include "CoarseRegions.h"
 #include <algorithm>    // std::max
+
 
 void Candidate::showCandidate(){
   cam_->pyramid_->getC(level_)->showImgWithColoredPixel( pixel_, pow(2,level_), "cand");
 }
 
+std::shared_ptr<CoarseRegions> PointsContainer::initCoarseRegions(){
+   std::shared_ptr<CoarseRegions> coarse_regions(new CoarseRegions(this, parameters_->coarsest_level-1));
+   return coarse_regions;
+}
 
 void PointsContainer::drawPoint(std::shared_ptr<Point> point, std::shared_ptr<Image<colorRGB>> show_img){
   pxl pixel= point->pixel_;
@@ -50,6 +56,7 @@ void PointsContainer::showProjectedCandidates(){
 }
 
 
+
 void PointsContainer::showActivePoints(){
   double alpha = 1;
 
@@ -64,6 +71,12 @@ void PointsContainer::showActivePoints(){
 
   show_img->show(pow(2,parameters_->candidate_level));
   cv::waitKey(0);
+
+}
+
+void PointsContainer::showCoarseActivePoints(int level){
+  coarse_regions_->showCoarseLevel(level);
+
 
 }
 
@@ -84,6 +97,22 @@ void PointsContainer::showProjectedActivePoints(){
 
 }
 
+std::vector<std::shared_ptr<ActivePoint>>& PointsContainer::getActivePoints(){
+  return getActivePoints(0);
+}
+
+std::vector<std::shared_ptr<ActivePoint>>& PointsContainer::getActivePoints(int level){
+  assert(level>=0 && level<parameters_->coarsest_level);
+  if(level==0){
+    std::vector<std::shared_ptr<ActivePoint>>& out = *active_points_;
+    return out;
+  }
+  else{
+    return (coarse_regions_->getCoarseActivePoints(level));
+
+  }
+}
+
 
 void CandidateProjected::init(std::shared_ptr<Candidate> cand, std::shared_ptr<CamCouple> cam_couple_){
   cam_couple_->getUv( cand->uv_.x(),cand->uv_.y(),1./cand->invdepth_,uv_.x(),uv_.y() );
@@ -102,4 +131,10 @@ void ActivePointProjected::init(std::shared_ptr<ActivePoint> active_pt, std::sha
   float depth;
   cam_couple_->getD2(active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,depth);
   invdepth_=1./depth;
+}
+
+void ActivePoint::updateInvdepthVarAndP(float invdepth, float invdepth_var){
+  invdepth_ = invdepth;
+  invdepth_var_ = invdepth_var;
+  cam_->pointAtDepth(uv_, 1.0/invdepth, p_, p_incamframe_);
 }

@@ -274,6 +274,30 @@ __/src/KeyframeHandler.cpp.s:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.s
 .PHONY : __/src/KeyframeHandler.cpp.s
 
+__/src/LinSystem.o: __/src/LinSystem.cpp.o
+.PHONY : __/src/LinSystem.o
+
+# target to build an object file
+__/src/LinSystem.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.o
+.PHONY : __/src/LinSystem.cpp.o
+
+__/src/LinSystem.i: __/src/LinSystem.cpp.i
+.PHONY : __/src/LinSystem.i
+
+# target to preprocess a source file
+__/src/LinSystem.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.i
+.PHONY : __/src/LinSystem.cpp.i
+
+__/src/LinSystem.s: __/src/LinSystem.cpp.s
+.PHONY : __/src/LinSystem.s
+
+# target to generate assembly for a file
+__/src/LinSystem.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.s
+.PHONY : __/src/LinSystem.cpp.s
+
 __/src/PointsContainer.o: __/src/PointsContainer.cpp.o
 .PHONY : __/src/PointsContainer.o
 
@@ -514,6 +538,30 @@ __/src/initializer.cpp.s:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.s
 .PHONY : __/src/initializer.cpp.s
 
+__/src/spectator.o: __/src/spectator.cpp.o
+.PHONY : __/src/spectator.o
+
+# target to build an object file
+__/src/spectator.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o
+.PHONY : __/src/spectator.cpp.o
+
+__/src/spectator.i: __/src/spectator.cpp.i
+.PHONY : __/src/spectator.i
+
+# target to preprocess a source file
+__/src/spectator.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.i
+.PHONY : __/src/spectator.cpp.i
+
+__/src/spectator.s: __/src/spectator.cpp.s
+.PHONY : __/src/spectator.s
+
+# target to generate assembly for a file
+__/src/spectator.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.s
+.PHONY : __/src/spectator.cpp.s
+
 __/src/utils.o: __/src/utils.cpp.o
 .PHONY : __/src/utils.o
 
@@ -589,6 +637,9 @@ help:
 	@echo "... __/src/KeyframeHandler.o"
 	@echo "... __/src/KeyframeHandler.i"
 	@echo "... __/src/KeyframeHandler.s"
+	@echo "... __/src/LinSystem.o"
+	@echo "... __/src/LinSystem.i"
+	@echo "... __/src/LinSystem.s"
 	@echo "... __/src/PointsContainer.o"
 	@echo "... __/src/PointsContainer.i"
 	@echo "... __/src/PointsContainer.s"
@@ -619,6 +670,9 @@ help:
 	@echo "... __/src/initializer.o"
 	@echo "... __/src/initializer.i"
 	@echo "... __/src/initializer.s"
+	@echo "... __/src/spectator.o"
+	@echo "... __/src/spectator.i"
+	@echo "... __/src/spectator.s"
 	@echo "... __/src/utils.o"
 	@echo "... __/src/utils.i"
 	@echo "... __/src/utils.s"
