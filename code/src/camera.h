@@ -19,7 +19,7 @@ class Camera{
     std::mutex mu_access_pose;
 
     // clone camera
-    Camera(std::shared_ptr<Camera> cam):
+    Camera(std::shared_ptr<Camera> cam, bool copy_pose):
       name_(cam->name_),
       cam_parameters_(cam->cam_parameters_),
       K_(cam->K_),
@@ -29,9 +29,10 @@ class Camera{
       frame_camera_wrt_world_(new Eigen::Isometry3f ),
       frame_world_wrt_camera_(new Eigen::Isometry3f )
       {
-
-        *frame_camera_wrt_world_=(*(cam->frame_camera_wrt_world_));
-        *frame_world_wrt_camera_=(*(cam->frame_world_wrt_camera_));
+        if(copy_pose){
+          *frame_camera_wrt_world_=(*(cam->frame_camera_wrt_world_));
+          *frame_world_wrt_camera_=(*(cam->frame_world_wrt_camera_));
+        }
       }
 
     Camera(const std::string& name, const std::shared_ptr<CamParameters> cam_parameters,

@@ -2,7 +2,7 @@
 #include "defs.h"
 #include "environment.h"
 #include "image.h"
-#include "parameters.h"
+#include "PointsContainer.h"
 #include "camera.h"
 // #include "dso.h"
 
@@ -39,16 +39,16 @@ class Spectator{
     std::shared_ptr<Image<colorRGB>> initImage();
 
 
-    // void reinitSpectator();
-    // void renderPoints();
-    // void renderCamsAndKFs();
-    //
-    // Eigen::Isometry3f getSpectatorPose();
-    //
-    // bool plotPt(ActivePoint* pt, const colorRGB& color);
-    // bool plotPt(Eigen::Vector3f& pt, const colorRGB& color);
-    // bool plotPt(ActivePoint* pt, const colorRGB& color, pxl& pixel);
-    // bool plotPt(Eigen::Vector3f& pt, const colorRGB& color, pxl& pixel);
-    // bool plotLine(pxl& pixel1, pxl& pixel2, const colorRGB& color );
-    // bool plotCam(Camera* cam, const colorRGB& color);
+    void reinitSpectator();
+    void renderPoints();
+    void renderCamsAndKFs();
+
+    Eigen::Isometry3f getSpectatorPose();
+
+    bool plotPt(std::shared_ptr<ActivePoint> pt, const colorRGB& color);
+    bool plotPt(Eigen::Vector3f& pt, const colorRGB& color);
+    bool plotPt(std::shared_ptr<ActivePoint> pt, const colorRGB& color, pxl& pixel);
+    bool plotPt(Eigen::Vector3f& pt, const colorRGB& color, pxl& pixel);
+    bool plotLine(pxl& pixel1, pxl& pixel2, const colorRGB& color );
+    bool plotCam(std::shared_ptr<Camera> cam, const colorRGB& color);
 };

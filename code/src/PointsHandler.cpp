@@ -161,7 +161,7 @@ void PointsHandler::projectActivePoints(std::shared_ptr<CameraForMapping> cam_r,
   }
 }
 
-void PointsHandler::trackCandidates(){
+void PointsHandler::trackCandidates(bool groundtruth){
 
   std::shared_ptr<CameraForMapping> last_keyframe = dso_->cameras_container_->getLastActiveKeyframe();
 
@@ -169,8 +169,23 @@ void PointsHandler::trackCandidates(){
   for (int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1; i++){
     std::shared_ptr<CameraForMapping> keyframe = dso_->cameras_container_->keyframes_active_[i];
 
-    trackCandidates(keyframe, last_keyframe);
+    if(groundtruth){
+      trackCandidatesGroundtruth(keyframe);
+    }
+    else{
+      trackCandidates(keyframe, last_keyframe);
+    }
   }
+}
+
+void PointsHandler::trackCandidatesGroundtruth(std::shared_ptr<CameraForMapping> keyframe){
+
+  // iterate through candidates
+  for (int i=0; i<keyframe->points_container_->candidates_->size(); i++){
+    std::shared_ptr<Candidate> cand = keyframe->points_container_->candidates_->at(i);
+    cand->setInvdepthGroundtruth();
+  }
+
 }
 
 void PointsHandler::trackCandidates(std::shared_ptr<CameraForMapping> keyframe, std::shared_ptr<CameraForMapping> last_keyframe){

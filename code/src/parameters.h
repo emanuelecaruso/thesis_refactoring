@@ -21,11 +21,11 @@ static bool use_spectator_ = true;
 
 // code parameters
 static bool take_gt_poses_=false;
-static bool take_gt_points_=false;
+static bool take_gt_points_=true;
 static int guess_type_=POSE_CONSTANT;
 // static int guess_type_=VELOCITY_CONSTANT;
-static int opt_norm_=HUBER;
-// static int opt_norm_=QUADRATIC;
+// static int opt_norm_=HUBER;
+static int opt_norm_=QUADRATIC;
 static int test_single_=TEST_ALL;
 // static int image_id_=INTENSITY_ID;
 static int image_id_=GRADIENT_ID;

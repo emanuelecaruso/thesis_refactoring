@@ -60,3 +60,7 @@ bool CamerasContainer::checkMarginalizedKeyframe( std::shared_ptr<CameraForMappi
 std::shared_ptr<CameraForMapping> CamerasContainer::getLastActiveKeyframe(){
   return keyframes_active_.back();
 }
+
+std::shared_ptr<CameraForMapping> CamerasContainer::getSecondLastFrame(){
+  return frames_[dso_->frame_current_idx_-1];
+}

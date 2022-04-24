@@ -18,5 +18,6 @@ class Tracker{
 
   protected:
     void trackCam();
+    void setInitialGuess();
 
 };

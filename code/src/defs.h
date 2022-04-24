@@ -499,20 +499,24 @@ inline Eigen::Isometry3f v2t_inv(Vector6f& t){
 
 
 
-inline int lowerBound(std::vector<int> const& vec, int value) {
+inline int lowerBound(const std::vector<int>& vec, int value) {
   auto const it = std::lower_bound(vec.begin(), vec.end(), value);
   if (it == vec.end()) { return -1; }
 
   return *it;
 }
 
-inline int upperBound(std::vector<int> const& vec, int value) {
+inline int upperBound(const std::vector<int>& vec, int value) {
   auto const it = std::upper_bound(vec.begin(), vec.end(), value);
   if (it == vec.end()) { return -1; }
 
   return *it;
 }
 
+template <class T>
+inline T pinvDense( T& matrix){
+  return matrix.completeOrthogonalDecomposition().pseudoInverse();
+}
 
 inline float getPinvThreshold(const Eigen::VectorXf& singular_values){
   // float sv_sum = 0;

@@ -4168,7 +4168,18 @@ executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.o: ../src/LinSystem.cpp
   ../src/PointsContainer.h \
   ../src/CameraForMapping.h \
   ../src/Pyramid.h \
-  ../src/CamCouple.h
+  ../src/dso.h \
+  ../src/CamerasContainer.h \
+  ../src/initializer.h \
+  ../src/environment.h \
+  ../src/CandidatesActivator.h \
+  ../src/KeyframeHandler.h \
+  ../src/PointsHandler.h \
+  ../src/epline.h \
+  ../src/CamCouple.h \
+  ../src/Tracker.h \
+  /usr/include/c++/7/condition_variable \
+  ../src/spectator.h
 
 executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o: ../src/PointsContainer.cpp \
   /usr/include/stdc-predef.h \
@@ -10736,11 +10747,11 @@ executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o: ../src/spectator.cpp
   /usr/include/c++/7/bits/mask_array.h \
   /usr/include/c++/7/bits/indirect_array.h \
   ../src/image.h \
-  ../src/dso.h \
-  ../src/CamerasContainer.h \
   ../src/PointsContainer.h \
   ../src/CameraForMapping.h \
   ../src/Pyramid.h \
+  ../src/dso.h \
+  ../src/CamerasContainer.h \
   ../src/initializer.h \
   ../src/CandidatesActivator.h \
   ../src/KeyframeHandler.h \

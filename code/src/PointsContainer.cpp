@@ -8,6 +8,15 @@ void Candidate::showCandidate(){
   cam_->pyramid_->getC(level_)->showImgWithColoredPixel( pixel_, pow(2,level_), "cand");
 }
 
+void Candidate::setInvdepthGroundtruth(){
+  pxl pixel;
+  cam_->uv2pixelCoords(uv_, pixel);
+  float invdepth_val = cam_->grountruth_camera_->invdepth_map_->evalPixel(pixel);
+  float invdepth_gt = invdepth_val/cam_->cam_parameters_->min_depth;
+  invdepth_=invdepth_gt;
+  invdepth_var_=0.0001;
+}
+
 std::shared_ptr<CoarseRegions> PointsContainer::initCoarseRegions(){
    std::shared_ptr<CoarseRegions> coarse_regions(new CoarseRegions(this, parameters_->coarsest_level-1));
    return coarse_regions;

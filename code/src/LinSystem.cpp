@@ -1,6 +1,7 @@
 #include "LinSystem.h"
 #include "camera.h"
 #include "PointsContainer.h"
+#include "dso.h"
 #include "CamCouple.h"
 
 bool MeasTracking::getPixelOfProjectedActivePoint(std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple, pxl& pixel){
@@ -57,6 +58,7 @@ bool MeasTracking::init(std::shared_ptr<ActivePoint> active_point, std::shared_p
   }
 
   J_m.setZero();  // initialize J_m
+  J_m_transpose.setZero();  // initialize J_m_transpose
   error=0;  // initialize error
 
   // get Jm_
@@ -64,18 +66,89 @@ bool MeasTracking::init(std::shared_ptr<ActivePoint> active_point, std::shared_p
 
   // update J_m and error for intensity
   Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian(pixel, active_point, cam_couple, INTENSITY_ID);
+  J_m += image_jacobian_intensity*Jm_;
   error += getError( pixel,  active_point, cam_couple, INTENSITY_ID);
 
   // // update J_m and error for gradient
   // Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian(pixel, active_point, cam_couple, GRADIENT_ID);
+  // J_m += image_jacobian_gradient*Jm_;
   // error += getError( pixel,  active_point, cam_couple, GRADIENT_ID);
 
+  J_m_transpose= J_m.transpose();
 }
 
 void LinSysTracking::addMeasurement( std::shared_ptr<MeasTracking> measurement ){
 
+  // get weight
+  float weight = getWeight(measurement->error);
+
+  // update H
+  H+= measurement->J_m_transpose*weight*measurement->J_m;
+
+  // update b
+  b= measurement->J_m_transpose*weight*measurement->error;
+
+  // update chi
+  chi+= measurement->error*weight*measurement->error;
 }
 
 void LinSysTracking::updateCameraPose(){
-  
+  // get dx
+  dx=-pinvDense(H)*b;
+  std::cout << "AOOO " << dx << std::endl;
+
+  // update pose
+  Eigen::Isometry3f new_guess = (*(dso_->frame_current_->frame_camera_wrt_world_))*v2t_inv(dx);
+  dso_->frame_current_->assignPose(new_guess);
+
+
+}
+
+void LinSysTracking::clear(){
+  H.setZero();
+  b.setZero();
+  dx.setZero();
+  chi=0;
+}
+
+float LinSysTracking::getWeight(float error){
+  float weight;
+
+  // huber robustifier
+  if(dso_->parameters_->opt_norm==HUBER){
+    float huber_threshold=dso_->parameters_->huber_threshold;
+    float u = abs(error);
+
+    if (u<=huber_threshold){
+      weight=1/huber_threshold;
+    }
+    else{
+      // float rho_der = huberNormDerivative(error,dso_->parameters_->huber_threshold);
+      float rho_der = huberNormDerivative(u,dso_->parameters_->huber_threshold);
+      float gamma=(1/u)*rho_der;
+      weight=gamma;
+    }
+
+  }
+  // least square without robustifier
+  else if (dso_->parameters_->opt_norm==QUADRATIC){
+    weight=1;
+  }
+  else{
+    throw std::invalid_argument( "optimization norm has wrong value" );
+  }
+  assert(!std::isnan(weight));
+  assert(!std::isinf(weight));
+
+
+  // // weight
+  // float variance = dso_->parameters_->variance;
+  // int ni = dso_->parameters_->robustifier_dofs;
+  // float weight = (ni+1.0)/(ni+(pow(error,2)/variance));
+  //
+  // float  weight = weight*gamma;
+
+  // return weight;
+  return weight;
+
 }

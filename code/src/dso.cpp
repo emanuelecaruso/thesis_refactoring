@@ -71,7 +71,7 @@ void Dso::initialize(){
 
     // ... add last keyframe
     keyframe_handler_->addKeyframe(true); // add fixed keyframe
-    points_handler_->trackCandidates(); // track existing candidates
+    points_handler_->trackCandidates(parameters_->take_gt_points); // track existing candidates
 
     // project candidates and active points on last frame
     points_handler_->projectCandidatesOnLastFrame();
@@ -90,7 +90,7 @@ void Dso::initialize(){
 
 
 
-    // to_initialize_=false;
+    to_initialize_=false;
 
     // bundle_adj_->projectActivePoints_prepMarg(0);
     // bundle_adj_->activateNewPoints();
@@ -120,10 +120,30 @@ void Dso::initialize(){
 
 void Dso::doDso(){
 
+  // tracker_->trackCam(parameters_->take_gt_poses);
+  tracker_->trackCam(false);
+  // tracker_->trackCam(true); //groundtruth
+
+  keyframe_handler_->addKeyframe(true); // add fixed keyframe
+
+  points_handler_->trackCandidates(parameters_->take_gt_points); // track existing candidates
+  points_handler_->projectCandidatesOnLastFrame();
+  points_handler_->projectActivePointsOnLastFrame();
+  candidates_activator_->activateCandidates();
+
+
   points_handler_->generateCoarseActivePoints();  // generate coarse active points for tracking
   // points_handler_->projectCoarseActivePointsOnLastFrame();
   // points_handler_->projectActivePointsOnLastFrame();
 
+  if(parameters_->debug_mapping){
+    // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
+    // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
+    // points_handler_->sampleCandidates();
+    // points_handler_->showCandidates();
+    points_handler_->showProjectedCandidates();
+    points_handler_->showProjectedActivePoints();
+  }
 
   // tracker->track
   // bool keyframe_taken = keyframe handler -> choose kf

@@ -35,9 +35,10 @@ class PointsHandler{
     void projectCandidates(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m );
     void projectActivePoints(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m );
 
-    void trackCandidates();
+    void trackCandidates(bool groundtruth);
   protected:
     void trackCandidates(std::shared_ptr<CameraForMapping> keyframe, std::shared_ptr<CameraForMapping> last_keyframe);
+    void trackCandidatesGroundtruth(std::shared_ptr<CameraForMapping> keyframe);
     bool trackCandidate(std::shared_ptr<Candidate> cand, std::shared_ptr<CamCouple> cam_couple);
 };
 

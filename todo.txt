@@ -7,7 +7,9 @@
 - plan ba
 - come back on mapping
 
-
+0) weight
+1) add measurement
+2) updateCameraPose
 
 
 

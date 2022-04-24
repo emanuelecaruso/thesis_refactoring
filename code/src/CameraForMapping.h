@@ -21,11 +21,13 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
     // ********** constructor **********
 
     CameraForMapping(std::shared_ptr<Camera> env_cam, std::shared_ptr<Params> parameters):
-      Camera(env_cam)
+      Camera(env_cam,false)
       ,grountruth_camera_(env_cam)
       ,pyramid_( new Pyramid(env_cam,parameters->coarsest_level) )
       // ,points_container_( new PointsContainer(this) )
       ,points_container_( initializePointsContainer(parameters) )
+      ,fixed_(false)
+      ,keyframe_(false)
       { };
 
 
