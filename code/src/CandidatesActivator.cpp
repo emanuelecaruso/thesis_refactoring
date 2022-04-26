@@ -38,7 +38,7 @@ void ActptpresenceMat::buildLevel0(std::shared_ptr<std::vector<std::shared_ptr<A
     pxl pixel = active_pt_proj->pixel_;
     int row = (int)(pixel.y()-0.5);
     int col = (int)(pixel.x()-0.5);
-    assert(row>0 && col>0 && row<nrows_ && col<ncols_);
+    assert(row>=0 && col>=0 && row<nrows_ && col<ncols_);
     mat_[row][col]=true;
   }
 }

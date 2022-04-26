@@ -26,6 +26,7 @@ class PointsHandler{
     void showProjectedCandidates();
     void showActivePoints();
     void showCoarseActivePoints(int level);
+    void showProjectedActivePoints(const std::string& name);
     void showProjectedActivePoints();
 
     void sampleCandidates();
@@ -69,8 +70,8 @@ class CandTracker{
 
     // ********** methods **********
     bool searchMin( );
-    float getCostMagn(pxl& pixel);
-    bool getPhaseCostContribute(pxl& pixel, float& cost_phase);
+    float getCostMagn(pxl& pixel_m);
+    bool getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, float& cost_phase);
     float getStandardDeviation( );
     void updateCand( );
 

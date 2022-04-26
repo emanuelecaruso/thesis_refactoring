@@ -35,6 +35,7 @@ class CamCouple{
     void getJrParameters();
     Eigen::Matrix<float,2,1> getJd_(std::shared_ptr<ActivePoint> active_pt);
     Eigen::Matrix<float,2,6> getJm_(std::shared_ptr<ActivePoint> active_pt);
+    Eigen::Matrix<float,2,6> getJm_old_(std::shared_ptr<ActivePoint> active_pt);
     Eigen::Matrix<float,2,6> getJr_(std::shared_ptr<ActivePoint> active_pt);
 
   private:

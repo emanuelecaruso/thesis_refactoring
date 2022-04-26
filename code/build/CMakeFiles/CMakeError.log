@@ -1,25 +1,25 @@
 Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
-Change Dir: /home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles/CMakeTmp
+Change Dir: /home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make -f Makefile cmTC_00bc8/fast && /usr/bin/make  -f CMakeFiles/cmTC_00bc8.dir/build.make CMakeFiles/cmTC_00bc8.dir/build
-make[1]: Entering directory '/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_00bc8.dir/src.c.o
-/usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -fPIC  -o CMakeFiles/cmTC_00bc8.dir/src.c.o -c /home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles/CMakeTmp/src.c
-Linking C executable cmTC_00bc8
-/snap/cmake/1070/bin/cmake -E cmake_link_script CMakeFiles/cmTC_00bc8.dir/link.txt --verbose=1
-/usr/bin/cc -fPIC  CMakeFiles/cmTC_00bc8.dir/src.c.o -o cmTC_00bc8 
-CMakeFiles/cmTC_00bc8.dir/src.c.o: In function `main':
-src.c:(.text+0x3e): undefined reference to `pthread_create'
-src.c:(.text+0x4a): undefined reference to `pthread_detach'
-src.c:(.text+0x56): undefined reference to `pthread_cancel'
-src.c:(.text+0x67): undefined reference to `pthread_join'
-src.c:(.text+0x7b): undefined reference to `pthread_atfork'
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_ee0de/fast && /usr/bin/make  -f CMakeFiles/cmTC_ee0de.dir/build.make CMakeFiles/cmTC_ee0de.dir/build
+make[1]: ingresso nella directory "/home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp"
+Building C object CMakeFiles/cmTC_ee0de.dir/src.c.o
+/usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -fPIC  -o CMakeFiles/cmTC_ee0de.dir/src.c.o -c /home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_ee0de
+/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ee0de.dir/link.txt --verbose=1
+/usr/bin/cc -fPIC  CMakeFiles/cmTC_ee0de.dir/src.c.o -o cmTC_ee0de 
+CMakeFiles/cmTC_ee0de.dir/src.c.o: nella funzione "main":
+src.c:(.text+0x3e): riferimento non definito a "pthread_create"
+src.c:(.text+0x4a): riferimento non definito a "pthread_detach"
+src.c:(.text+0x56): riferimento non definito a "pthread_cancel"
+src.c:(.text+0x67): riferimento non definito a "pthread_join"
+src.c:(.text+0x7b): riferimento non definito a "pthread_atfork"
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_00bc8.dir/build.make:98: recipe for target 'cmTC_00bc8' failed
-make[1]: *** [cmTC_00bc8] Error 1
-make[1]: Leaving directory '/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles/CMakeTmp'
-Makefile:127: recipe for target 'cmTC_00bc8/fast' failed
-make: *** [cmTC_00bc8/fast] Error 2
+CMakeFiles/cmTC_ee0de.dir/build.make:98: recipe for target 'cmTC_ee0de' failed
+make[1]: *** [cmTC_ee0de] Error 1
+make[1]: uscita dalla directory "/home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp"
+Makefile:127: recipe for target 'cmTC_ee0de/fast' failed
+make: *** [cmTC_ee0de/fast] Error 2
 
 
 Source file was:
@@ -44,22 +44,22 @@ int main(void)
 }
 
 Determining if the function pthread_create exists in the pthreads failed with the following output:
-Change Dir: /home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles/CMakeTmp
+Change Dir: /home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make -f Makefile cmTC_0aaa8/fast && /usr/bin/make  -f CMakeFiles/cmTC_0aaa8.dir/build.make CMakeFiles/cmTC_0aaa8.dir/build
-make[1]: Entering directory '/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_0aaa8.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create -o CMakeFiles/cmTC_0aaa8.dir/CheckFunctionExists.c.o -c /snap/cmake/1070/share/cmake-3.23/Modules/CheckFunctionExists.c
-Linking C executable cmTC_0aaa8
-/snap/cmake/1070/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0aaa8.dir/link.txt --verbose=1
-/usr/bin/cc -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create CMakeFiles/cmTC_0aaa8.dir/CheckFunctionExists.c.o -o cmTC_0aaa8  -lpthreads 
-/usr/bin/ld: cannot find -lpthreads
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_cb766/fast && /usr/bin/make  -f CMakeFiles/cmTC_cb766.dir/build.make CMakeFiles/cmTC_cb766.dir/build
+make[1]: ingresso nella directory "/home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp"
+Building C object CMakeFiles/cmTC_cb766.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create -o CMakeFiles/cmTC_cb766.dir/CheckFunctionExists.c.o -c /usr/local/share/cmake-3.22/Modules/CheckFunctionExists.c
+Linking C executable cmTC_cb766
+/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cb766.dir/link.txt --verbose=1
+/usr/bin/cc -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create CMakeFiles/cmTC_cb766.dir/CheckFunctionExists.c.o -o cmTC_cb766  -lpthreads 
+/usr/bin/ld: impossibile trovare -lpthreads
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_0aaa8.dir/build.make:98: recipe for target 'cmTC_0aaa8' failed
-make[1]: *** [cmTC_0aaa8] Error 1
-make[1]: Leaving directory '/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles/CMakeTmp'
-Makefile:127: recipe for target 'cmTC_0aaa8/fast' failed
-make: *** [cmTC_0aaa8/fast] Error 2
+CMakeFiles/cmTC_cb766.dir/build.make:98: recipe for target 'cmTC_cb766' failed
+make[1]: *** [cmTC_cb766] Error 1
+make[1]: uscita dalla directory "/home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp"
+Makefile:127: recipe for target 'cmTC_cb766/fast' failed
+make: *** [cmTC_cb766/fast] Error 2
 
 
 

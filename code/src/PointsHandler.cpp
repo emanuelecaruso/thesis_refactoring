@@ -98,7 +98,9 @@ void PointsHandler::showCoarseActivePoints(int level){
 void PointsHandler::showProjectedActivePoints(){
   dso_->frame_current_->points_container_->showProjectedActivePoints();
 }
-
+void PointsHandler::showProjectedActivePoints(const std::string& name){
+  dso_->frame_current_->points_container_->showProjectedActivePoints(name);
+}
 
 void PointsHandler::projectCandidatesOnLastFrame(){
 
@@ -308,20 +310,20 @@ bool CandTracker::searchMin( ){
 
   // iterate through uvs
   for(int i=0; i<ep_segment_->uvs->size(); i++){
-    Eigen::Vector2f uv = ep_segment_->uvs->at(i);
-    pxl pixel = cam_couple_->cam_m_->uv2pixelCoords( uv, cand_->level_);
+    Eigen::Vector2f uv_m = ep_segment_->uvs->at(i);
+    pxl pixel_m = cam_couple_->cam_m_->uv2pixelCoords( uv_m, cand_->level_);
 
-    if(!cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->pixelInRange(pixel))
+    if(!cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->pixelInRange(pixel_m))
       continue;
 
-    float cost_magn = getCostMagn(pixel);
-    // float cost_phase=0;
-    // bool valid = getPhaseCostContribute(pixel, cost_phase);
-    // if(!valid)
-    //   return false;
+    float cost_magn = getCostMagn(pixel_m);
+    float cost_phase=0;
+    bool valid = getPhaseCostContribute(pixel_m, uv_m, cost_phase);
+    if(!valid)
+      return false;
 
-    // float cost=cost_magn+cost_phase;
-    float cost=cost_magn;
+    float cost=cost_magn+cost_phase;
+    // float cost=cost_magn;
 
     if(cost>parameters_->cost_threshold){
       if(min_segment_reached){
@@ -346,8 +348,8 @@ bool CandTracker::searchMin( ){
 
       if(cost<cost_min){
         cost_min=cost;
-        uv_=uv;
-        pixel_=pixel;
+        uv_=uv_m;
+        pixel_=pixel_m;
       }
 
     }
@@ -375,12 +377,12 @@ float CandTracker::getCostMagn(pxl& pixel){
 
   // std::cout << "c_m " << c_m << " c_r " << c_r << " magn_m " << magn_m << " magn_cd_r " << magn_cd_r << "\n";
   // return cost_magn_cd;
-  return cost_c+cost_magn_cd;
+  return parameters_->intensity_coeff*cost_c+parameters_->gradient_coeff*cost_magn_cd;
 }
 
-bool CandTracker::getPhaseCostContribute(pxl& pixel, float& phase_cost){
+bool CandTracker::getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, float& phase_cost){
 
-  phase_m = cam_couple_->cam_m_->pyramid_->getPhase(cand_->level_)->evalPixelBilinear(pixel);
+  phase_m = cam_couple_->cam_m_->pyramid_->getPhase(cand_->level_)->evalPixelBilinear(pixel_m);
 
   float pixel_width=cand_->cam_->cam_parameters_->pixel_width/pow(2,cand_->level_);
   float phase_r = cand_->phase_cd_;
@@ -390,9 +392,9 @@ bool CandTracker::getPhaseCostContribute(pxl& pixel, float& phase_cost){
   Eigen::Vector2f tip_to_project = cand_->uv_+grad_direction_r;
   float d1, coord;
   if(ep_segment_->u_or_v)
-    coord = uv_.x();
+    coord = uv_m.x();
   else
-    coord = uv_.y();
+    coord = uv_m.y();
 
   cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), d1, coord, ep_segment_->u_or_v);
 
@@ -400,25 +402,25 @@ bool CandTracker::getPhaseCostContribute(pxl& pixel, float& phase_cost){
 
   cam_couple_->getUv(tip_to_project.x(), tip_to_project.y(), d1, tip_m.x(), tip_m.y() );
 
-  direction_m=tip_m-uv_;
+  direction_m=tip_m-uv_m;
 
   // std::cout << "\n1:\n" << direction_m << " 2:\n " << grad_direction_r << std::endl;
 
-  float phase_m_ = std::atan2(direction_m.y(),direction_m.x());
+  float phase_m_hat = std::atan2(direction_m.y(),direction_m.x());
 
-  if (phase_m_<0)
-    phase_m_+=2*PI;
+  if (phase_m_hat<0)
+    phase_m_hat+=2*PI;
   if (phase_m<0)
     phase_m+=2*PI;
 
-  if(abs(phase_m)>10 || abs(phase_m_)>10){
+  if(abs(phase_m)>10 || abs(phase_m_hat)>10){
     return false;
   }
 
   // if( (phase_far < phase_m && phase_m < phase_close) || (phase_far > phase_m && phase_m > phase_close) ){
-  assert(abs(phase_m_)<10);
+  assert(abs(phase_m_hat)<10);
   assert(abs(phase_m)<10);
 
-  phase_cost= abs(radiansSub(phase_m_,phase_m)/(2*PI));
+  phase_cost= abs(radiansSub(phase_m_hat,phase_m))*parameters_->phase_coeff;
   return true;
 }

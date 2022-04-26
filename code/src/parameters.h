@@ -21,14 +21,14 @@ static bool use_spectator_ = true;
 
 // code parameters
 static bool take_gt_poses_=false;
-static bool take_gt_points_=true;
+static bool take_gt_points_=false;
 static int guess_type_=POSE_CONSTANT;
 // static int guess_type_=VELOCITY_CONSTANT;
-// static int opt_norm_=HUBER;
-static int opt_norm_=QUADRATIC;
+static int opt_norm_=HUBER;
+// static int opt_norm_=QUADRATIC;
 static int test_single_=TEST_ALL;
-// static int image_id_=INTENSITY_ID;
-static int image_id_=GRADIENT_ID;
+static int image_id_=INTENSITY_ID;
+// static int image_id_=GRADIENT_ID;
 // int image_id_=PHASE_ID;
 static bool test_marginalization_=false;
 static bool all_keyframes_=false;
@@ -38,7 +38,7 @@ static bool get_current_frame_=false;
 
 // candidate selection
 static int candidate_level_ = 0;
-static int coarsest_level_= candidate_level_+3; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
+static int coarsest_level_= candidate_level_+5; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 // static int reg_level_=candidate_level_+4;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static float grad_threshold_=0.06;
@@ -46,8 +46,9 @@ static int num_candidates_=2000;
 static float der_threshold_=0.01;
 
 // mapping
-static float cost_threshold_=0.02;
-// static float cost_threshold_=0.1;
+static float cost_threshold_=0.1;
+// static float cost_threshold_=0.075;
+// static float cost_threshold_=0.125;
 // static float cost_grad_threshold_=0.08;
 // static float cost_grad_threshold_DSO_=0.01; // for DSO
 static int max_num_mins_ = 3;
@@ -61,22 +62,22 @@ static float percentage_marg_pts_threshold_ = 0.1;
 // optimization
 static int max_iterations_ba_=20;
 static int max_num_active_points_=2000;
-// static float huber_threshold_=0.02;
-static float huber_threshold_=0.07;
+static float huber_threshold_=0.02;
+// static float huber_threshold_=0.07;
 // static float huber_threshold_=0.5;
 static float chi_occlusion_threshold_=(0.12-huber_threshold_/2);
 // static float chi_occlusion_threshold_=1000;
 // static float chi_occlusion_threshold_=(pow(0.2,2));
 static int max_occlusions_ = num_active_keyframes_/2;
 static float intensity_coeff_ = 1;
-static float gradient_coeff_ = 0.25;
-static float phase_coeff_ = 1./(8.*PI);
+static float gradient_coeff_ = 0.5;
+static float phase_coeff_ = 1./(4.*PI);
 static float damp_pose_position_ = 0;
 static float damp_pose_orientation_ = 0;
 static float damp_point_invdepth_ = 100;
 
 // tracking
-static int max_iterations_ls_=7;
+static int max_iterations_ls_=10;
 static float variance_ = 0.1;
 static int robustifier_dofs_=2;
 static float ratio_for_convergence_ = 0.001;

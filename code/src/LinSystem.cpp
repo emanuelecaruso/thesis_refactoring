@@ -5,7 +5,7 @@
 #include "CamCouple.h"
 
 bool MeasTracking::getPixelOfProjectedActivePoint(std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple, pxl& pixel){
-  // project active point and get pixel of projected active point
+  // project active point get pixel of projected active point
   Eigen::Vector2f uv;
   cam_couple->getUv( active_point->uv_.x(),active_point->uv_.y(),1./active_point->invdepth_,uv.x(),uv.y() );
   cam_couple->cam_m_->uv2pixelCoords( uv, pixel, active_point->level_ );
@@ -19,15 +19,16 @@ float MeasTracking::getError(pxl& pixel_m, std::shared_ptr<ActivePoint> active_p
   float z, z_hat;
   float error;
   if(image_type==INTENSITY_ID){
-    z = active_point->intensity_;
+    z = active_point->c_;
     z_hat = cam_couple->cam_m_->pyramid_->getC(active_point->level_)->evalPixelBilinear(pixel_m);
     error = (z_hat-z);
   }
   else if(image_type==GRADIENT_ID){
-    z = active_point->grad_magnitude_;
+    z = active_point->magn_cd_;
     z_hat = cam_couple->cam_m_->pyramid_->getMagn(active_point->level_)->evalPixelBilinear(pixel_m);
     error = (z_hat-z);
   }
+  return error;
 
 }
 
@@ -63,6 +64,7 @@ bool MeasTracking::init(std::shared_ptr<ActivePoint> active_point, std::shared_p
 
   // get Jm_
   Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_(active_point);
+  // Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_old_(active_point);
 
   // update J_m and error for intensity
   Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian(pixel, active_point, cam_couple, INTENSITY_ID);
@@ -86,7 +88,7 @@ void LinSysTracking::addMeasurement( std::shared_ptr<MeasTracking> measurement )
   H+= measurement->J_m_transpose*weight*measurement->J_m;
 
   // update b
-  b= measurement->J_m_transpose*weight*measurement->error;
+  b+= measurement->J_m_transpose*weight*measurement->error;
 
   // update chi
   chi+= measurement->error*weight*measurement->error;
@@ -95,7 +97,6 @@ void LinSysTracking::addMeasurement( std::shared_ptr<MeasTracking> measurement )
 void LinSysTracking::updateCameraPose(){
   // get dx
   dx=-pinvDense(H)*b;
-  std::cout << "AOOO " << dx << std::endl;
 
   // update pose
   Eigen::Isometry3f new_guess = (*(dso_->frame_current_->frame_camera_wrt_world_))*v2t_inv(dx);

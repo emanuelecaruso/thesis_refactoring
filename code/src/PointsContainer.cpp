@@ -22,12 +22,15 @@ std::shared_ptr<CoarseRegions> PointsContainer::initCoarseRegions(){
    return coarse_regions;
 }
 
-void PointsContainer::drawPoint(std::shared_ptr<Point> point, std::shared_ptr<Image<colorRGB>> show_img){
+void PointsContainer::drawPoint(std::shared_ptr<Point> point, std::shared_ptr<Image<colorRGB>> show_img, bool circle){
   pxl pixel= point->pixel_;
   colorRGB color = black;
   if( point->invdepth_>0 )
     color = cam_->cam_parameters_->invdepthToRgb(point->invdepth_);
-  show_img->drawCircle( color, pixel, 1, 2);
+  if(circle)
+    show_img->drawCircle( color, pixel, 1, 2);
+  else
+    show_img->setPixel( pixel,color);
 }
 
 void PointsContainer::showCandidates(){
@@ -90,9 +93,13 @@ void PointsContainer::showCoarseActivePoints(int level){
 }
 
 void PointsContainer::showProjectedActivePoints(){
+  std::string name = cam_->name_+" , "+std::to_string(active_points_projected_->size())+" projected active points";
+  showProjectedActivePoints(name);
+}
+
+void PointsContainer::showProjectedActivePoints(const std::string& name){
   double alpha = 1;
 
-  std::string name = cam_->name_+" , "+std::to_string(active_points_projected_->size())+" projected active points";
   std::shared_ptr<Image<colorRGB>> show_img( cam_->pyramid_->getC(parameters_->candidate_level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through candidates
@@ -105,6 +112,8 @@ void PointsContainer::showProjectedActivePoints(){
   cv::waitKey(0);
 
 }
+
+
 
 std::vector<std::shared_ptr<ActivePoint>>& PointsContainer::getActivePoints(){
   return getActivePoints(0);

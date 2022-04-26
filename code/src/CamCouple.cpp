@@ -248,6 +248,70 @@ Eigen::Matrix<float,2,6> CamCouple::getJm_(std::shared_ptr<ActivePoint> active_p
 }
 
 
+Eigen::Matrix<float,2,6> CamCouple::getJm_old_(std::shared_ptr<ActivePoint> active_pt ){
+
+  std::shared_ptr<CameraForMapping> cam_r = active_pt->cam_;
+  std::shared_ptr<CameraForMapping> cam_m = cam_m_;
+
+  float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
+  Eigen::Matrix3f K = *(cam_m->K_);
+  float coeff = pixels_meter_ratio/pow(2,active_pt->level_);
+
+  // variables
+  Eigen::Vector2f uv_m_0;
+  pxl pixel_m_0;
+  pxl pixel_m;
+  Eigen::Vector2f uv_m;
+  Eigen::Vector3f p_incamframe = active_pt->p_incamframe_;
+
+
+  Eigen::Vector3f point_m_0= (*(cam_m->frame_world_wrt_camera_))*(active_pt->p_);
+  Eigen::Vector3f point_m=   (*(cam_m->frame_world_wrt_camera_))*(active_pt->p_);
+
+  Eigen::Vector3f p_proj_0 = K*point_m_0;
+  // Eigen::Vector3f p_proj_0 = K*point_m_0;
+
+
+  uv_m_0 = p_proj_0.head<2>()*(1./p_proj_0.z());
+
+  cam_m->projectPointInCamFrame( point_m_0, uv_m_0 );
+  cam_m->uv2pixelCoords(uv_m_0, pixel_m_0, active_pt->level_);
+
+  cam_m->projectPointInCamFrame( point_m, uv_m );
+  cam_m->uv2pixelCoords(uv_m, pixel_m, active_pt->level_);
+
+  Eigen::Matrix<float,2,3> J_first_;
+
+  Eigen::Matrix<float, 2,3> proj_jacobian;
+  Eigen::Matrix<float, 2,6> jacobian_to_mul;
+  Eigen::Matrix<float, 2,1> jacobian_to_mul_normalizer;
+
+  proj_jacobian << 1./p_proj_0.z(), 0, -p_proj_0.x()/pow(p_proj_0.z(),2),
+                   0, 1./p_proj_0.z(), -p_proj_0.y()/pow(p_proj_0.z(),2);
+
+
+  J_first_ = coeff*((proj_jacobian)*K);
+  assert(J_first_.allFinite());
+
+  // if(J_first_->norm()>10){
+  //   std::cout << "JFIRSTTTTTT " << *J_first_ <<"\n\ncoeff " << coeff << "\n\nproj_jac " << proj_jacobian << "\n\nK " << K << std::endl;
+  // }
+  // assert(!J_first->isInf());
+
+  // return J_first_;
+
+  Eigen::Matrix<float, 3,6> state_jacobian ;
+
+  state_jacobian << 1, 0, 0,  0             ,  point_m_0.z()  , -point_m_0.y(),
+                    0, 1, 0, -point_m_0.z() ,  0              ,  point_m_0.x(),
+                    0, 0, 1,  point_m_0.y() , -point_m_0.x()  ,  0         ;
+
+  Eigen::Matrix<float,2,6> Jm = J_first_*state_jacobian;
+
+
+  return Jm;
+}
+
 void CamCouple::getDepthParameters(){
   A_d=r(2,0)/f;
   B_d=r(1,2)/f;
@@ -429,12 +493,13 @@ void CamCoupleContainer::init(){
 void CamCoupleContainer::update(){
   for(int i=0; i<cam_couple_mat_.size(); i++){
     for(int j=0; j<cam_couple_mat_[i].size(); j++){
-      std::shared_ptr<CamCouple> cam_couple = cam_couple_mat_[i][j];
-      cam_couple->update();
+      cam_couple_mat_[i][j]->update();
     }
   }
 }
 
 std::shared_ptr<CamCouple> CamCoupleContainer::get(int cam_r_idx, int cam_m_idx){
+  assert(cam_m_idx>=0 && cam_m_idx<cam_couple_mat_.size());
+  assert(cam_r_idx>=0 && cam_r_idx<cam_couple_mat_[cam_m_idx].size());
   return cam_couple_mat_[cam_m_idx][cam_r_idx];
 }

@@ -131,6 +131,7 @@ void CoarseRegions::generateCoarseActivePoints(){
         coarse_reg->updateFromSubregions();
       }
       std::shared_ptr<ActivePoint> active_pt = coarse_reg->generateCoarseActivePoint();
+      assert(active_pt->level_==level+1);
       actptscoarse_vec_.push(active_pt);
     }
 
@@ -139,7 +140,11 @@ void CoarseRegions::generateCoarseActivePoints(){
 
 std::vector<std::shared_ptr<ActivePoint>>& CoarseRegions::getCoarseActivePoints(int level){
   assert(level>0 && level<points_container_->parameters_->coarsest_level);
-  return actptscoarse_vec_.vec_[level-1];  
+  for(std::shared_ptr<ActivePoint> act_pt : actptscoarse_vec_.vec_[level-1]){
+    assert(act_pt->level_==level);
+  }
+
+  return actptscoarse_vec_.vec_[level-1];
 }
 
 
@@ -156,7 +161,7 @@ void CoarseRegions::showCoarseLevel(int level){
   // iterate through active points
   for(int i=0; i<vector_of_coarse_active_points.size(); i++){
     std::shared_ptr<ActivePoint> coarse_active_pt = vector_of_coarse_active_points.at(i);
-    points_container_->drawPoint(coarse_active_pt,show_img);
+    points_container_->drawPoint(coarse_active_pt,show_img, false);
   }
 
   show_img->show(pow(2,level));

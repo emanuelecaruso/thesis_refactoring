@@ -103,8 +103,6 @@ public:
   // ********** members **********
   Eigen::Vector3f p_;
   Eigen::Vector3f p_incamframe_;
-  pixelIntensity intensity_;
-  pixelIntensity grad_magnitude_;
   pixelIntensity c_;
   pixelIntensity magn_cd_;
   // current guess
@@ -201,7 +199,7 @@ class PointsContainer{
 
 
     // ********** methods **********
-    void drawPoint(std::shared_ptr<Point> point, std::shared_ptr<Image<colorRGB>> show_img);
+    void drawPoint(std::shared_ptr<Point> point, std::shared_ptr<Image<colorRGB>> show_img, bool circle=true);
     std::vector<std::shared_ptr<ActivePoint>>& getActivePoints();
     std::vector<std::shared_ptr<ActivePoint>>& getActivePoints(int level);
     void showCandidates();
@@ -209,6 +207,7 @@ class PointsContainer{
     void showActivePoints();
     void showCoarseActivePoints(int level);
     void showProjectedActivePoints();
+    void showProjectedActivePoints( const std::string& name );
 
   protected:
 };
