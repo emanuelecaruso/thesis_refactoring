@@ -12,9 +12,9 @@ class Region{
     int level_;
     int idx_regvecmat_;
 
-    std::vector<std::shared_ptr<CandidateProjected>> candidates_projected_;
-    std::vector<std::shared_ptr<Region>> subregions_;
-
+    std::vector<CandidateProjected*> candidates_projected_;
+    std::vector<Region*> subregions_;
+    Region* parent_;
 
     // ********** constructor **********
     Region(int level, int num_forbid_subregs):
@@ -25,8 +25,8 @@ class Region{
     }
 
     // ********** methods **********
-    void pushCandidateProj(std::shared_ptr<CandidateProjected> cand_proj);
-    void pushSubreg(std::shared_ptr<Region> subreg);
+    void pushCandidateProj(CandidateProjected* cand_proj);
+    void pushSubreg(Region* subreg);
 
 };
 
@@ -35,9 +35,9 @@ class CandidatesActivator;
 class RegVecMat{
   public:
     // ********** members **********
-    std::shared_ptr<CandidatesActivator> cand_activator_;
-    // std::shared_ptr<Dso> dso_;
-    std::vector<std::vector<std::vector<std::shared_ptr<Region>>>> regs_;
+    CandidatesActivator* cand_activator_;
+    // Dso* dso_;
+    std::vector<std::vector<std::vector<Region*>>> regs_;
     bool updated_;
 
     // ********** constructor **********
@@ -62,7 +62,7 @@ class CandprojpresenceMat{
     bool** mat_;
 
     // ********** constructor **********
-    CandprojpresenceMat(std::shared_ptr<Dso> dso)
+    CandprojpresenceMat(Dso* dso)
     {
       init(dso);
     }
@@ -77,11 +77,7 @@ class CandprojpresenceMat{
 
 
     // ********** methods **********
-    void init(std::shared_ptr<Dso> dso);
-    // void clear();
-    // void buildLevel0(std::shared_ptr<std::vector<std::shared_ptr<ActivePointProjected>>> v);
-    // void updateFromLowerLevel(std::shared_ptr<ActptpresenceMat> lower);
-
+    void init(Dso* dso);
 
 };
 
@@ -118,8 +114,8 @@ class ActptpresenceMat{
 
     // ********** methods **********
     void clear();
-    void buildLevel0(std::shared_ptr<std::vector<std::shared_ptr<ActivePointProjected>>> v);
-    void updateFromLowerLevel(std::shared_ptr<ActptpresenceMat> lower);
+    void buildLevel0(std::vector<ActivePointProjected*>& v);
+    void updateFromLowerLevel(ActptpresenceMat* lower);
 
 
 };
@@ -127,12 +123,12 @@ class ActptpresenceMat{
 class ActptpresenceMatVec{
   public:
     // ********** members **********
-    std::shared_ptr<Dso> dso_;
-    std::vector<std::shared_ptr<ActptpresenceMat>> actptpresencemat_vec_;
+    Dso* dso_;
+    std::vector<ActptpresenceMat*> actptpresencemat_vec_;
     bool updated_ = false;
 
     // ********** constructor **********
-    ActptpresenceMatVec(std::shared_ptr<Dso> dso):
+    ActptpresenceMatVec(Dso* dso):
     dso_(dso)
     {
       init(dso);
@@ -140,7 +136,7 @@ class ActptpresenceMatVec{
 
     ~ActptpresenceMatVec(){ }
     // ********** methods **********
-    void init(std::shared_ptr<Dso> dso);
+    void init(Dso* dso);
     void clear();
     void reset();
 
@@ -152,24 +148,30 @@ class RegionsMat{
     // ********** members **********
       unsigned int nrows_;
       unsigned int ncols_;
-      std::shared_ptr<Region>** mat_;
+      Region*** mat_;
 
       // ********** constructor **********
       RegionsMat(int nrows, int ncols):
       nrows_(nrows)
       ,ncols_(ncols)
       {
-        mat_=new std::shared_ptr<Region>*[nrows];
+        mat_=new Region**[nrows];
         for( int i = 0; i < nrows; i++ ) {
-          mat_[i] = new std::shared_ptr<Region>[ncols];
+          mat_[i] = new Region*[ncols];
           for( int j = 0; j < ncols; j++ ) {
-              std::shared_ptr<Region> ptr(nullptr);
-              mat_[i][j] = ptr;
+            mat_[i][j] = nullptr;
           }
         }
       }
 
       ~RegionsMat(){
+
+        for( int i = 0; i < nrows_; i++ ) {
+          for( int j = 0; j < ncols_; j++ ) {
+            delete mat_[i][j];
+          }
+        }
+
         for( int i = 0; i < nrows_; i++ ) {
             delete[] mat_[i];
         }
@@ -179,7 +181,7 @@ class RegionsMat{
 
 
       // ********** methods **********
-      std::shared_ptr<RegionsMat> getHigherLevel();
+      RegionsMat* getHigherLevel();
       bool checkRegion(int row, int col);
       void clear();
       // bool pushRegion(int row, int col, Region*);
@@ -190,14 +192,14 @@ class RegMatVec{
   public:
     // ********** members **********
 
-    std::vector<std::shared_ptr<RegionsMat>> regionsmat_vec_;
+    std::vector<RegionsMat*> regionsmat_vec_;
 
     // ********** constructor **********
-    RegMatVec(std::shared_ptr<Dso> dso){
+    RegMatVec(Dso* dso){
       init(dso);
     }
     // ********** methods **********
-    void init(std::shared_ptr<Dso> dso);
+    void init(Dso* dso);
     void clear();
 
 };
@@ -206,7 +208,7 @@ class RegMatVec{
 class CandidatesActivator{
   public:
     // ********** members **********
-    std::shared_ptr<Dso> dso_;
+    Dso* dso_;
     ActptpresenceMatVec actptpresencemat_vec_;
     RegMatVec regmat_vec_;
     RegVecMat regvec_mat_;
@@ -228,9 +230,10 @@ class CandidatesActivator{
     // ********** methods **********
     void reset();
     // void activateCandidateFromRegion();
-    void removeCand(std::shared_ptr<CandidateProjected> cand_proj);
-    void activateCandidate(std::shared_ptr<CandidateProjected> cand_proj);
+    void removeCand(CandidateProjected* cand_proj);
+    void activateCandidate(CandidateProjected* cand_proj);
     void activateCandidates();
+    void removeEmptyRegion(Region* reg);
     // void activateCandidates();
     // void collectRegions();
     // void collectRegion(int level);

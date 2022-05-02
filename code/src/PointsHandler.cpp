@@ -14,7 +14,7 @@ void PointsHandler::sampleCandidates(){
   reg_level=std::max(reg_level,1);
 
   // get image
-  std::shared_ptr<Image<pixelIntensity>> img  = dso_->frame_current_->pyramid_->getMagn(dso_->parameters_->candidate_level);
+  Image<pixelIntensity>* img  = dso_->frame_current_->pyramid_->getMagn(dso_->parameters_->candidate_level);
 
   while(true){
 
@@ -55,9 +55,9 @@ void PointsHandler::sampleCandidates(){
 
         img->image_(maxLoc->x,maxLoc->y)=0;
 
-        std::shared_ptr<Candidate> cand = std::make_shared<Candidate>(dso_->frame_current_, pixel, dso_->parameters_->candidate_level);
+        Candidate* cand = new Candidate(dso_->frame_current_, pixel, dso_->parameters_->candidate_level);
 
-        dso_->frame_current_->points_container_->candidates_->push_back(cand);
+        dso_->frame_current_->points_container_->candidates_.push_back(cand);
         img->setPixel(pixel,0);
 
         delete maxLoc;
@@ -104,22 +104,22 @@ void PointsHandler::showProjectedActivePoints(const std::string& name){
 
 void PointsHandler::projectCandidatesOnLastFrame(){
 
-  dso_->frame_current_->points_container_->candidates_projected_->clear();
+  dso_->frame_current_->points_container_->candidates_projected_.clear();
 
   // iterate through keyframes (except last)
   for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
-    std::shared_ptr<CameraForMapping> keyframe = dso_->cameras_container_->keyframes_active_[i];
+    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
     projectCandidates(keyframe, dso_->frame_current_ );
   }
 }
 
 void PointsHandler::projectActivePointsOnLastFrame(){
 
-  dso_->frame_current_->points_container_->active_points_projected_->clear();
+  dso_->frame_current_->points_container_->active_points_projected_.clear();
 
   // iterate through keyframes (except last)
   for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
-    std::shared_ptr<CameraForMapping> keyframe = dso_->cameras_container_->keyframes_active_[i];
+    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
     projectActivePoints(keyframe, dso_->frame_current_ );
   }
 }
@@ -128,50 +128,50 @@ void PointsHandler::generateCoarseActivePoints(){
 
   // iterate through keyframes (except last)
   for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
-    std::shared_ptr<CameraForMapping> keyframe = dso_->cameras_container_->keyframes_active_[i];
+    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
     keyframe->points_container_->coarse_regions_->generateCoarseActivePoints();
   }
 
 }
 
-void PointsHandler::projectCandidates(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m ){
-  std::shared_ptr<CamCouple> cam_couple(new CamCouple(cam_r, cam_m) );
+void PointsHandler::projectCandidates(CameraForMapping* cam_r, CameraForMapping* cam_m ){
+  CamCouple* cam_couple = new CamCouple(cam_r, cam_m);
 
   // iterate through candidates
-  for(std::shared_ptr<Candidate> cand : *(cam_r->points_container_->candidates_)){
+  for(Candidate* cand : (cam_r->points_container_->candidates_)){
     if(cand->invdepth_==-1)
       continue;
-    std::shared_ptr<CandidateProjected> cand_proj(new CandidateProjected(cand, cam_couple ));
+    CandidateProjected* cand_proj = new CandidateProjected(cand, cam_couple );
     if( cam_m->image_intensity_->pixelInRange(cand_proj->pixel_) ){
-      cam_m->points_container_->candidates_projected_->push_back(cand_proj);
+      cam_m->points_container_->candidates_projected_.push_back(cand_proj);
     }
   }
 
 }
 
-void PointsHandler::projectActivePoints(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m ){
-  std::shared_ptr<CamCouple> cam_couple(new CamCouple(cam_r, cam_m) );
+void PointsHandler::projectActivePoints(CameraForMapping* cam_r, CameraForMapping* cam_m ){
+  CamCouple* cam_couple(new CamCouple(cam_r, cam_m) );
 
   // iterate through candidates
-  for(std::shared_ptr<ActivePoint> active_pt : *(cam_r->points_container_->active_points_)){
+  for(ActivePoint* active_pt : (cam_r->points_container_->active_points_)){
     if(active_pt->invdepth_==-1)
       continue;
-    std::shared_ptr<ActivePointProjected> active_pt_proj(new ActivePointProjected(active_pt, cam_couple ));
+    ActivePointProjected* active_pt_proj(new ActivePointProjected(active_pt, cam_couple ));
     if( cam_m->image_intensity_->pixelInRange(active_pt_proj->pixel_) ){
-      cam_m->points_container_->active_points_projected_->push_back(active_pt_proj);
+      cam_m->points_container_->active_points_projected_.push_back(active_pt_proj);
     }
   }
 }
 
 void PointsHandler::trackCandidates(bool groundtruth){
 
-  std::shared_ptr<CameraForMapping> last_keyframe = dso_->cameras_container_->getLastActiveKeyframe();
+  CameraForMapping* last_keyframe = dso_->cameras_container_->getLastActiveKeyframe();
 
   double t_start=getTime();
 
   // iterate through keyframes (except last)
   for (int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1; i++){
-    std::shared_ptr<CameraForMapping> keyframe = dso_->cameras_container_->keyframes_active_[i];
+    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
 
     if(groundtruth){
       trackCandidatesGroundtruth(keyframe);
@@ -187,24 +187,24 @@ void PointsHandler::trackCandidates(bool groundtruth){
 
 }
 
-void PointsHandler::trackCandidatesGroundtruth(std::shared_ptr<CameraForMapping> keyframe){
+void PointsHandler::trackCandidatesGroundtruth(CameraForMapping* keyframe){
 
   // iterate through candidates
-  for (int i=0; i<keyframe->points_container_->candidates_->size(); i++){
-    std::shared_ptr<Candidate> cand = keyframe->points_container_->candidates_->at(i);
+  for (int i=0; i<keyframe->points_container_->candidates_.size(); i++){
+    Candidate* cand = keyframe->points_container_->candidates_.at(i);
     cand->setInvdepthGroundtruth();
   }
 
 }
 
-void PointsHandler::trackCandidates(std::shared_ptr<CameraForMapping> keyframe, std::shared_ptr<CameraForMapping> last_keyframe){
+void PointsHandler::trackCandidates(CameraForMapping* keyframe, CameraForMapping* last_keyframe){
 
 
-  std::shared_ptr<CamCouple> cam_couple(new CamCouple(keyframe,last_keyframe));
-  std::cout<< keyframe->points_container_->candidates_->size() << " prorojsfaiodjfsdi " << keyframe->name_ << std::endl;
+  CamCouple* cam_couple(new CamCouple(keyframe,last_keyframe));
+  std::cout<< keyframe->points_container_->candidates_.size() << " prorojsfaiodjfsdi " << keyframe->name_ << std::endl;
   // iterate through candidates
-  for (int i=0; i<keyframe->points_container_->candidates_->size(); i++){
-    std::shared_ptr<Candidate> cand = keyframe->points_container_->candidates_->at(i);
+  for (int i=0; i<keyframe->points_container_->candidates_.size(); i++){
+    Candidate* cand = keyframe->points_container_->candidates_.at(i);
     trackCandidate(cand, cam_couple);
 
   }
@@ -212,7 +212,7 @@ void PointsHandler::trackCandidates(std::shared_ptr<CameraForMapping> keyframe, 
 
 }
 
-bool PointsHandler::trackCandidate(std::shared_ptr<Candidate> cand, std::shared_ptr<CamCouple> cam_couple){
+bool PointsHandler::trackCandidate(Candidate* cand, CamCouple* cam_couple){
   // get uv of min and max depth
   Eigen::Vector2f uv_min, uv_max;
   cam_couple->getUv(cand->uv_.x(),cand->uv_.y(),cand->depth_min_,uv_min.x(),uv_min.y());
@@ -224,7 +224,7 @@ bool PointsHandler::trackCandidate(std::shared_ptr<Candidate> cand, std::shared_
     return false;
 
   // create epipolar line
-  std::shared_ptr<EpipolarLine> ep_segment( new EpipolarLine( cam_couple->cam_m_, uv_min, uv_max, cand->level_) );
+  EpipolarLine* ep_segment( new EpipolarLine( cam_couple->cam_m_, uv_min, uv_max, cand->level_) );
 
   // search pixel in epipolar line
   CandTracker CandTracker(ep_segment, cand, cam_couple, dso_->parameters_);
@@ -319,8 +319,8 @@ bool CandTracker::searchMin( ){
   int repetitive=0;
 
   // iterate through uvs
-  for(int i=0; i<ep_segment_->uvs->size(); i++){
-    Eigen::Vector2f uv_m = ep_segment_->uvs->at(i);
+  for(int i=0; i<ep_segment_->uvs.size(); i++){
+    Eigen::Vector2f uv_m = ep_segment_->uvs[i];
     pxl pixel_m = cam_couple_->cam_m_->uv2pixelCoords( uv_m, cand_->level_);
 
     if(!cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->pixelInRange(pixel_m))
@@ -340,10 +340,10 @@ bool CandTracker::searchMin( ){
         min_segment_leaved=true;
       }
 
-      if(cam_couple_->cam_m_->name_=="Camera0002"){
-        cand_->showCandidate();
-        ep_segment_->showEpipolarWithMin(pixel_m, blue, cand_->level_, 2);
-      }
+      // if(cam_couple_->cam_m_->name_=="Camera0002"){
+      //   cand_->showCandidate();
+      //   ep_segment_->showEpipolarWithMin(pixel_m, blue, cand_->level_, 2);
+      // }
     }
     else{
 
@@ -353,10 +353,10 @@ bool CandTracker::searchMin( ){
       }
       min_segment_reached=true;
 
-      if(cam_couple_->cam_m_->name_=="Camera0002"){
-        cand_->showCandidate();
-        ep_segment_->showEpipolarWithMin(pixel_m, red, cand_->level_, 2);
-      }
+      // if(cam_couple_->cam_m_->name_=="Camera0002"){
+      //   cand_->showCandidate();
+      //   ep_segment_->showEpipolarWithMin(pixel_m, red, cand_->level_, 2);
+      // }
 
 
 

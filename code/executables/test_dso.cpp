@@ -16,9 +16,9 @@ int main (int argc, char * argv[]) {
   const std::string path_name = "./dataset/"+dataset_name;
 
   // initialization
-  std::shared_ptr<Params> parameters( new Params());
+  Params* parameters =  new Params();
 
-  std::shared_ptr<Environment> environment(new Environment(path_name, dataset_name, parameters));
+  Environment* environment = new Environment(path_name, dataset_name, parameters);
 
   Dso* dso = new Dso( environment, parameters); // dense mapper and tracker
 

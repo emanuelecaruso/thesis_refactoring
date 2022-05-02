@@ -8,9 +8,9 @@
 using json = nlohmann::json;
 
 
-std::vector<std::shared_ptr<Camera>>* Environment::loadCameraVector(const std::string& path_name, const std::string& dataset_name, int end_frame){
+std::vector<Camera*>* Environment::loadCameraVector(const std::string& path_name, const std::string& dataset_name, int end_frame){
 
-  std::vector<std::shared_ptr<Camera>>* camera_vector = nullptr;
+  std::vector<Camera*>* camera_vector = nullptr;
 
   const char* path_name_ = path_name.c_str(); // dataset name
 
@@ -34,7 +34,7 @@ std::vector<std::shared_ptr<Camera>>* Environment::loadCameraVector(const std::s
 
   auto cameras = j.at("cameras");
 
-  camera_vector = new std::vector<std::shared_ptr<Camera>>;
+  camera_vector = new std::vector<Camera*>;
 
   int count =0;
 
@@ -68,13 +68,13 @@ std::vector<std::shared_ptr<Camera>>* Environment::loadCameraVector(const std::s
     std::string path_depth_=(path_name+"/depth_"+name+".exr");
     const char* path_depth = path_depth_.c_str(); // dataset name
     if( stat( path_depth, &info__ ) != 0 ){
-      std::shared_ptr<Camera> camera( new Camera(name,cam_parameters_, f, path_rgb_ ));
+      Camera* camera( new Camera(name,cam_parameters_, f, path_rgb_ ));
       camera_vector->push_back(camera);
       std::cout << camera->name_ << " added in env" << std::endl;
       count++;
     }
     else{
-      std::shared_ptr<Camera> camera( new Camera(name,cam_parameters_, f, path_rgb_, path_depth_));
+      Camera* camera( new Camera(name,cam_parameters_, f, path_rgb_, path_depth_));
       camera_vector->push_back(camera);
       std::cout << camera->name_ << " added in env" << std::endl;
       count++;
@@ -86,9 +86,9 @@ std::vector<std::shared_ptr<Camera>>* Environment::loadCameraVector(const std::s
 }
 
 
-std::shared_ptr<CamParameters> Environment::loadCamParameters(const std::string& path_name, const std::string& dataset_name){
+CamParameters* Environment::loadCamParameters(const std::string& path_name, const std::string& dataset_name){
 
-  std::shared_ptr<CamParameters> cam_parameters_out(nullptr);
+  CamParameters* cam_parameters_out = nullptr;
 
   const char* path_name_ = path_name.c_str(); // dataset name
 
@@ -129,7 +129,7 @@ std::shared_ptr<CamParameters> Environment::loadCamParameters(const std::string&
     const int resolution_x = environment.at("resolution_x");
     const int resolution_y = environment.at("resolution_y");
 
-    cam_parameters_out = std::make_shared<CamParameters>(
+    cam_parameters_out = new CamParameters(
       resolution_x, resolution_y, width,
       lens, min_depth, max_depth);
 
@@ -148,7 +148,7 @@ void Environment::debugAllCameras(bool show_imgs) const {
   std::cout << "DEBUGGING ALL CAMERAS:" << std::endl;
   std::cout << "camera vector size: " << camera_vector_->size() << std::endl;
 
-  for(std::shared_ptr<Camera> camera : *camera_vector_){
+  for(Camera* camera : *camera_vector_){
     camera->printMembers();
     if (show_imgs){
       camera->showRGB();

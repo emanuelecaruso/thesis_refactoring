@@ -250,6 +250,13 @@ struct CamParameters{
   pixel_width(width/(float)resolution_x), pixel_meter_ratio((float)resolution_x/width)
   { };
 
+  // clone
+  CamParameters(const CamParameters* cam_parameters):
+  resolution_x(cam_parameters->resolution_x), resolution_y(cam_parameters->resolution_y), aspect((float)resolution_x/(float)resolution_y),
+  width(cam_parameters->width), height(width/aspect), lens(cam_parameters->lens), min_depth(cam_parameters->min_depth), max_depth(cam_parameters->max_depth),
+  pixel_width(width/(float)resolution_x), pixel_meter_ratio((float)resolution_x/width)
+  { };
+
   inline void printMembers() const {
     std::cout << "lens: " << lens << std::endl;
     std::cout << "aspect: " << aspect << std::endl;
@@ -262,7 +269,7 @@ struct CamParameters{
   }
 
 
-  inline colorRGB invdepthToRgb(float invdepth){
+  inline colorRGB invdepthToRgb( const float invdepth) const {
 
     float min_depth_ = min_depth;
     float invdepth_normalized = min_depth_*invdepth;

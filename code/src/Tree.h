@@ -9,8 +9,8 @@ class CameraForMapping;
 class Node{
   public:
     // ********** members **********
-    std::shared_ptr<Node> parent_;
-    std::vector<std::shared_ptr<Node>> children_;
+    Node* parent_;
+    std::vector<Node*> children_;
 };
 
 class NodeActPtAct : public Node{
@@ -24,7 +24,7 @@ class NodeActPtAct : public Node{
 class NodeActPtCoarseGen : public Node{
   public:
     // ********** members **********
-    std::shared_ptr<ActivePoint> coarse_act_pt_;
+    ActivePoint* coarse_act_pt_;
 
 };
 
@@ -36,13 +36,13 @@ class Tree{
     // ********** members **********
     int levels_;
     int factor_;
-    std::vector<std::shared_ptr<Node>> roots_;
+    std::vector<Node*> roots_;
 
-    std::shared_ptr<CameraForMapping> cam_;
+    CameraForMapping* cam_;
 
     // ********** constructor **********
     // tree generation from image
-    Tree(int levels, int factor, std::shared_ptr<CameraForMapping> cam, int mode):
+    Tree(int levels, int factor, CameraForMapping* cam, int mode):
     levels_(levels),
     factor_(factor),
     cam_(cam)

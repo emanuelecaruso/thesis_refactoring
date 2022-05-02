@@ -28,9 +28,9 @@ class Initializer{
 
   protected:
 
-    std::shared_ptr<Dso> dso_;
+    Dso* dso_;
     //
-    std::shared_ptr<CameraForMapping> ref_frame_;
+    CameraForMapping* ref_frame_;
     int ref_frame_idx_;
 
     std::vector<std::vector<cv::Point2f>*>* corners_vec_;

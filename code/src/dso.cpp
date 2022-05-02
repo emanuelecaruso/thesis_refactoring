@@ -79,6 +79,8 @@ void Dso::initialize(){
     candidates_activator_->activateCandidates();
     points_handler_->generateCoarseActivePoints();
 
+    points_handler_->sampleCandidates(); // sample candidates as high gradient points
+
     if(parameters_->debug_mapping){
       // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
       cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
@@ -135,9 +137,11 @@ void Dso::doDso(){
   candidates_activator_->activateCandidates();
   points_handler_->generateCoarseActivePoints();  // generate coarse active points for tracking
 
+  points_handler_->sampleCandidates(); // sample candidates as high gradient points
+
   // bundle adjustment
 
-  
+
   if(parameters_->debug_mapping){
     // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
     // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
@@ -202,7 +206,7 @@ void Dso::updateCamerasFromEnvironment(){
 
     // sharedCout("\nFrame: "+ std::to_string(counter));
 
-    std::shared_ptr<Camera> cam = environment_->camera_vector_->at(counter);
+    Camera* cam = environment_->camera_vector_->at(counter);
     cameras_container_->addFrame(cam);
 
     // locker.unlock();

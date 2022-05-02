@@ -10,13 +10,13 @@ class CameraForMapping;
 class CamerasContainer{
   public:
     // ********** members **********
-    std::shared_ptr<Dso> dso_;
+    Dso* dso_;
 
     // cam vectors
-    std::vector<std::shared_ptr<CameraForMapping>> frames_;
-    std::vector<std::shared_ptr<CameraForMapping>> keyframes_active_;
-    std::vector<std::shared_ptr<CameraForMapping>> keyframes_to_marginalize_;
-    std::vector<std::shared_ptr<CameraForMapping>> keyframes_marginalized_;
+    std::vector<CameraForMapping*> frames_;
+    std::vector<CameraForMapping*> keyframes_active_;
+    std::vector<CameraForMapping*> keyframes_to_marginalize_;
+    std::vector<CameraForMapping*> keyframes_marginalized_;
 
     // ********** constructor **********
     CamerasContainer(Dso* dso):
@@ -25,22 +25,22 @@ class CamerasContainer{
 
     // ********** methods **********
     // frame management functions
-    void addFrame(std::shared_ptr<Camera> frame);
-    void addActiveKeyframe(std::shared_ptr<CameraForMapping> keyframe);
-    void addKeyframeToMarginalize(std::shared_ptr<CameraForMapping> keyframe);
-    void addKeyframeMarginalized(std::shared_ptr<CameraForMapping> keyframe);
-    void removeFrame(std::shared_ptr<Camera> frame);
-    void removeActiveKeyframe(std::shared_ptr<CameraForMapping> keyframe);
-    void removeKeyframeToMarginalize(std::shared_ptr<CameraForMapping> keyframe);
-    void removeKeyframeMarginalized(std::shared_ptr<CameraForMapping> keyframe);
+    void addFrame(Camera* frame);
+    void addActiveKeyframe(CameraForMapping* keyframe);
+    void addKeyframeToMarginalize(CameraForMapping* keyframe);
+    void addKeyframeMarginalized(CameraForMapping* keyframe);
+    void removeFrame(Camera* frame);
+    void removeActiveKeyframe(CameraForMapping* keyframe);
+    void removeKeyframeToMarginalize(CameraForMapping* keyframe);
+    void removeKeyframeMarginalized(CameraForMapping* keyframe);
 
-    std::shared_ptr<CameraForMapping> getLastActiveKeyframe();
-    std::shared_ptr<CameraForMapping> getSecondLastFrame();
+    CameraForMapping* getLastActiveKeyframe();
+    CameraForMapping* getSecondLastFrame();
 
   protected:
     // check functions
-    bool checkFrame(std::shared_ptr<CameraForMapping> frame);
-    bool checkActiveKeyframe(std::shared_ptr<CameraForMapping> frame);
-    bool checkKeyframeToBeMarginalized(std::shared_ptr<CameraForMapping> frame);
-    bool checkMarginalizedKeyframe(std::shared_ptr<CameraForMapping> frame);
+    bool checkFrame(CameraForMapping* frame);
+    bool checkActiveKeyframe(CameraForMapping* frame);
+    bool checkKeyframeToBeMarginalized(CameraForMapping* frame);
+    bool checkMarginalizedKeyframe(CameraForMapping* frame);
 };

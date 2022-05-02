@@ -55,7 +55,7 @@ void Camera::clearImgs(){
   invdepth_map_->setAllPixels(1.0);
 }
 
-std::shared_ptr<Eigen::Matrix3f> Camera::compute_K(){
+Eigen::Matrix3f* Camera::compute_K(){
 
   float lens = cam_parameters_->lens;
   float width = cam_parameters_->width;
@@ -65,7 +65,7 @@ std::shared_ptr<Eigen::Matrix3f> Camera::compute_K(){
   assert(width>0);
   assert(height>0);
 
-  std::shared_ptr<Eigen::Matrix3f> K (new Eigen::Matrix3f);
+  Eigen::Matrix3f* K = new Eigen::Matrix3f;
   *K <<
       lens ,  0   , width/2,
       0    ,  lens, height/2,
@@ -201,7 +201,7 @@ bool Camera::projectPointInCamFrame(const Eigen::Vector3f& p_incamframe, Eigen::
   return true;
 }
 
-bool Camera::projectCam(std::shared_ptr<Camera> cam_to_be_projected, Eigen::Vector2f& uv ) const {
+bool Camera::projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv ) const {
 
   Eigen::Vector3f p = cam_to_be_projected->frame_camera_wrt_world_->translation();
 
@@ -210,7 +210,7 @@ bool Camera::projectCam(std::shared_ptr<Camera> cam_to_be_projected, Eigen::Vect
 
 }
 
-bool Camera::projectCam(std::shared_ptr<Camera> cam_to_be_projected, Eigen::Vector2f& uv, float& p_cam_z  ) const {
+bool Camera::projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv, float& p_cam_z  ) const {
 
   Eigen::Vector3f p = cam_to_be_projected->frame_camera_wrt_world_->translation();
 
@@ -230,9 +230,9 @@ void Camera::saveDepthMap(const std::string& path) const {
 
 }
 
-std::shared_ptr<Image<pixelIntensity>> Camera::returnIntensityImgFromPath(const std::string& path_rgb){
+Image<pixelIntensity>* Camera::returnIntensityImgFromPath(const std::string& path_rgb){
 
-  std::shared_ptr<Image<pixelIntensity>> img (new Image<pixelIntensity>(name_));
+  Image<pixelIntensity>* img = new Image<pixelIntensity>(name_);
   img->image_=cv::imread(path_rgb,cv::IMREAD_GRAYSCALE);
   img->image_.convertTo(img->image_, pixelIntensity_CODE, pixelIntensity_maxval/255.0);
   return img;
@@ -256,11 +256,11 @@ void Camera::loadPoseFromJsonVal(nlohmann::basic_json<>::value_type f){
     f[6], f[7], f[8];
 
   Eigen::Vector3f t(f[9],f[10],f[11]);
-  frame_camera_wrt_world_ = std::make_shared<Eigen::Isometry3f>();
+  frame_camera_wrt_world_ = new Eigen::Isometry3f();
   frame_camera_wrt_world_->linear()=R;
   frame_camera_wrt_world_->translation()=t;
 
-  frame_world_wrt_camera_ = std::make_shared<Eigen::Isometry3f>();
+  frame_world_wrt_camera_ = new Eigen::Isometry3f();
   *frame_world_wrt_camera_=frame_camera_wrt_world_->inverse();
 
 }

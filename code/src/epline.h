@@ -23,8 +23,8 @@ class EpipolarLine{
     float start;  // start of segment (u or v coord)
     float end;    // end of segment (u or v coord)
 
-    std::shared_ptr<CameraForMapping> cam; // camera associated to epipolar line
-    std::vector<Eigen::Vector2f>* uvs;  // vector of interpoled uvs along epipolar line
+    CameraForMapping* cam; // camera associated to epipolar line
+    std::vector<Eigen::Vector2f> uvs;  // vector of interpoled uvs along epipolar line
     std::vector<int>* uv_idxs_mins;  // idx of the min costs along epipolar line
 
     // EpipolarLine( CameraForMapping* cam_, float slope_, float c_start_, float c_end_, float c0_, int level=-1 ):
@@ -44,7 +44,7 @@ class EpipolarLine{
     // EpipolarLine( cam_, slope_, c_start_, c_end_, computeC0( cam_proj_, slope_), level  ){}
 
 
-    EpipolarLine( std::shared_ptr<CameraForMapping> cam_, Eigen::Vector2f& start_, Eigen::Vector2f& end_, int level=-1):
+    EpipolarLine( CameraForMapping* cam_, Eigen::Vector2f& start_, Eigen::Vector2f& end_, int level=-1):
     slope( (end_-start_).y()/(end_-start_).x() ),
     u_or_v( (slope<1 && slope>-1) ),
     c0( u_or_v ? start_.y()-slope*start_.x() : start_.x()-start_.y()/slope ),

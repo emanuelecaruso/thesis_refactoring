@@ -9,35 +9,35 @@ class Pyramid;
 class PyramidLevel{
   public:
     // ********** members **********
-    std::shared_ptr<Image<pixelIntensity>> c_;
-    std::shared_ptr<Image<pixelIntensity>> c_dx_;
-    std::shared_ptr<Image<pixelIntensity>> c_dy_;
-    std::shared_ptr<Image<pixelIntensity>> magn_cd_;
-    std::shared_ptr<Image<pixelIntensity>> magn_cd_dx_;
-    std::shared_ptr<Image<pixelIntensity>> magn_cd_dy_;
-    std::shared_ptr<Image<pixelIntensity>> phase_cd_;
+    Image<pixelIntensity>* c_;
+    Image<pixelIntensity>* c_dx_;
+    Image<pixelIntensity>* c_dy_;
+    Image<pixelIntensity>* magn_cd_;
+    Image<pixelIntensity>* magn_cd_dx_;
+    Image<pixelIntensity>* magn_cd_dy_;
+    Image<pixelIntensity>* phase_cd_;
 
     // ********** constructor **********
-    PyramidLevel(std::shared_ptr<Image<pixelIntensity>> img){
+    PyramidLevel(Image<pixelIntensity>* img){
       init(img);
     }
     ~PyramidLevel(){}
 
   protected:
     // ********** methods **********
-    void init(std::shared_ptr<Image<pixelIntensity>> img);
-    std::shared_ptr<Image<float>> getMagnitude(std::shared_ptr<Image<pixelIntensity>> dx, std::shared_ptr<Image<pixelIntensity>> dy);
-    std::shared_ptr<Image<float>> getPhase(std::shared_ptr<Image<pixelIntensity>> dx, std::shared_ptr<Image<pixelIntensity>> dy);
+    void init(const Image<pixelIntensity>* img);
+    Image<float>* getMagnitude(Image<pixelIntensity>* dx, Image<pixelIntensity>* dy);
+    Image<float>* getPhase(Image<pixelIntensity>* dx, Image<pixelIntensity>* dy);
 };
 
 class Pyramid{
   public:
     // ********** members **********
     int levels_;
-    std::vector< std::shared_ptr<PyramidLevel> > pyramid_levels_;
+    std::vector< PyramidLevel* > pyramid_levels_;
 
     // ********** constructor **********
-    Pyramid(std::shared_ptr<Camera> cam, const int levels):
+    Pyramid(Camera* cam, const int levels):
     levels_(levels){
       init(levels, cam->image_intensity_);
     }
@@ -45,14 +45,14 @@ class Pyramid{
     ~Pyramid(){}
 
     // ********** methods **********
-    void init(const int levels, std::shared_ptr<Image<pixelIntensity>> image_intensity);
-    std::shared_ptr<Image<pixelIntensity>> getC(int level);
-    std::shared_ptr<Image<pixelIntensity>> getCDX(int level);
-    std::shared_ptr<Image<pixelIntensity>> getCDY(int level);
-    std::shared_ptr<Image<pixelIntensity>> getMagn(int level);
-    std::shared_ptr<Image<pixelIntensity>> getMagnDX(int level);
-    std::shared_ptr<Image<pixelIntensity>> getMagnDY(int level);
-    std::shared_ptr<Image<pixelIntensity>> getPhase(int level);
+    void init(const int levels, const Image<pixelIntensity>* image_intensity);
+    Image<pixelIntensity>* getC(int level);
+    Image<pixelIntensity>* getCDX(int level);
+    Image<pixelIntensity>* getCDY(int level);
+    Image<pixelIntensity>* getMagn(int level);
+    Image<pixelIntensity>* getMagnDX(int level);
+    Image<pixelIntensity>* getMagnDY(int level);
+    Image<pixelIntensity>* getPhase(int level);
 
 
   protected:

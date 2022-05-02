@@ -21,24 +21,24 @@ class Dso : public std::enable_shared_from_this<Dso>{
 
 
     // main objects
-    std::shared_ptr<Params> parameters_;
-    std::shared_ptr<Environment> environment_;
-    std::shared_ptr<CamParameters> cam_parameters_;
-    std::shared_ptr<CamerasContainer> cameras_container_;
-    std::shared_ptr<PointsHandler> points_handler_;
-    std::shared_ptr<BundleAdj> bundle_adj_;
-    std::shared_ptr<Tracker> tracker_;
-    std::shared_ptr<KeyframeHandler> keyframe_handler_;
-    std::shared_ptr<Initializer> initializer_;
-    std::shared_ptr<CandidatesActivator> candidates_activator_;
-    std::shared_ptr<Spectator> spectator_;
+    Params* parameters_;
+    Environment* environment_;
+    CamParameters* cam_parameters_;
+    CamerasContainer* cameras_container_;
+    PointsHandler* points_handler_;
+    BundleAdj* bundle_adj_;
+    Tracker* tracker_;
+    KeyframeHandler* keyframe_handler_;
+    Initializer* initializer_;
+    CandidatesActivator* candidates_activator_;
+    Spectator* spectator_;
 
     // flags for dso phases
     bool first_frame_to_set_ = true;
     bool to_initialize_ = true;
 
     // flow
-    std::shared_ptr<CameraForMapping> frame_current_;
+    CameraForMapping* frame_current_;
     int frame_current_idx_=-1;
 
 
@@ -50,10 +50,10 @@ class Dso : public std::enable_shared_from_this<Dso>{
 
 
     // ********** constructor **********
-    Dso(std::shared_ptr<Environment> environment, std::shared_ptr<Params> parameters):
+    Dso(Environment* environment, Params* parameters):
       parameters_(parameters)
       ,environment_(environment)
-      ,cam_parameters_(environment_->cam_parameters_)
+      ,cam_parameters_(new CamParameters(environment_->cam_parameters_))
       ,cameras_container_( new CamerasContainer(this) )
       ,bundle_adj_( new BundleAdj(this))
       ,points_handler_( new PointsHandler(this) )

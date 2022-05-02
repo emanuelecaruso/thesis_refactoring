@@ -9,10 +9,10 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
   // class CameraForMapping : public Camera{
   public:
     // ********** members **********
-    std::shared_ptr<Camera> grountruth_camera_;
-    std::shared_ptr<Pyramid> pyramid_;
+    Camera* grountruth_camera_;
+    Pyramid* pyramid_;
     // Pyramid pyramid_;
-    std::shared_ptr<PointsContainer> points_container_;
+    PointsContainer* points_container_;
 
     // flags
     bool fixed_;
@@ -20,7 +20,7 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
 
     // ********** constructor **********
 
-    CameraForMapping(std::shared_ptr<Camera> env_cam, std::shared_ptr<Params> parameters):
+    CameraForMapping(Camera* env_cam, Params* parameters):
       Camera(env_cam,false)
       ,grountruth_camera_(env_cam)
       ,pyramid_( new Pyramid(env_cam,parameters->coarsest_level) )
@@ -34,7 +34,7 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
     // ********** methods **********
     void setGrountruthPose();
   protected:
-    std::shared_ptr<PointsContainer> initializePointsContainer(std::shared_ptr<Params> parameters);
+    PointsContainer* initializePointsContainer(Params* parameters);
 
 
 };

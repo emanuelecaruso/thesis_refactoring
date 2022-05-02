@@ -4,7 +4,7 @@
 #include "dso.h"
 #include "CamCouple.h"
 
-bool MeasTracking::getPixelOfProjectedActivePoint(std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple, pxl& pixel){
+bool MeasTracking::getPixelOfProjectedActivePoint(ActivePoint* active_point, CamCouple* cam_couple, pxl& pixel){
   // project active point get pixel of projected active point
   Eigen::Vector2f uv;
   cam_couple->getUv( active_point->uv_.x(),active_point->uv_.y(),1./active_point->invdepth_,uv.x(),uv.y() );
@@ -15,7 +15,7 @@ bool MeasTracking::getPixelOfProjectedActivePoint(std::shared_ptr<ActivePoint> a
   return false;
 }
 
-float MeasTracking::getError(pxl& pixel_m, std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple, int image_type){
+float MeasTracking::getError(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int image_type){
   float z, z_hat;
   float error;
   if(image_type==INTENSITY_ID){
@@ -32,7 +32,7 @@ float MeasTracking::getError(pxl& pixel_m, std::shared_ptr<ActivePoint> active_p
 
 }
 
-Eigen::Matrix<float,1,2> MeasTracking::getImageJacobian(pxl& pixel_m, std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple, int image_type){
+Eigen::Matrix<float,1,2> MeasTracking::getImageJacobian(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int image_type){
 
   Eigen::Matrix<float,1,2> image_jacobian;
 
@@ -46,7 +46,7 @@ Eigen::Matrix<float,1,2> MeasTracking::getImageJacobian(pxl& pixel_m, std::share
   return image_jacobian;
 }
 
-bool MeasTracking::init(std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple){
+bool MeasTracking::init(ActivePoint* active_point, CamCouple* cam_couple){
   assert(active_point->cam_==cam_couple->cam_r_);
 
   // project active point and get pixel coordinates
@@ -82,7 +82,7 @@ bool MeasTracking::init(std::shared_ptr<ActivePoint> active_point, std::shared_p
 
 
 
-void LinSysTracking::addMeasurement( std::shared_ptr<MeasTracking> measurement ){
+void LinSysTracking::addMeasurement( MeasTracking* measurement ){
 
   // get weight
   float weight = getWeight(measurement->error);

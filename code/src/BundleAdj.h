@@ -7,7 +7,7 @@ class BundleAdj{
   public:
 
     // ********** members **********
-    std::shared_ptr<Dso> dso_;
+    Dso* dso_;
 
     // ********** constructor **********
     // BundleAdj(Dso* dso ){}

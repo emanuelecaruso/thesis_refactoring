@@ -8,12 +8,12 @@ class Dso;
 
 class CamCouple{
   public:
-    std::shared_ptr<CameraForMapping> cam_r_; // cam to be projected
-    std::shared_ptr<CameraForMapping> cam_m_; // cam on which project
+    CameraForMapping* cam_r_; // cam to be projected
+    CameraForMapping* cam_m_; // cam on which project
     Eigen::Isometry3f T; //cam_r expressed in cam_m
 
 
-    CamCouple(std::shared_ptr<CameraForMapping> cam_r, std::shared_ptr<CameraForMapping> cam_m):
+    CamCouple(CameraForMapping* cam_r, CameraForMapping* cam_m):
     cam_r_(cam_r),
     cam_m_(cam_m)
     {
@@ -33,10 +33,10 @@ class CamCouple{
     bool getSlope(float u1, float v1, float& slope_m);
 
     void getJrParameters();
-    Eigen::Matrix<float,2,1> getJd_(std::shared_ptr<ActivePoint> active_pt);
-    Eigen::Matrix<float,2,6> getJm_(std::shared_ptr<ActivePoint> active_pt);
-    Eigen::Matrix<float,2,6> getJm_old_(std::shared_ptr<ActivePoint> active_pt);
-    Eigen::Matrix<float,2,6> getJr_(std::shared_ptr<ActivePoint> active_pt);
+    Eigen::Matrix<float,2,1> getJd_(ActivePoint* active_pt);
+    Eigen::Matrix<float,2,6> getJm_(ActivePoint* active_pt);
+    Eigen::Matrix<float,2,6> getJm_old_(ActivePoint* active_pt);
+    Eigen::Matrix<float,2,6> getJr_(ActivePoint* active_pt);
 
   private:
     Eigen::Matrix3f r;
@@ -80,13 +80,13 @@ class CamCouple{
 class CamCoupleContainer{
   public:
     // ********** members **********
-    std::shared_ptr<Dso> dso_;
+    Dso* dso_;
     int type_;
-    std::vector<std::vector<std::shared_ptr<CamCouple>>> cam_couple_mat_; // cam_couple_mat_[cam_m][cam_r]
+    std::vector<std::vector<CamCouple*>> cam_couple_mat_; // cam_couple_mat_[cam_m][cam_r]
 
 
     // ********** constructor **********
-    CamCoupleContainer(std::shared_ptr<Dso> dso, int type):
+    CamCoupleContainer(Dso* dso, int type):
     dso_( dso ),
     type_(type)
     {
@@ -95,7 +95,7 @@ class CamCoupleContainer{
 
     // ********** methods **********
     void update();
-    std::shared_ptr<CamCouple> get(int cam_r_idx, int cam_m_idx);
+    CamCouple* get(int cam_r_idx, int cam_m_idx);
 
   protected:
     void init();

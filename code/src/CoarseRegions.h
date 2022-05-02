@@ -7,7 +7,7 @@
 class ActptsCoarseVec{
   public:
     // ********** members **********
-    std::vector<std::vector<std::shared_ptr<ActivePoint>>> vec_;
+    std::vector<std::vector<ActivePoint*>> vec_;
 
     // ********** constructor **********
     ActptsCoarseVec(int levels){
@@ -15,7 +15,7 @@ class ActptsCoarseVec{
     }
 
     // ********** methods **********
-    inline void push(std::shared_ptr<ActivePoint> active_pt){
+    inline void push(ActivePoint* active_pt){
       vec_[active_pt->level_-1].push_back(active_pt);
     }
 
@@ -29,13 +29,13 @@ class ActptsCoarseVec{
 class CoarseRegion : public Point{
   public:
     // ********** members **********
-    std::shared_ptr<CoarseRegion> parent_;
-    std::vector<std::shared_ptr<CoarseRegion>> subregions_;
-    std::vector<std::shared_ptr<ActivePoint>> active_pts_;
+    CoarseRegion* parent_;
+    std::vector<CoarseRegion*> subregions_;
+    std::vector<ActivePoint*> active_pts_;
 
 
     // ********** constructor **********
-    CoarseRegion(std::shared_ptr<CameraForMapping> cam, pxl& pixel, int level):
+    CoarseRegion(CameraForMapping* cam, pxl& pixel, int level):
     Point(cam, pixel, level)
     ,parent_(nullptr)
     {}
@@ -43,7 +43,7 @@ class CoarseRegion : public Point{
     // ********** methods **********
     void updateFromActivePts();
     void updateFromSubregions();
-    std::shared_ptr<ActivePoint> generateCoarseActivePoint();
+    ActivePoint* generateCoarseActivePoint();
 
 };
 
@@ -51,17 +51,17 @@ class CoarseRegion : public Point{
 class CoarseRegionMat{
   public:
     // ********** members **********
-    std::shared_ptr<CoarseRegion>** mat_;
+    CoarseRegion*** mat_;
     unsigned int nrows_;
     unsigned int ncols_;
 
     // ********** constructor **********
     CoarseRegionMat(int nrows, int ncols){
-      mat_=new std::shared_ptr<CoarseRegion>*[nrows];
+      mat_=new CoarseRegion**[nrows];
       for( int i = 0; i < nrows; i++ ) {
-        mat_[i] = new std::shared_ptr<CoarseRegion>[ncols];
+        mat_[i] = new CoarseRegion*[ncols];
         for( int j = 0; j < ncols; j++ ) {
-          std::shared_ptr<CoarseRegion> ptr(nullptr);
+          CoarseRegion* ptr(nullptr);
           mat_[i][j] = ptr;
         }
       }
@@ -75,7 +75,7 @@ class CoarseRegionMat{
 class CoarseRegionMatVec{
   public:
     // ********** members **********
-    std::vector<std::shared_ptr<CoarseRegionMat>> coarseregionsmat_vec_;
+    std::vector<CoarseRegionMat*> coarseregionsmat_vec_;
 
 
     // ********** constructor **********
@@ -91,11 +91,11 @@ class CoarseRegionMatVec{
 class CoarseRegions{
   public:
     // ********** members **********
-    std::shared_ptr<PointsContainer> points_container_;
+    PointsContainer* points_container_;
     int levels_;
     CoarseRegionMatVec coarseregionsmat_vec_;
     ActptsCoarseVec actptscoarse_vec_;
-    std::vector<std::vector<std::shared_ptr<CoarseRegion>>> coarseregions_vec_;
+    std::vector<std::vector<CoarseRegion*>> coarseregions_vec_;
 
 
     // ********** constructor **********
@@ -110,13 +110,13 @@ class CoarseRegions{
 
     // ********** methods **********
     void generateCoarseActivePoints();
-    void addActivePoint(std::shared_ptr<ActivePoint> active_pt);
-    void removeActivePoint(std::shared_ptr<ActivePoint> active_pt);
-    std::vector<std::shared_ptr<ActivePoint>>& getCoarseActivePoints(int level);
+    void addActivePoint(ActivePoint* active_pt);
+    void removeActivePoint(ActivePoint* active_pt);
+    std::vector<ActivePoint*>& getCoarseActivePoints(int level);
     void showCoarseLevel(int level);
 
   protected:
-    void getLevelRowCol(std::shared_ptr<ActivePoint> active_pt, int level, int& row, int& col);
-    void removeFromParent(std::shared_ptr<CoarseRegion> coarse_reg);
+    void getLevelRowCol(ActivePoint* active_pt, int level, int& row, int& col);
+    void removeFromParent(CoarseRegion* coarse_reg);
 
 };

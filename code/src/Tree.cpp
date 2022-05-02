@@ -2,7 +2,7 @@
 #include "CameraForMapping.h"
 
 void Tree::checkTreeValidity(){
-  std::shared_ptr<Image<pixelIntensity>> image = cam_->image_intensity_;
+  Image<pixelIntensity>* image = cam_->image_intensity_;
   int subd = pow(2,levels_);
   assert( !(image->image_.rows%subd ) || !(image->image_.cols%subd ) );
 }

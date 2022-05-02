@@ -4,21 +4,21 @@
 #include <vector>
 #include <mutex>
 
-std::shared_ptr<CamParameters> Spectator::initCamParams(){
-  std::shared_ptr<CamParameters> spectator_params (new CamParameters(
+CamParameters* Spectator::initCamParams(){
+  CamParameters* spectator_params (new CamParameters(
   dso_->parameters_->spec_resolution_x, dso_->parameters_->spec_resolution_y, dso_->parameters_->spec_width,
   dso_->parameters_->spec_lens, dso_->parameters_->spec_min_depth, dso_->parameters_->spec_max_depth));
   return spectator_params;
 }
 
-std::shared_ptr<Camera> Spectator::initCam(){
-  std::shared_ptr<Image<pixelIntensity>> null_shared_ptr(nullptr);
-  std::shared_ptr<Camera> spectator_cam (new Camera("Spectator", spectator_params_, null_shared_ptr));
+Camera* Spectator::initCam(){
+  Image<pixelIntensity>* null_shared_ptr = nullptr;
+  Camera* spectator_cam (new Camera("Spectator", spectator_params_, null_shared_ptr));
   return spectator_cam;
 }
 
-std::shared_ptr<Image<colorRGB>> Spectator::initImage(){
-  std::shared_ptr<Image<colorRGB>> spectator_image( new Image<colorRGB> ("Spectator"));
+Image<colorRGB>* Spectator::initImage(){
+  Image<colorRGB>* spectator_image( new Image<colorRGB> ("Spectator"));
   spectator_image->initImage(dso_->parameters_->spec_resolution_y, dso_->parameters_->spec_resolution_x);
   spectator_image->setAllPixels(background_color_);
   return spectator_image;
@@ -64,20 +64,20 @@ void Spectator::renderPoints(){
   // iterate through all cameras
   int num_kfs = dso_->frame_current_idx_+1;
   for ( int i = 0; i<num_kfs; i++){
-    std::shared_ptr<CameraForMapping> cam = dso_->cameras_container_->frames_[i];
+    CameraForMapping* cam = dso_->cameras_container_->frames_[i];
     if (cam->keyframe_){
       // // iterate through all marginalized points
       // int num_marg_pts = cam->marginalized_points_->size();
       // for ( int j = num_marg_pts-1; j>=0; j--){
-      //   std::shared_ptr<ActivePoint> marg_pt = cam->marginalized_points_->at(j);
+      //   ActivePoint* marg_pt = cam->marginalized_points_->at(j);
       //   plotPt(marg_pt, black);
       // }
       //
-      std::vector<std::shared_ptr<CameraForMapping>>& v = dso_->cameras_container_->keyframes_active_;
+      std::vector<CameraForMapping*>& v = dso_->cameras_container_->keyframes_active_;
       if (std::count(v.begin(), v.end(), cam)) {
-        int num_act_pts = cam->points_container_->active_points_->size();
+        int num_act_pts = cam->points_container_->active_points_.size();
         for ( int j = num_act_pts-1; j>=0; j--){
-          std::shared_ptr<ActivePoint> act_pt = cam->points_container_->active_points_->at(j);
+          ActivePoint* act_pt = cam->points_container_->active_points_.at(j);
           plotPt(act_pt, magenta);
         }
       }
@@ -90,11 +90,11 @@ void Spectator::renderCamsAndKFs(){
   // iterate through all cameras
   int num_kfs = dso_->frame_current_idx_+1;
   for ( int i = 0; i<num_kfs; i++){
-    std::shared_ptr<CameraForMapping> cam = dso_->cameras_container_->frames_[i];
+    CameraForMapping* cam = dso_->cameras_container_->frames_[i];
 
     plotCam(cam->grountruth_camera_, orange);
     if (cam->keyframe_){
-      std::vector<std::shared_ptr<CameraForMapping>>& v = dso_->cameras_container_->keyframes_active_;
+      std::vector<CameraForMapping*>& v = dso_->cameras_container_->keyframes_active_;
 
       if (std::count(v.begin(), v.end(), cam)) {
         plotCam(cam, red);
@@ -113,7 +113,7 @@ void Spectator::renderCamsAndKFs(){
 
 Eigen::Isometry3f Spectator::getSpectatorPose(){
   // get first active keyframe
-  std::shared_ptr<CameraForMapping> first_keyframe = dso_->frame_current_;
+  CameraForMapping* first_keyframe = dso_->frame_current_;
   // distance of spectator wrt first keyframe
   float spec_distance = dso_->parameters_->spec_distance;
   // spec wrt first keyframe
@@ -127,7 +127,7 @@ Eigen::Isometry3f Spectator::getSpectatorPose(){
 
 }
 
-bool Spectator::plotPt(std::shared_ptr<ActivePoint> pt, const colorRGB& color){
+bool Spectator::plotPt(ActivePoint* pt, const colorRGB& color){
   bool success = plotPt( pt->p_, color);
   return success;
 }
@@ -138,7 +138,7 @@ bool Spectator::plotPt(Eigen::Vector3f& pt, const colorRGB& color){
   return success;
 }
 
-bool Spectator::plotPt(std::shared_ptr<ActivePoint> pt, const colorRGB& color, pxl& pixel){
+bool Spectator::plotPt(ActivePoint* pt, const colorRGB& color, pxl& pixel){
   bool success = plotPt( pt->p_, color, pixel);
   return success;
 }
@@ -169,7 +169,7 @@ bool Spectator::plotLine(pxl& pixel1, pxl& pixel2, const colorRGB& color ){
   return false;
 }
 
-bool Spectator::plotCam(std::shared_ptr<Camera> cam, const colorRGB& color){
+bool Spectator::plotCam(Camera* cam, const colorRGB& color){
 
   // Eigen::Isometry3f T;
   Eigen::Isometry3f T = cam->access_frame_camera_wrt_world();

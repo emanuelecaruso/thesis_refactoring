@@ -12,11 +12,11 @@ class Spectator{
   public:
 
     // ********** members **********
-    std::shared_ptr<Dso> dso_;
+    Dso* dso_;
     colorRGB background_color_;
-    std::shared_ptr<CamParameters> spectator_params_;
-    std::shared_ptr<Camera> spectator_cam_;
-    std::shared_ptr<Image<colorRGB>> spectator_image_;
+    CamParameters* spectator_params_;
+    Camera* spectator_cam_;
+    Image<colorRGB>* spectator_image_;
 
     // ********** constructor **********
     Spectator(Dso* dso, const colorRGB& background_color ):
@@ -34,9 +34,9 @@ class Spectator{
 
   private:
 
-    std::shared_ptr<CamParameters> initCamParams();
-    std::shared_ptr<Camera> initCam();
-    std::shared_ptr<Image<colorRGB>> initImage();
+    CamParameters* initCamParams();
+    Camera* initCam();
+    Image<colorRGB>* initImage();
 
 
     void reinitSpectator();
@@ -45,10 +45,10 @@ class Spectator{
 
     Eigen::Isometry3f getSpectatorPose();
 
-    bool plotPt(std::shared_ptr<ActivePoint> pt, const colorRGB& color);
+    bool plotPt(ActivePoint* pt, const colorRGB& color);
     bool plotPt(Eigen::Vector3f& pt, const colorRGB& color);
-    bool plotPt(std::shared_ptr<ActivePoint> pt, const colorRGB& color, pxl& pixel);
+    bool plotPt(ActivePoint* pt, const colorRGB& color, pxl& pixel);
     bool plotPt(Eigen::Vector3f& pt, const colorRGB& color, pxl& pixel);
     bool plotLine(pxl& pixel1, pxl& pixel2, const colorRGB& color );
-    bool plotCam(std::shared_ptr<Camera> cam, const colorRGB& color);
+    bool plotCam(Camera* cam, const colorRGB& color);
 };

@@ -15,7 +15,7 @@ class Image{
     name_(name),
     image_(image){};
 
-    Image(const std::shared_ptr<Image> img):
+    Image(const Image* img):
     name_(img->name_),
     image_(img->image_){};
 
@@ -228,8 +228,8 @@ class Image{
     }
 
 
-    inline std::shared_ptr<Image<pixelIntensity>> compute_sobel_x(const std::string& name) const{
-      std::shared_ptr<Image<pixelIntensity>> img_sobel_x(new Image<pixelIntensity>(name));
+    inline Image<pixelIntensity>* compute_sobel_x(const std::string& name) const{
+      Image<pixelIntensity>* img_sobel_x(new Image<pixelIntensity>(name));
 
       cv::Mat_<float> kernel(3,3);
       kernel <<  -1,  0, 1,
@@ -264,8 +264,8 @@ class Image{
       return img_sobel_x;
     }
 
-    inline std::shared_ptr<Image<pixelIntensity>> compute_sobel_y(const std::string& name) const{
-      std::shared_ptr<Image<pixelIntensity>> img_sobel_y (new Image<pixelIntensity>(name));
+    inline Image<pixelIntensity>* compute_sobel_y(const std::string& name) const{
+      Image<pixelIntensity>* img_sobel_y (new Image<pixelIntensity>(name));
 
       cv::Mat_<float> kernel(3,3);
       kernel <<  -1, -2, -1,
@@ -299,16 +299,16 @@ class Image{
       return img_sobel_y;
     }
 
-    inline std::shared_ptr<Image<pixelIntensity>> compute_sobel_x() const{
+    inline Image<pixelIntensity>* compute_sobel_x() const{
       return compute_sobel_x("fx_"+name_);
     }
 
-    inline std::shared_ptr<Image<pixelIntensity>> compute_sobel_y() const{
+    inline Image<pixelIntensity>* compute_sobel_y() const{
       return compute_sobel_y("fy_"+name_);
     }
 
-    inline std::shared_ptr<Image<pixelIntensity>> squared() const{
-      std::shared_ptr<Image<pixelIntensity>> squared (new Image<pixelIntensity>("^2_"+name_));
+    inline Image<pixelIntensity>* squared() const{
+      Image<pixelIntensity>* squared (new Image<pixelIntensity>("^2_"+name_));
 
       squared->image_=image_.mul(image_);
 

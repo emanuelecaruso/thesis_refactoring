@@ -6,7 +6,7 @@
 void CoarseRegion::updateFromActivePts(){
   float sum=0;
   float normalizer=0;
-  for(std::shared_ptr<ActivePoint> active_pt : active_pts_){
+  for(ActivePoint* active_pt : active_pts_){
     sum+=active_pt->invdepth_/active_pt->invdepth_var_;
     normalizer+=1.0/active_pt->invdepth_var_;
   }
@@ -17,7 +17,7 @@ void CoarseRegion::updateFromActivePts(){
 void CoarseRegion::updateFromSubregions(){
   float sum=0;
   float normalizer=0;
-  for(std::shared_ptr<CoarseRegion> subreg : subregions_){
+  for(CoarseRegion* subreg : subregions_){
     sum+=subreg->invdepth_/subreg->invdepth_var_;
     normalizer+=1.0/subreg->invdepth_var_;
   }
@@ -25,8 +25,8 @@ void CoarseRegion::updateFromSubregions(){
   invdepth_var_=subregions_.size()/normalizer;
 }
 
-std::shared_ptr<ActivePoint> CoarseRegion::generateCoarseActivePoint(){
-  std::shared_ptr<ActivePoint> active_pt(new ActivePoint(cam_, pixel_, level_+1, invdepth_, invdepth_var_));
+ActivePoint* CoarseRegion::generateCoarseActivePoint(){
+  ActivePoint* active_pt(new ActivePoint(cam_, pixel_, level_+1, invdepth_, invdepth_var_));
   return active_pt;
 }
 
@@ -36,7 +36,7 @@ void CoarseRegionMatVec::init(PointsContainer* points_container, int levels){
   int rows = points_container->cam_->cam_parameters_->resolution_y/2;
   int cols = points_container->cam_->cam_parameters_->resolution_x/2;
   for(int i=0; i<levels; i++){
-    std::shared_ptr<CoarseRegionMat> coarse_region_mat(new CoarseRegionMat(rows,cols) );
+    CoarseRegionMat* coarse_region_mat(new CoarseRegionMat(rows,cols) );
     coarseregionsmat_vec_.push_back(coarse_region_mat);
     rows/=2;
     cols/=2;
@@ -44,7 +44,7 @@ void CoarseRegionMatVec::init(PointsContainer* points_container, int levels){
   }
 }
 
-void CoarseRegions::getLevelRowCol(std::shared_ptr<ActivePoint> active_pt, int level, int& row, int& col){
+void CoarseRegions::getLevelRowCol(ActivePoint* active_pt, int level, int& row, int& col){
 
   row = (int)(active_pt->pixel_.y()-0.5)/pow(2,level+1);
   col = (int)(active_pt->pixel_.x()-0.5)/pow(2,level+1);
@@ -52,14 +52,14 @@ void CoarseRegions::getLevelRowCol(std::shared_ptr<ActivePoint> active_pt, int l
 }
 
 
-void CoarseRegions::addActivePoint(std::shared_ptr<ActivePoint> active_pt){
+void CoarseRegions::addActivePoint(ActivePoint* active_pt){
 
   int row, col;
   getLevelRowCol(active_pt, 0, row, col);
   pxl pixel(col,row);
-  std::shared_ptr<CoarseRegion> prev_coarse_reg = coarseregionsmat_vec_.coarseregionsmat_vec_[0]->mat_[row][col];
-  if(prev_coarse_reg.get()==nullptr){
-    prev_coarse_reg.reset(new CoarseRegion(points_container_->cam_, pixel, 0));
+  CoarseRegion* prev_coarse_reg = coarseregionsmat_vec_.coarseregionsmat_vec_[0]->mat_[row][col];
+  if(prev_coarse_reg == nullptr){
+    prev_coarse_reg = new CoarseRegion(points_container_->cam_, pixel, 0);
     coarseregions_vec_[0].push_back(prev_coarse_reg);
   }
 
@@ -69,9 +69,9 @@ void CoarseRegions::addActivePoint(std::shared_ptr<ActivePoint> active_pt){
     col/=2;
     pixel.x()=col;
     pixel.y()=row;
-    std::shared_ptr<CoarseRegion> curr_coarse_reg = coarseregionsmat_vec_.coarseregionsmat_vec_[level]->mat_[row][col];
-    if(curr_coarse_reg.get()==nullptr){
-      curr_coarse_reg.reset(new CoarseRegion(points_container_->cam_, pixel, level));
+    CoarseRegion* curr_coarse_reg = coarseregionsmat_vec_.coarseregionsmat_vec_[level]->mat_[row][col];
+    if(curr_coarse_reg == nullptr){
+      curr_coarse_reg = new CoarseRegion(points_container_->cam_, pixel, level);
       coarseregions_vec_[level].push_back(curr_coarse_reg);
     }
     curr_coarse_reg->subregions_.push_back(prev_coarse_reg);
@@ -80,12 +80,12 @@ void CoarseRegions::addActivePoint(std::shared_ptr<ActivePoint> active_pt){
   }
 }
 
-void CoarseRegions::removeFromParent(std::shared_ptr<CoarseRegion> coarse_reg){
+void CoarseRegions::removeFromParent(CoarseRegion* coarse_reg){
   if(coarse_reg->subregions_.empty() && coarse_reg->active_pts_.empty()){
 
-    if(coarse_reg->parent_.get() != nullptr){
+    if(coarse_reg->parent_ != nullptr){
 
-      std::vector<std::shared_ptr<CoarseRegion>>& v = coarse_reg->parent_->subregions_;
+      std::vector<CoarseRegion*>& v = coarse_reg->parent_->subregions_;
       v.erase(std::remove(v.begin(), v.end(), coarse_reg), v.end());
       removeFromParent(coarse_reg->parent_);
 
@@ -95,19 +95,19 @@ void CoarseRegions::removeFromParent(std::shared_ptr<CoarseRegion> coarse_reg){
 
     }
 
-    std::shared_ptr<CoarseRegion> ptr(nullptr);
+    CoarseRegion* ptr(nullptr);
     coarse_reg=ptr;
   }
 }
 
 
-void CoarseRegions::removeActivePoint(std::shared_ptr<ActivePoint> active_pt){
+void CoarseRegions::removeActivePoint(ActivePoint* active_pt){
   int row, col;
   getLevelRowCol(active_pt, 0, row, col);
-  std::shared_ptr<CoarseRegion> coarse_reg = coarseregionsmat_vec_.coarseregionsmat_vec_[0]->mat_[row][col];
-  assert(coarse_reg.get()!=nullptr);
+  CoarseRegion* coarse_reg = coarseregionsmat_vec_.coarseregionsmat_vec_[0]->mat_[row][col];
+  assert(coarse_reg != nullptr);
 
-  std::vector<std::shared_ptr<ActivePoint>>& v = coarse_reg->active_pts_;
+  std::vector<ActivePoint*>& v = coarse_reg->active_pts_;
   assert(v.size()>0);
 
   int v_size = v.size();
@@ -124,15 +124,15 @@ void CoarseRegions::generateCoarseActivePoints(){
 
   for(int level=0; level<levels_; level++){
 
-    std::vector<std::shared_ptr<CoarseRegion>>& v = coarseregions_vec_[level];
-    for(std::shared_ptr<CoarseRegion> coarse_reg : v){
+    std::vector<CoarseRegion*>& v = coarseregions_vec_[level];
+    for(CoarseRegion* coarse_reg : v){
       if(level==0){
         coarse_reg->updateFromActivePts();
       }
       else{
         coarse_reg->updateFromSubregions();
       }
-      std::shared_ptr<ActivePoint> active_pt = coarse_reg->generateCoarseActivePoint();
+      ActivePoint* active_pt = coarse_reg->generateCoarseActivePoint();
       assert(active_pt->level_==level+1);
       actptscoarse_vec_.push(active_pt);
     }
@@ -140,9 +140,9 @@ void CoarseRegions::generateCoarseActivePoints(){
   }
 }
 
-std::vector<std::shared_ptr<ActivePoint>>& CoarseRegions::getCoarseActivePoints(int level){
+std::vector<ActivePoint*>& CoarseRegions::getCoarseActivePoints(int level){
   assert(level>0 && level<points_container_->parameters_->coarsest_level);
-  for(std::shared_ptr<ActivePoint> act_pt : actptscoarse_vec_.vec_[level-1]){
+  for(ActivePoint* act_pt : actptscoarse_vec_.vec_[level-1]){
     assert(act_pt->level_==level);
   }
 
@@ -153,16 +153,16 @@ std::vector<std::shared_ptr<ActivePoint>>& CoarseRegions::getCoarseActivePoints(
 void CoarseRegions::showCoarseLevel(int level){
 
   assert(level>0);
-  std::vector<std::shared_ptr<ActivePoint>>& vector_of_coarse_active_points = actptscoarse_vec_.vec_[level-1];
+  std::vector<ActivePoint*>& vector_of_coarse_active_points = actptscoarse_vec_.vec_[level-1];
 
   double alpha = 1;
 
   std::string name = points_container_->cam_->name_+" , "+std::to_string(vector_of_coarse_active_points.size())+" coarse active points";
-  std::shared_ptr<Image<colorRGB>> show_img( points_container_->cam_->pyramid_->getC(level)->returnColoredImgFromIntensityImg(name) );
+  Image<colorRGB>* show_img( points_container_->cam_->pyramid_->getC(level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through active points
   for(int i=0; i<vector_of_coarse_active_points.size(); i++){
-    std::shared_ptr<ActivePoint> coarse_active_pt = vector_of_coarse_active_points.at(i);
+    ActivePoint* coarse_active_pt = vector_of_coarse_active_points.at(i);
     points_container_->drawPoint(coarse_active_pt,show_img, false);
   }
 

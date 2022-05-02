@@ -13,37 +13,37 @@ class MeasTracking{
     pixelIntensity error;
 
     // ********** constructor **********
-    MeasTracking(std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple ):
+    MeasTracking(ActivePoint* active_point, CamCouple* cam_couple ):
     valid_(true){
       init(active_point, cam_couple);
     }
 
     // ********** methods **********
-    bool init(std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple);
-    Eigen::Matrix<float,1,2> getImageJacobian(pxl& pixel_m, std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple, int image_type);
-    float getError(pxl& pixel_m, std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple, int image_type);
-    bool getPixelOfProjectedActivePoint(std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple, pxl& pixel);
+    bool init(ActivePoint* active_point, CamCouple* cam_couple);
+    Eigen::Matrix<float,1,2> getImageJacobian(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int image_type);
+    float getError(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int image_type);
+    bool getPixelOfProjectedActivePoint(ActivePoint* active_point, CamCouple* cam_couple, pxl& pixel);
 
 };
 
 class LinSysTracking{
   public:
     // ********** members **********
-    std::shared_ptr<Dso> dso_;
+    Dso* dso_;
     Eigen::Matrix<float,6,6> H;
     Eigen::Matrix<float,6,1> b;
     Eigen::Matrix<float,6,1> dx;
     pixelIntensity chi;
 
     // ********** constructor **********
-    LinSysTracking(std::shared_ptr<Dso> dso):
+    LinSysTracking(Dso* dso):
     dso_(dso)
     {
       clear();
     };
 
     // ********** methods **********
-    void addMeasurement( std::shared_ptr<MeasTracking> measurement );
+    void addMeasurement( MeasTracking* measurement );
     void updateCameraPose();
     void clear();
   protected:

@@ -73,8 +73,8 @@ void Initializer::extractCorners(){
 // }
 
 void Initializer::trackCornersLK(){
-  std::shared_ptr<Image<float>> img_prev = ref_frame_->image_intensity_;
-  std::shared_ptr<Image<float>> img_next = dso_->frame_current_->image_intensity_;
+  const Image<float>* img_prev = ref_frame_->image_intensity_;
+  const Image<float>* img_next = dso_->frame_current_->image_intensity_;
   cv::Mat_<uchar> img_prev_uchar;
   cv::Mat_<uchar> img_next_uchar;
 
@@ -136,7 +136,7 @@ bool Initializer::findPose(){
     // Eigen::Isometry3f T = homography2pose( H );
 
     // assign pose
-    std::shared_ptr<CameraForMapping> cam = dso_->frame_current_;
+    CameraForMapping* cam = dso_->frame_current_;
 
     cam->assignPose(T);
     // cam->assignPose0(T);
@@ -368,9 +368,9 @@ void Initializer::showCornersTrackCurr(int i){
   if (i==0)
     initializeColors();
 
-  std::shared_ptr<CameraForMapping> cam_r =ref_frame_;
-  std::shared_ptr<CameraForMapping> cam_m =dso_->frame_current_;
-  std::shared_ptr<Image<colorRGB>> show_image(cam_m->image_intensity_->returnColoredImgFromIntensityImg("corners tracking"));
+  CameraForMapping* cam_r =ref_frame_;
+  CameraForMapping* cam_m =dso_->frame_current_;
+  Image<colorRGB>* show_image(cam_m->image_intensity_->returnColoredImgFromIntensityImg("corners tracking"));
 
   for (int j=0; j<corners_vec_->at(i)->size(); j++){
     cv::Point2f corner = corners_vec_->at(i)->at(j);

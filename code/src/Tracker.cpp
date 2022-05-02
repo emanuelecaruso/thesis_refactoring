@@ -44,19 +44,19 @@ bool Tracker::chiUpdateAndCheck(float chi){
 
 void Tracker::showProjectedActivePoints(int level, CamCoupleContainer& cam_couple_container){
 
-  std::shared_ptr<Image<colorRGB>> show_img( dso_->frame_current_->pyramid_->getC(level)->returnColoredImgFromIntensityImg("PORCODDIOINFAME") );
+  Image<colorRGB>* show_img( dso_->frame_current_->pyramid_->getC(level)->returnColoredImgFromIntensityImg("PORCODDIOINFAME") );
 
   // iterate through keyframes (except last)
   for( int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1 ; i++){
-    std::shared_ptr<CameraForMapping> cam_r = dso_->cameras_container_->keyframes_active_[i];
+    CameraForMapping* cam_r = dso_->cameras_container_->keyframes_active_[i];
 
     // get coarse active points to project
-    std::vector<std::shared_ptr<ActivePoint>>& act_pts_coarse = cam_r->points_container_->getActivePoints(level);
+    std::vector<ActivePoint*>& act_pts_coarse = cam_r->points_container_->getActivePoints(level);
 
     // for each act pt coarse
-    for( std::shared_ptr<ActivePoint> active_pt_coarse : act_pts_coarse){
+    for( ActivePoint* active_pt_coarse : act_pts_coarse){
       // project it
-      std::shared_ptr<ActivePointProjected> act_pt_proj(new ActivePointProjected(active_pt_coarse,cam_couple_container.get(i,0)));
+      ActivePointProjected* act_pt_proj = new ActivePointProjected(active_pt_coarse,cam_couple_container.get(i,0));
       dso_->frame_current_->points_container_->drawPoint(act_pt_proj, show_img, !(level));
     }
   }
@@ -74,7 +74,7 @@ void Tracker::trackCam(){
   setInitialGuess();
 
   CamCoupleContainer cam_couple_container(dso_,ALL_KFS_ON_LAST);
-  // std::shared_ptr<LinSysTracking> lin_sys_tracking( new LinSysTracking(dso_));
+  // LinSysTracking* lin_sys_tracking( new LinSysTracking(dso_));
   LinSysTracking lin_sys_tracking(dso_);
 
   // iterate through levels
@@ -90,17 +90,17 @@ void Tracker::trackCam(){
 
       // iterate through keyframes (except last)
       for( int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1 ; i++){
-        std::shared_ptr<CameraForMapping> cam_r = dso_->cameras_container_->keyframes_active_[i];
+        CameraForMapping* cam_r = dso_->cameras_container_->keyframes_active_[i];
 
         // select active points vector
-        std::vector<std::shared_ptr<ActivePoint>>& active_points = cam_r->points_container_->getActivePoints(level);
+        std::vector<ActivePoint*>& active_points = cam_r->points_container_->getActivePoints(level);
 
         // iterate through active points (at current coarse level)
         for (int j=0; j<active_points.size(); j++){
-          std::shared_ptr<ActivePoint> active_point = active_points[j];
+          ActivePoint* active_point = active_points[j];
 
           // get measurement
-          std::shared_ptr<MeasTracking> measurement(new MeasTracking(active_point, cam_couple_container.get(i,0) ) );
+          MeasTracking* measurement(new MeasTracking(active_point, cam_couple_container.get(i,0) ) );
 
           if(measurement->valid_){
             // update linear system with that measurement

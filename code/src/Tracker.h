@@ -8,7 +8,7 @@
 class Tracker{
   public:
     // ********** members **********
-    std::shared_ptr<Dso> dso_;
+    Dso* dso_;
     std::vector<float> chi_history_;
 
     // ********** constructor **********
