@@ -514,7 +514,7 @@ inline int upperBound(const std::vector<int>& vec, int value) {
 }
 
 template <class T>
-inline T pinvDense( T& matrix){
+inline T pinvDense(const T& matrix){
   return matrix.completeOrthogonalDecomposition().pseudoInverse();
 }
 

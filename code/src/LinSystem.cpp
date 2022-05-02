@@ -54,7 +54,7 @@ bool MeasTracking::init(std::shared_ptr<ActivePoint> active_point, std::shared_p
   bool pixel_in_cam = getPixelOfProjectedActivePoint(active_point, cam_couple, pixel);
   // if pixel is outside of frustum
   if(!pixel_in_cam){
-    valid = false;
+    valid_ = false;
     return false;
   }
 
@@ -77,7 +77,10 @@ bool MeasTracking::init(std::shared_ptr<ActivePoint> active_point, std::shared_p
   // error += getError( pixel,  active_point, cam_couple, GRADIENT_ID);
 
   J_m_transpose= J_m.transpose();
+  return true;
 }
+
+
 
 void LinSysTracking::addMeasurement( std::shared_ptr<MeasTracking> measurement ){
 
@@ -85,7 +88,7 @@ void LinSysTracking::addMeasurement( std::shared_ptr<MeasTracking> measurement )
   float weight = getWeight(measurement->error);
 
   // update H
-  H+= measurement->J_m_transpose*weight*measurement->J_m;
+  H.triangularView<Eigen::Upper>() += measurement->J_m_transpose*weight*measurement->J_m;
 
   // update b
   b+= measurement->J_m_transpose*weight*measurement->error;
@@ -95,13 +98,13 @@ void LinSysTracking::addMeasurement( std::shared_ptr<MeasTracking> measurement )
 }
 
 void LinSysTracking::updateCameraPose(){
+
   // get dx
-  dx=-pinvDense(H)*b;
+  dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
 
   // update pose
   Eigen::Isometry3f new_guess = (*(dso_->frame_current_->frame_camera_wrt_world_))*v2t_inv(dx);
   dso_->frame_current_->assignPose(new_guess);
-
 
 }
 

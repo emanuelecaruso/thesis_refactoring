@@ -245,17 +245,29 @@ void CandidatesActivator::reset(){
 //
 // }
 
-void CandidatesActivator::activateCandidate(std::shared_ptr<CandidateProjected> cand_proj){
+void CandidatesActivator::removeCand(std::shared_ptr<CandidateProjected> cand_proj){
+
   // remove projected candidate from vector
   std::shared_ptr<std::vector<std::shared_ptr<CandidateProjected>>> cp = cand_proj->cam_->points_container_->candidates_projected_;
+  int cp_size = cp->size();
   cp->erase(std::remove(cp->begin(), cp->end(), cand_proj), cp->end());
+  assert(cp_size!=cp->size());
 
   // remove candidate from vector
   std::shared_ptr<std::vector<std::shared_ptr<Candidate>>> c = cand_proj->cand_->cam_->points_container_->candidates_;
+  int c_size = c->size();
   c->erase(std::remove(c->begin(), c->end(), cand_proj->cand_), c->end());
+  assert(c_size!=c->size());
+
+
+}
+
+void CandidatesActivator::activateCandidate(std::shared_ptr<CandidateProjected> cand_proj){
+  // remove projected candidate and candidate from vectors
+  removeCand(cand_proj);
 
   // create new active point
-  std::shared_ptr<ActivePoint> active_point (new ActivePoint(cand_proj->cand_));
+  std::shared_ptr<ActivePoint> active_point = std::make_shared<ActivePoint>(cand_proj->cand_);
 
   // push active point
   cand_proj->cand_->cam_->points_container_->active_points_->push_back(active_point);
@@ -279,6 +291,7 @@ void CandidatesActivator::activateCandidates(){
 
   reset();
   int num_candidates_to_activate = dso_->parameters_->max_num_active_points-num_current_active_points_;
+  int num_candidates_activated = 0;
   for(int level=dso_->parameters_->reg_level-1; level>0; level--){
     for(int i=0; i<4; i++){
       while(regvec_mat_.regs_[level][i].size()>0){
@@ -314,6 +327,7 @@ void CandidatesActivator::activateCandidates(){
           // activate candidate
           std::shared_ptr<CandidateProjected> cand_proj = subreg->candidates_projected_.back();
           activateCandidate(cand_proj);
+          num_candidates_activated++;
         }
         else{
           if(reg->candidates_projected_.size()>0){
@@ -328,6 +342,7 @@ void CandidatesActivator::activateCandidates(){
           // activate candidate
           std::shared_ptr<CandidateProjected> cand_proj = reg->candidates_projected_.back();
           activateCandidate(cand_proj);
+          num_candidates_activated++;
         }
 
         num_current_active_points_++;
@@ -340,6 +355,7 @@ void CandidatesActivator::activateCandidates(){
 
   double t_end=getTime();
   int deltaTime=(t_end-t_start);
-  sharedCoutDebug("   - Candidate activation: "+ std::to_string(deltaTime)+" ms");
+  sharedCoutDebug("   - Candidates activated: "+ std::to_string(num_candidates_activated) + ", " + std::to_string(deltaTime)+" ms");
+
 
 }

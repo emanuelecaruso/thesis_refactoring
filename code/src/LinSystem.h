@@ -7,13 +7,14 @@ class Dso;
 class MeasTracking{
   public:
     // ********** members **********
-    bool valid;
+    bool valid_;
     Eigen::Matrix<float,1,6> J_m;
     Eigen::Matrix<float,6,1> J_m_transpose;
     pixelIntensity error;
 
     // ********** constructor **********
-    MeasTracking(std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple ){
+    MeasTracking(std::shared_ptr<ActivePoint> active_point, std::shared_ptr<CamCouple> cam_couple ):
+    valid_(true){
       init(active_point, cam_couple);
     }
 

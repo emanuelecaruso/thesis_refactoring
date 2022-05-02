@@ -5,12 +5,14 @@
 #include "initializer.h"
 #include "CandidatesActivator.h"
 #include "environment.h"
+#include "BundleAdj.h"
 #include "KeyframeHandler.h"
 #include "PointsHandler.h"
 #include "Tracker.h"
 #include <memory>
 #include <condition_variable>
 #include "spectator.h"
+
 class CameraForMapping;
 
 class Dso : public std::enable_shared_from_this<Dso>{
@@ -24,6 +26,7 @@ class Dso : public std::enable_shared_from_this<Dso>{
     std::shared_ptr<CamParameters> cam_parameters_;
     std::shared_ptr<CamerasContainer> cameras_container_;
     std::shared_ptr<PointsHandler> points_handler_;
+    std::shared_ptr<BundleAdj> bundle_adj_;
     std::shared_ptr<Tracker> tracker_;
     std::shared_ptr<KeyframeHandler> keyframe_handler_;
     std::shared_ptr<Initializer> initializer_;
@@ -52,6 +55,7 @@ class Dso : public std::enable_shared_from_this<Dso>{
       ,environment_(environment)
       ,cam_parameters_(environment_->cam_parameters_)
       ,cameras_container_( new CamerasContainer(this) )
+      ,bundle_adj_( new BundleAdj(this))
       ,points_handler_( new PointsHandler(this) )
       ,tracker_( new Tracker(this) )
       ,keyframe_handler_( new KeyframeHandler(this) )

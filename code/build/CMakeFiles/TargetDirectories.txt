@@ -1,5 +1,5 @@
-/home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/edit_cache.dir
-/home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/rebuild_cache.dir
-/home/emanuele/Scrivania/thesis_refactoring/code/build/executables/CMakeFiles/test_dso.dir
-/home/emanuele/Scrivania/thesis_refactoring/code/build/executables/CMakeFiles/edit_cache.dir
-/home/emanuele/Scrivania/thesis_refactoring/code/build/executables/CMakeFiles/rebuild_cache.dir
+/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles/edit_cache.dir
+/home/manu/Desktop/thesis_refactoring/code/build/CMakeFiles/rebuild_cache.dir
+/home/manu/Desktop/thesis_refactoring/code/build/executables/CMakeFiles/test_dso.dir
+/home/manu/Desktop/thesis_refactoring/code/build/executables/CMakeFiles/edit_cache.dir
+/home/manu/Desktop/thesis_refactoring/code/build/executables/CMakeFiles/rebuild_cache.dir

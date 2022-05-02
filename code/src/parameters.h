@@ -15,7 +15,7 @@
 // static bool use_fast_cam_coupling_ = false;
 static bool debug_initialization_=false;
 static bool debug_mapping_=true;
-static bool debug_tracking_=true;
+static bool debug_tracking_=false;
 static bool debug_optimization_= true;
 static bool use_spectator_ = true;
 
@@ -38,7 +38,7 @@ static bool get_current_frame_=false;
 
 // candidate selection
 static int candidate_level_ = 0;
-static int coarsest_level_= candidate_level_+5; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
+static int coarsest_level_= candidate_level_+4; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 // static int reg_level_=candidate_level_+4;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static float grad_threshold_=0.06;
@@ -77,10 +77,11 @@ static float damp_pose_orientation_ = 0;
 static float damp_point_invdepth_ = 100;
 
 // tracking
-static int max_iterations_ls_=10;
+static int max_iterations_ls_=7;
 static float variance_ = 0.1;
 static int robustifier_dofs_=2;
 static float ratio_for_convergence_ = 0.001;
+static float stop_threshold_ = 0.75;
 
 //  video streaming
 static int end_frame_=5;
@@ -157,6 +158,7 @@ struct Params{
   float damp_point_invdepth=damp_point_invdepth_;
 
   int max_iterations_ls=max_iterations_ls_;
+  float stop_threshold=stop_threshold_;
   float variance=variance_;
   int robustifier_dofs=robustifier_dofs_;
   int ratio_for_convergence=ratio_for_convergence_;

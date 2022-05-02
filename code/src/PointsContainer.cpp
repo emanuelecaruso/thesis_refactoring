@@ -102,7 +102,7 @@ void PointsContainer::showProjectedActivePoints(const std::string& name){
 
   std::shared_ptr<Image<colorRGB>> show_img( cam_->pyramid_->getC(parameters_->candidate_level)->returnColoredImgFromIntensityImg(name) );
 
-  // iterate through candidates
+  // iterate through active points projected
   for(int i=0; i<active_points_projected_->size(); i++){
     std::shared_ptr<ActivePointProjected> active_pt_proj = active_points_projected_->at(i);
     drawPoint(active_pt_proj,show_img);

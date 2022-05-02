@@ -120,22 +120,24 @@ void Dso::initialize(){
 
 void Dso::doDso(){
 
-  // tracker_->trackCam(parameters_->take_gt_poses);
-  tracker_->trackCam(false);
+  // track cam
+  tracker_->trackCam(parameters_->take_gt_poses);
   // tracker_->trackCam(true); //groundtruth
 
+  // add keyframe
   keyframe_handler_->addKeyframe(true); // add fixed keyframe
 
   points_handler_->trackCandidates(parameters_->take_gt_points); // track existing candidates
+
+  // activate points
   points_handler_->projectCandidatesOnLastFrame();
   points_handler_->projectActivePointsOnLastFrame();
   candidates_activator_->activateCandidates();
-
-
   points_handler_->generateCoarseActivePoints();  // generate coarse active points for tracking
-  // points_handler_->projectCoarseActivePointsOnLastFrame();
-  // points_handler_->projectActivePointsOnLastFrame();
 
+  // bundle adjustment
+
+  
   if(parameters_->debug_mapping){
     // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
     // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();

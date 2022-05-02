@@ -3,6 +3,7 @@
 #include "CamCouple.h"
 #include "epline.h"
 #include "CoarseRegions.h"
+#include "utils.h"
 #include <algorithm>    // std::max
 
 void PointsHandler::sampleCandidates(){
@@ -13,12 +14,11 @@ void PointsHandler::sampleCandidates(){
   reg_level=std::max(reg_level,1);
 
   // get image
-  std::shared_ptr<Image<pixelIntensity>> img(new  Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn(dso_->parameters_->candidate_level)) );
+  std::shared_ptr<Image<pixelIntensity>> img  = dso_->frame_current_->pyramid_->getMagn(dso_->parameters_->candidate_level);
 
   while(true){
 
     int factor = pow(2,reg_level-dso_->parameters_->candidate_level);
-
 
     assert(!(img->image_.rows%factor));
     assert(!(img->image_.cols%factor));
@@ -42,7 +42,7 @@ void PointsHandler::sampleCandidates(){
         cv::Point2i* maxLoc = new cv::Point2i;
         double* maxVal = new double;
 
-        cv::minMaxLoc 	( cropped_image,nullptr,maxVal,nullptr,maxLoc );
+        cv::minMaxLoc( cropped_image,nullptr,maxVal,nullptr,maxLoc );
         maxLoc->x+=col_coord;
         maxLoc->y+=row_coord;
 
@@ -55,7 +55,7 @@ void PointsHandler::sampleCandidates(){
 
         img->image_(maxLoc->x,maxLoc->y)=0;
 
-        std::shared_ptr<Candidate> cand(new Candidate(dso_->frame_current_, pixel, dso_->parameters_->candidate_level));
+        std::shared_ptr<Candidate> cand = std::make_shared<Candidate>(dso_->frame_current_, pixel, dso_->parameters_->candidate_level);
 
         dso_->frame_current_->points_container_->candidates_->push_back(cand);
         img->setPixel(pixel,0);
@@ -167,6 +167,8 @@ void PointsHandler::trackCandidates(bool groundtruth){
 
   std::shared_ptr<CameraForMapping> last_keyframe = dso_->cameras_container_->getLastActiveKeyframe();
 
+  double t_start=getTime();
+
   // iterate through keyframes (except last)
   for (int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1; i++){
     std::shared_ptr<CameraForMapping> keyframe = dso_->cameras_container_->keyframes_active_[i];
@@ -178,6 +180,11 @@ void PointsHandler::trackCandidates(bool groundtruth){
       trackCandidates(keyframe, last_keyframe);
     }
   }
+
+  double t_end=getTime();
+  sharedCoutDebug("   - Candidates tracked: " + std::to_string((t_end-t_start)) + " ms");
+
+
 }
 
 void PointsHandler::trackCandidatesGroundtruth(std::shared_ptr<CameraForMapping> keyframe){
@@ -192,14 +199,16 @@ void PointsHandler::trackCandidatesGroundtruth(std::shared_ptr<CameraForMapping>
 
 void PointsHandler::trackCandidates(std::shared_ptr<CameraForMapping> keyframe, std::shared_ptr<CameraForMapping> last_keyframe){
 
-  std::shared_ptr<CamCouple> cam_couple(new CamCouple(keyframe,last_keyframe));
 
+  std::shared_ptr<CamCouple> cam_couple(new CamCouple(keyframe,last_keyframe));
+  std::cout<< keyframe->points_container_->candidates_->size() << " prorojsfaiodjfsdi " << keyframe->name_ << std::endl;
   // iterate through candidates
   for (int i=0; i<keyframe->points_container_->candidates_->size(); i++){
     std::shared_ptr<Candidate> cand = keyframe->points_container_->candidates_->at(i);
     trackCandidate(cand, cam_couple);
 
   }
+
 
 }
 
@@ -289,6 +298,7 @@ void CandTracker::updateCand(){
   // update variance / standard deviation
   float standard_deviation = getStandardDeviation();
 
+  // update bounds
   float bound_min, bound_max;
   int sign = pow(-1,(ep_segment_->start>ep_segment_->end));
   float coord_min = coord-sign*standard_deviation;
@@ -330,8 +340,10 @@ bool CandTracker::searchMin( ){
         min_segment_leaved=true;
       }
 
-      // cand_->showCandidate();
-      // ep_segment_->showEpipolarWithMin(pixel, blue, cand_->level_, 2);
+      if(cam_couple_->cam_m_->name_=="Camera0002"){
+        cand_->showCandidate();
+        ep_segment_->showEpipolarWithMin(pixel_m, blue, cand_->level_, 2);
+      }
     }
     else{
 
@@ -341,8 +353,10 @@ bool CandTracker::searchMin( ){
       }
       min_segment_reached=true;
 
-      // cand_->showCandidate();
-      // ep_segment_->showEpipolarWithMin(pixel, red, cand_->level_, 2);
+      if(cam_couple_->cam_m_->name_=="Camera0002"){
+        cand_->showCandidate();
+        ep_segment_->showEpipolarWithMin(pixel_m, red, cand_->level_, 2);
+      }
 
 
 

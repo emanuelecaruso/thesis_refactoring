@@ -228,6 +228,7 @@ class CandidatesActivator{
     // ********** methods **********
     void reset();
     // void activateCandidateFromRegion();
+    void removeCand(std::shared_ptr<CandidateProjected> cand_proj);
     void activateCandidate(std::shared_ptr<CandidateProjected> cand_proj);
     void activateCandidates();
     // void activateCandidates();

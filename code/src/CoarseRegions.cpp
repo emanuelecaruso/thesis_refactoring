@@ -110,7 +110,9 @@ void CoarseRegions::removeActivePoint(std::shared_ptr<ActivePoint> active_pt){
   std::vector<std::shared_ptr<ActivePoint>>& v = coarse_reg->active_pts_;
   assert(v.size()>0);
 
+  int v_size = v.size();
   v.erase(std::remove(v.begin(), v.end(), active_pt), v.end());
+  assert(v_size!=v.size());
 
   removeFromParent(coarse_reg);
 

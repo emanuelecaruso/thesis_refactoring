@@ -1,8 +1,8 @@
 executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/initializer.cpp \
+ /home/manu/Desktop/thesis_refactoring/code/src/initializer.cpp \
  /usr/include/stdc-predef.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/dso.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/camera.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/dso.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/camera.h \
  /usr/include/c++/7/string \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/os_defines.h \
@@ -122,7 +122,7 @@ executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/c++/7/bits/functional_hash.h \
  /usr/include/c++/7/bits/basic_string.tcc \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/defs.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/defs.h \
  /usr/local/include/eigen3/Eigen/Core \
  /usr/local/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
  /usr/local/include/eigen3/Eigen/src/Core/util/Macros.h \
@@ -354,9 +354,9 @@ executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: \
  /usr/local/include/opencv4/opencv2/opencv_modules.hpp \
  /usr/local/include/opencv4/opencv2/core.hpp \
  /usr/local/include/opencv4/opencv2/core/cvdef.h \
+ /usr/local/include/opencv4/opencv2/core/version.hpp \
  /usr/local/include/opencv4/opencv2/core/hal/interface.h \
  /usr/local/include/opencv4/opencv2/core/cv_cpu_dispatch.h \
- /usr/local/include/opencv4/opencv2/core/version.hpp \
  /usr/local/include/opencv4/opencv2/core/base.hpp \
  /usr/local/include/opencv4/opencv2/core/cvstd.hpp \
  /usr/local/include/opencv4/opencv2/core/cvstd_wrapper.hpp \
@@ -460,16 +460,12 @@ executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: \
  /usr/local/include/opencv4/opencv2/imgcodecs.hpp \
  /usr/local/include/opencv4/opencv2/videoio.hpp \
  /usr/local/include/opencv4/opencv2/imgproc.hpp \
+ /usr/local/include/opencv4/opencv2/imgproc/segmentation.hpp \
  /usr/local/include/opencv4/opencv2/ml.hpp \
  /usr/local/include/opencv4/opencv2/ml/ml.inl.hpp \
  /usr/local/include/opencv4/opencv2/objdetect.hpp \
  /usr/local/include/opencv4/opencv2/objdetect/detection_based_tracker.hpp \
  /usr/local/include/opencv4/opencv2/photo.hpp \
- /usr/local/include/opencv4/opencv2/shape.hpp \
- /usr/local/include/opencv4/opencv2/shape/emdL1.hpp \
- /usr/local/include/opencv4/opencv2/shape/shape_transformer.hpp \
- /usr/local/include/opencv4/opencv2/shape/hist_cost.hpp \
- /usr/local/include/opencv4/opencv2/shape/shape_distance.hpp \
  /usr/local/include/opencv4/opencv2/stitching.hpp \
  /usr/local/include/opencv4/opencv2/stitching/warpers.hpp \
  /usr/local/include/opencv4/opencv2/stitching/detail/warpers.hpp \
@@ -493,42 +489,12 @@ executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: \
  /usr/local/include/opencv4/opencv2/stitching/detail/seam_finders.hpp \
  /usr/local/include/opencv4/opencv2/stitching/detail/blenders.hpp \
  /usr/local/include/opencv4/opencv2/stitching/detail/camera.hpp \
- /usr/local/include/opencv4/opencv2/superres.hpp \
- /usr/local/include/opencv4/opencv2/superres/optical_flow.hpp \
  /usr/local/include/opencv4/opencv2/video.hpp \
  /usr/local/include/opencv4/opencv2/video/tracking.hpp \
  /usr/local/include/opencv4/opencv2/video/background_segm.hpp \
- /usr/local/include/opencv4/opencv2/videostab.hpp \
- /usr/local/include/opencv4/opencv2/videostab/stabilizer.hpp \
- /usr/local/include/opencv4/opencv2/videostab/global_motion.hpp \
- /usr/include/c++/7/fstream \
- /usr/include/x86_64-linux-gnu/c++/7/bits/basic_file.h \
- /usr/include/x86_64-linux-gnu/c++/7/bits/c++io.h \
- /usr/include/c++/7/bits/fstream.tcc \
- /usr/local/include/opencv4/opencv2/videostab/optical_flow.hpp \
- /usr/local/include/opencv4/opencv2/cudaoptflow.hpp \
- /usr/local/include/opencv4/opencv2/videostab/motion_core.hpp \
- /usr/local/include/opencv4/opencv2/videostab/outlier_rejection.hpp \
- /usr/local/include/opencv4/opencv2/cudaimgproc.hpp \
- /usr/local/include/opencv4/opencv2/videostab/motion_stabilizing.hpp \
- /usr/local/include/opencv4/opencv2/videostab/frame_source.hpp \
- /usr/local/include/opencv4/opencv2/videostab/log.hpp \
- /usr/local/include/opencv4/opencv2/videostab/inpainting.hpp \
- /usr/local/include/opencv4/opencv2/videostab/fast_marching.hpp \
- /usr/local/include/opencv4/opencv2/videostab/fast_marching_inl.hpp \
- /usr/local/include/opencv4/opencv2/videostab/deblurring.hpp \
- /usr/local/include/opencv4/opencv2/videostab/wobble_suppression.hpp \
- /usr/local/include/opencv4/opencv2/videostab/ring_buffer.hpp \
- /usr/local/include/opencv4/opencv2/cudaarithm.hpp \
- /usr/local/include/opencv4/opencv2/cudabgsegm.hpp \
- /usr/local/include/opencv4/opencv2/cudafeatures2d.hpp \
- /usr/local/include/opencv4/opencv2/cudafilters.hpp \
- /usr/local/include/opencv4/opencv2/cudaobjdetect.hpp \
- /usr/local/include/opencv4/opencv2/cudastereo.hpp \
- /usr/local/include/opencv4/opencv2/cudawarping.hpp /usr/include/dirent.h \
- /usr/include/x86_64-linux-gnu/bits/dirent.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp \
+ /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/parameters.h \
+ /home/manu/Desktop/thesis_refactoring/code/libs/json.hpp \
  /usr/include/c++/7/ciso646 /usr/include/c++/7/iterator \
  /usr/include/c++/7/bits/stream_iterator.h /usr/include/c++/7/numeric \
  /usr/include/c++/7/bits/stl_numeric.h /usr/include/c++/7/forward_list \
@@ -542,22 +508,103 @@ executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: \
  /usr/include/c++/7/bits/gslice.h /usr/include/c++/7/bits/gslice_array.h \
  /usr/include/c++/7/bits/mask_array.h \
  /usr/include/c++/7/bits/indirect_array.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/image.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/CamerasContainer.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/PointsContainer.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/CameraForMapping.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/Pyramid.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/initializer.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/environment.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/CandidatesActivator.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/KeyframeHandler.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/PointsHandler.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/epline.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/CamCouple.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/Tracker.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/image.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CamerasContainer.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/PointsContainer.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CameraForMapping.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/Pyramid.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/initializer.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/environment.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CandidatesActivator.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/BundleAdj.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/epline.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CamCouple.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/Tracker.h \
  /usr/include/c++/7/condition_variable \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/spectator.h \
- /home/emanuele/Scrivania/thesis_refactoring/code/src/utils.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/spectator.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/utils.h \
  /usr/include/c++/7/future /usr/include/c++/7/thread \
  /usr/include/c++/7/atomic /usr/include/c++/7/bits/atomic_futex.h \
- /usr/local/include/opencv4/opencv2/core/eigen.hpp
+ /usr/local/include/opencv4/opencv2/core/eigen.hpp \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/Tensor \
+ /usr/local/include/eigen3/Eigen/Core \
+ /usr/local/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
+ /usr/local/include/eigen3/unsupported/Eigen/SpecialFunctions \
+ /usr/local/include/eigen3/Eigen/Core \
+ /usr/local/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
+ /usr/local/include/eigen3/unsupported/Eigen/src/SpecialFunctions/SpecialFunctionsImpl.h \
+ /usr/local/include/eigen3/unsupported/Eigen/src/SpecialFunctions/SpecialFunctionsPacketMath.h \
+ /usr/local/include/eigen3/unsupported/Eigen/src/SpecialFunctions/SpecialFunctionsHalf.h \
+ /usr/local/include/eigen3/unsupported/Eigen/src/SpecialFunctions/SpecialFunctionsFunctors.h \
+ /usr/local/include/eigen3/unsupported/Eigen/src/SpecialFunctions/SpecialFunctionsArrayAPI.h \
+ /usr/local/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/util/CXX11Meta.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/util/EmulateArray.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/util/CXX11Workarounds.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/util/MaxSizeVector.h \
+ /usr/include/c++/7/random /usr/include/c++/7/bits/random.h \
+ /usr/include/x86_64-linux-gnu/c++/7/bits/opt_random.h \
+ /usr/include/c++/7/bits/random.tcc \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorMacros.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorForwardDeclarations.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorMeta.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorFunctors.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorCostModel.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorDeviceDefault.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorDeviceThreadPool.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorDeviceCuda.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorDeviceSycl.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorIndexList.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorDimensionList.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorDimensions.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorInitializer.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorTraits.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorRandom.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorUInt128.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorIntDiv.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorGlobalFunctions.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorBase.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorEvaluator.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorExpr.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorReduction.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorReductionCuda.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorArgMax.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorConcatenation.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorContractionMapper.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorContractionBlocking.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorContraction.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorContractionThreadPool.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorContractionCuda.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorConversion.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorConvolution.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorFFT.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorPatch.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorImagePatch.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorVolumePatch.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorBroadcasting.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorChipping.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorInflation.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorLayoutSwap.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorMorphing.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorPadding.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorReverse.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorShuffling.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorStriding.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorCustomOp.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorEvalTo.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorForcedEval.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorGenerator.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorAssign.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorScan.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorSycl.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorExecutor.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorDevice.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorStorage.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/Tensor.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorFixedSize.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorMap.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorRef.h \
+ /usr/local/include/eigen3/unsupported/Eigen/CXX11/src/Tensor/TensorIO.h \
+ /usr/local/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h

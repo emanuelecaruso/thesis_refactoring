@@ -3,7 +3,7 @@
 #include "PointsContainer.h"
 #include "CamCouple.h"
 
-class Dso;
+// class Dso;
 
 class Tracker{
   public:
@@ -22,6 +22,6 @@ class Tracker{
     void trackCam();
     void setInitialGuess();
     bool chiUpdateAndCheck(float chi);
-    void showProjectedActivePoints(int level, std::shared_ptr<CamCoupleContainer> cam_couple_container);
+    void showProjectedActivePoints(int level, CamCoupleContainer& cam_couple_container);
 
 };

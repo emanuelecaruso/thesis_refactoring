@@ -1,4 +1,4 @@
-# Install script for directory: /home/emanuele/Scrivania/thesis_refactoring/code
+# Install script for directory: /home/manu/Desktop/thesis_refactoring/code
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,7 +44,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/emanuele/Scrivania/thesis_refactoring/code/build/executables/cmake_install.cmake")
+  include("/home/manu/Desktop/thesis_refactoring/code/build/executables/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -55,5 +55,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/emanuele/Scrivania/thesis_refactoring/code/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/manu/Desktop/thesis_refactoring/code/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

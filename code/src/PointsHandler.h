@@ -5,10 +5,6 @@
 #include "PointsContainer.h"
 #include "CameraForMapping.h"
 
-class Dso;
-
-
-
 class PointsHandler{
   public:
 

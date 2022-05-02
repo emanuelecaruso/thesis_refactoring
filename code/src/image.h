@@ -357,6 +357,7 @@ class Image{
       Image< colorRGB >* show_image = returnColoredImgFromIntensityImg(name);
       show_image->setPixel( pixel, red);
       show_image->show(size, name);
+      delete show_image;
     }
 
     inline void showImgWithCircledPixel(const pxl& pixel, float size, const std::string& name, int radius=2, int thickness=2) const{
@@ -364,6 +365,8 @@ class Image{
       // show_image->setPixel( pixel, red);
       show_image->drawCircle(red, pixel, radius, thickness);
       show_image->show(size, name);
+      delete show_image;
+
     }
 
     inline void destroyWindow() const{

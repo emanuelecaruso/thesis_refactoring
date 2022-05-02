@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/test_dso.dir/__/src/BundleAdj.cpp.o"
+  "CMakeFiles/test_dso.dir/__/src/BundleAdj.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.o"
   "CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/CameraForMapping.cpp.o"
