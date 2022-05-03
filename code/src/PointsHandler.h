@@ -42,7 +42,7 @@ class PointsHandler{
 class CandTracker{
   public:
     // ********** members **********
-    EpipolarLine* ep_segment_;
+    EpipolarLine& ep_segment_;
     Candidate* cand_;
     CamCouple* cam_couple_;
     Params* parameters_;
@@ -52,7 +52,7 @@ class CandTracker{
     pxl pixel_;
 
     // ********** constructor **********
-    CandTracker( EpipolarLine* ep_segment,
+    CandTracker( EpipolarLine& ep_segment,
               Candidate* cand,
               CamCouple* cam_couple,
               Params* parameters

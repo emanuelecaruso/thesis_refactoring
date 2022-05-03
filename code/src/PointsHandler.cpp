@@ -7,6 +7,9 @@
 #include <algorithm>    // std::max
 
 void PointsHandler::sampleCandidates(){
+
+  double t_start=getTime();
+
   int count = 0;
   int n_pixels_tot = dso_->frame_current_->cam_parameters_->resolution_x*dso_->frame_current_->cam_parameters_->resolution_y;
   int reg_level = trunc(std::log((float)(n_pixels_tot/(pow(4,dso_->parameters_->candidate_level)))/(dso_->parameters_->num_candidates))/std::log(4))+1;
@@ -80,6 +83,9 @@ void PointsHandler::sampleCandidates(){
     reg_level=std::max(reg_level,1);
   }
 
+  double t_end=getTime();
+  int deltaTime=(t_end-t_start);
+  sharedCoutDebug("   - Candidates sampled: "+ std::to_string(count) + ", " + std::to_string(deltaTime)+" ms");
 
 }
 
@@ -199,16 +205,17 @@ void PointsHandler::trackCandidatesGroundtruth(CameraForMapping* keyframe){
 
 void PointsHandler::trackCandidates(CameraForMapping* keyframe, CameraForMapping* last_keyframe){
 
+  CamCouple* cam_couple = (new CamCouple(keyframe,last_keyframe));
 
-  CamCouple* cam_couple(new CamCouple(keyframe,last_keyframe));
-  std::cout<< keyframe->points_container_->candidates_.size() << " prorojsfaiodjfsdi " << keyframe->name_ << std::endl;
   // iterate through candidates
-  for (int i=0; i<keyframe->points_container_->candidates_.size(); i++){
+  for (int i=keyframe->points_container_->candidates_.size()-1; i>=0; i--){
     Candidate* cand = keyframe->points_container_->candidates_.at(i);
-    trackCandidate(cand, cam_couple);
+
+    if( !trackCandidate(cand, cam_couple) ){
+      cand->remove();
+    }
 
   }
-
 
 }
 
@@ -224,7 +231,7 @@ bool PointsHandler::trackCandidate(Candidate* cand, CamCouple* cam_couple){
     return false;
 
   // create epipolar line
-  EpipolarLine* ep_segment( new EpipolarLine( cam_couple->cam_m_, uv_min, uv_max, cand->level_) );
+  EpipolarLine ep_segment( cam_couple->cam_m_, uv_min, uv_max, cand->level_) ;
 
   // search pixel in epipolar line
   CandTracker CandTracker(ep_segment, cand, cam_couple, dso_->parameters_);
@@ -236,7 +243,6 @@ bool PointsHandler::trackCandidate(Candidate* cand, CamCouple* cam_couple){
     return true;
   }
   else{
-    // cand->remove();
     return false;
   }
 }
@@ -248,7 +254,7 @@ float CandTracker::getStandardDeviation( ){
   float g_dot_l; // squared scalar product between direction of gradient and ep_line -> |g| |l| cos(a)
                  // since |g|, |l| =1 -> cos(angle between g and l)
   float angle_g = phase_m;
-  float angle_l =ep_segment_->slope2angle();
+  float angle_l =ep_segment_.slope2angle();
   if (angle_l<0)
     angle_l+=2*PI;
   float a = radiansSub(angle_g,angle_l);
@@ -275,6 +281,8 @@ float CandTracker::getStandardDeviation( ){
   float standard_deviation = 2*(sd_disparity_geo+sd_disparity_photometric);
   // standard_deviation = 2*(sd_disparity_photometric);
   // standard_deviation = 2*(sd_disparity_geo);
+  // float standard_deviation = cand_->cam_->cam_parameters_->pixel_width;
+  // float standard_deviation = 0.00000000001;
 
   return standard_deviation;
 }
@@ -283,28 +291,27 @@ float CandTracker::getStandardDeviation( ){
 void CandTracker::updateCand(){
 
   float coord;
-  if(ep_segment_->u_or_v)
+  if(ep_segment_.u_or_v)
     coord=uv_.x();
   else
     coord=uv_.y();
 
   // update depth / invdepth
   float depth;
-  cam_couple_->getD1( cand_->uv_.x(), cand_->uv_.y(), depth, coord, ep_segment_->u_or_v );
+  cam_couple_->getD1( cand_->uv_.x(), cand_->uv_.y(), depth, coord, ep_segment_.u_or_v );
   cand_->invdepth_=1./depth;
   // std::cout << cand_->invdepth_ << std::endl;
 
-
-  // update variance / standard deviation
+  // get standard deviation
   float standard_deviation = getStandardDeviation();
 
   // update bounds
   float bound_min, bound_max;
-  int sign = pow(-1,(ep_segment_->start>ep_segment_->end));
+  int sign = pow(-1,(ep_segment_.start>ep_segment_.end));
   float coord_min = coord-sign*standard_deviation;
   float coord_max = coord+sign*standard_deviation;
-  cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), cand_->depth_min_, coord_min, ep_segment_->u_or_v);
-  cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), cand_->depth_max_, coord_max, ep_segment_->u_or_v);
+  cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), cand_->depth_min_, coord_min, ep_segment_.u_or_v);
+  cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), cand_->depth_max_, coord_max, ep_segment_.u_or_v);
 
   cand_->invdepth_var_= (1./cand_->depth_min_)-(1./cand_->depth_max_);
 
@@ -319,8 +326,8 @@ bool CandTracker::searchMin( ){
   int repetitive=0;
 
   // iterate through uvs
-  for(int i=0; i<ep_segment_->uvs.size(); i++){
-    Eigen::Vector2f uv_m = ep_segment_->uvs[i];
+  for(int i=0; i<ep_segment_.uvs.size(); i++){
+    Eigen::Vector2f uv_m = ep_segment_.uvs[i];
     pxl pixel_m = cam_couple_->cam_m_->uv2pixelCoords( uv_m, cand_->level_);
 
     if(!cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->pixelInRange(pixel_m))
@@ -340,10 +347,6 @@ bool CandTracker::searchMin( ){
         min_segment_leaved=true;
       }
 
-      // if(cam_couple_->cam_m_->name_=="Camera0002"){
-      //   cand_->showCandidate();
-      //   ep_segment_->showEpipolarWithMin(pixel_m, blue, cand_->level_, 2);
-      // }
     }
     else{
 
@@ -352,12 +355,6 @@ bool CandTracker::searchMin( ){
         return false;
       }
       min_segment_reached=true;
-
-      // if(cam_couple_->cam_m_->name_=="Camera0002"){
-      //   cand_->showCandidate();
-      //   ep_segment_->showEpipolarWithMin(pixel_m, red, cand_->level_, 2);
-      // }
-
 
 
       if(cost<cost_min){
@@ -373,7 +370,7 @@ bool CandTracker::searchMin( ){
     return false;
 
   // cand_->showCandidate();
-  // ep_segment_->showEpipolarWithMin(pixel_, red, cand_->level_, 2);
+  // ep_segment_.showEpipolarWithMin(pixel_, red, cand_->level_, 2);
 
   return true;
 }
@@ -405,12 +402,12 @@ bool CandTracker::getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, fl
   // std::cout << "\nphase r: " << phase_r << ", grad dir r:\n" << grad_direction_r << std::endl;
   Eigen::Vector2f tip_to_project = cand_->uv_+grad_direction_r;
   float d1, coord;
-  if(ep_segment_->u_or_v)
+  if(ep_segment_.u_or_v)
     coord = uv_m.x();
   else
     coord = uv_m.y();
 
-  cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), d1, coord, ep_segment_->u_or_v);
+  cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), d1, coord, ep_segment_.u_or_v);
 
   Eigen::Vector2f tip_m, direction_m;
 

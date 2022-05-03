@@ -30,6 +30,9 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
       ,keyframe_(false)
       { };
 
+    ~CameraForMapping(){
+      delete pyramid_;
+    }
 
     // ********** methods **********
     void setGrountruthPose();

@@ -375,7 +375,7 @@ bool CamCouple::getD1(float u1, float v1, float& d1, float coord, bool u_or_v){
   else{
     d1=((-H_bv)*coord + D_bv)/(E_bv*coord*u1 + F_bv*coord*v1 + G_bv*coord + (-A_bv)*u1 + (-B_bv)*v1 - C_bv);
   }
-  // assert(!std::isnan(d1));
+  assert(std::isfinite(d1));
   if (std::isnan(d1) || std::isinf(d1) ){
     return false;
   }

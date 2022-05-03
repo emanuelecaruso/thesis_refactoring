@@ -43,7 +43,7 @@ class LinSysTracking{
     };
 
     // ********** methods **********
-    void addMeasurement( MeasTracking* measurement );
+    void addMeasurement( MeasTracking& measurement );
     void updateCameraPose();
     void clear();
   protected:

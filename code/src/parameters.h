@@ -14,7 +14,7 @@
 // debug parameters
 // static bool use_fast_cam_coupling_ = false;
 static bool debug_initialization_=false;
-static bool debug_mapping_=true;
+static bool debug_mapping_=false;
 static bool debug_tracking_=false;
 static bool debug_optimization_= true;
 static bool use_spectator_ = true;
@@ -42,7 +42,7 @@ static int coarsest_level_= candidate_level_+4; // e.g. level = 3 -> 0,1,2,*3* (
 // static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static float grad_threshold_=0.06;
-static int num_candidates_=2000;
+static int num_candidates_=1000;
 static float der_threshold_=0.01;
 
 // mapping

@@ -93,6 +93,14 @@ class CamCoupleContainer{
       init();
     }
 
+    ~CamCoupleContainer(){
+      for(int i=0; i<cam_couple_mat_.size(); i++){
+        for(int j=0; j<cam_couple_mat_[i].size(); j++){
+          delete cam_couple_mat_[i][j];
+        }
+      }
+    }
+
     // ********** methods **********
     void update();
     CamCouple* get(int cam_r_idx, int cam_m_idx);

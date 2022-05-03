@@ -72,6 +72,7 @@ class Candidate : public Point{
   // ********** methods **********
   void showCandidate();
   void setInvdepthGroundtruth();
+  void remove();
 
 
 };

@@ -82,19 +82,19 @@ bool MeasTracking::init(ActivePoint* active_point, CamCouple* cam_couple){
 
 
 
-void LinSysTracking::addMeasurement( MeasTracking* measurement ){
+void LinSysTracking::addMeasurement( MeasTracking& measurement ){
 
   // get weight
-  float weight = getWeight(measurement->error);
+  float weight = getWeight(measurement.error);
 
   // update H
-  H.triangularView<Eigen::Upper>() += measurement->J_m_transpose*weight*measurement->J_m;
+  H.triangularView<Eigen::Upper>() += measurement.J_m_transpose*weight*measurement.J_m;
 
   // update b
-  b+= measurement->J_m_transpose*weight*measurement->error;
+  b+= measurement.J_m_transpose*weight*measurement.error;
 
   // update chi
-  chi+= measurement->error*weight*measurement->error;
+  chi+= measurement.error*weight*measurement.error;
 }
 
 void LinSysTracking::updateCameraPose(){

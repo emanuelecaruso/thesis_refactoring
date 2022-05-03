@@ -100,20 +100,16 @@ void Tracker::trackCam(){
           ActivePoint* active_point = active_points[j];
 
           // get measurement
-          MeasTracking* measurement(new MeasTracking(active_point, cam_couple_container.get(i,0) ) );
+          MeasTracking measurement(MeasTracking(active_point, cam_couple_container.get(i,0) ));
 
-          if(measurement->valid_){
+          if(measurement.valid_){
             // update linear system with that measurement
             lin_sys_tracking.addMeasurement(measurement);
             n_meas++;
           }
 
         }
-        // if(dso_->parameters_->debug_tracking){
-        //   std::cout << "it " << iteration << std::endl;
-        //   std::cout << "num meas " << n_meas << std::endl;
-        //   std::cout << "cam r " << cam_couple_container->get(i,0)->cam_r_->name_ << ", cam m " << cam_couple_container->get(i,0)->cam_m_->name_ << std::endl;
-        // }
+
       }
 
       assert(n_meas>0);
@@ -122,12 +118,6 @@ void Tracker::trackCam(){
 
 
       double t_end=getTime();
-      deltaTime_tot+=(t_end-t_start);
-      // deltaTime_tot+=deltaTime;
-      // sharedCoutDebug("\nAdd Frame "+std::to_string(counter)+", computation time: "+ std::to_string(deltaTime)+" ms");
-
-      // sharedCoutDebug("   - Frame tracked: " + std::to_string(deltaTime_tot) + " ms, level " + std::to_string(level));
-      // sharedCoutDebug("   - Frame tracked: " + std::to_string((t_end-t_start)) + " ms, level " + std::to_string(level));
 
       if(dso_->parameters_->debug_tracking){
 
@@ -157,9 +147,8 @@ void Tracker::trackCam(){
     // std::cout << "tracking time step: " << deltaTime_tot << std::endl;
     chi_history_.clear();
   }
-  sharedCoutDebug("   - Frame tracked: " + std::to_string(deltaTime_tot) + " ms");
   dso_->spectator_->renderState();
   dso_->spectator_->showSpectator();
-
+  sharedCoutDebug("   - Frame tracked: " + std::to_string(deltaTime_tot) + " ms");
 
 }

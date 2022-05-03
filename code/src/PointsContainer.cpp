@@ -5,7 +5,7 @@
 
 
 void Candidate::showCandidate(){
-  cam_->pyramid_->getC(level_)->showImgWithColoredPixel( pixel_, pow(2,level_), "cand");
+  cam_->pyramid_->getC(level_)->showImgWithColoredPixel( pixel_, pow(2,level_), cam_->name_+", cand");
 }
 
 void Candidate::setInvdepthGroundtruth(){
@@ -16,6 +16,17 @@ void Candidate::setInvdepthGroundtruth(){
   invdepth_=invdepth_gt;
   invdepth_var_=0.0001;
 }
+
+void Candidate::remove(){
+  // remove candidate from vector
+  std::vector<Candidate*>& v = cam_->points_container_->candidates_;
+  int v_size = v.size();
+  v.erase(std::remove(v.begin(), v.end(), this), v.end());
+  assert(v_size==v.size()+1);
+
+  delete this;
+}
+
 
 CoarseRegions* PointsContainer::initCoarseRegions(){
    CoarseRegions* coarse_regions(new CoarseRegions(this, parameters_->coarsest_level-1));
