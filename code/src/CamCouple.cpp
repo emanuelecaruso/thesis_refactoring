@@ -484,6 +484,7 @@ void CamCoupleContainer::init(){
     }
   }
 
+  // cam_couple_mat_[cam_m][cam_r]
   else if(type_==ALL_KFS_ON_ALL_KFS){
     cam_couple_mat_.resize(n_active_kfs);  //
     // iterate through keyframes (except last)
@@ -507,6 +508,25 @@ void CamCoupleContainer::init(){
   }
 }
 
+void CamCoupleContainer::init(CameraForMapping* cam_r){
+  clear();
+
+  // cam_couple_mat_[cam_r][cam_m]
+  int n_active_kfs = dso_->cameras_container_->keyframes_active_.size();
+  cam_couple_mat_.resize(1);  //
+  cam_couple_mat_[0].resize(n_active_kfs);
+  // iterate through keyframes (except last)
+  for( int i=0; i<n_active_kfs ; i++){
+    CameraForMapping* cam_m = dso_->cameras_container_->keyframes_active_[i];
+
+    // cam couple keyframe with last keyframe
+    CamCouple* cam_couple = new CamCouple( cam_r, cam_m ) ;
+    cam_couple_mat_[0][i]= cam_couple;
+  }
+
+
+}
+
 void CamCoupleContainer::update(){
   for(int i=0; i<cam_couple_mat_.size(); i++){
     for(int j=0; j<cam_couple_mat_[i].size(); j++){
@@ -516,7 +536,15 @@ void CamCoupleContainer::update(){
 }
 
 CamCouple* CamCoupleContainer::get(int cam_r_idx, int cam_m_idx){
-  assert(cam_m_idx>=0 && cam_m_idx<cam_couple_mat_.size());
-  assert(cam_r_idx>=0 && cam_r_idx<cam_couple_mat_[cam_m_idx].size());
-  return cam_couple_mat_[cam_m_idx][cam_r_idx];
+  if(type_!=KF_ON_ALL_KFS){
+    assert(cam_m_idx>=0 && cam_m_idx<cam_couple_mat_.size());
+    assert(cam_r_idx>=0 && cam_r_idx<cam_couple_mat_[cam_m_idx].size());
+    return cam_couple_mat_[cam_m_idx][cam_r_idx];
+  }
+  else{
+    assert(cam_r_idx>=0 && cam_r_idx<cam_couple_mat_.size());
+    assert(cam_m_idx>=0 && cam_m_idx<cam_couple_mat_[cam_r_idx].size());
+    return cam_couple_mat_[cam_r_idx][cam_m_idx];
+  }
+
 }

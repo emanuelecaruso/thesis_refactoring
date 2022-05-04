@@ -12,11 +12,18 @@ void CamerasContainer::addFrame(Camera* frame){
 void CamerasContainer::addActiveKeyframe(CameraForMapping* keyframe){
   assert(checkFrame(keyframe) && !checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
   keyframes_active_.push_back(keyframe);
+  keyframe->keyframe_=true;
 
 }
 void CamerasContainer::addKeyframeToMarginalize(CameraForMapping* keyframe){
   assert(checkFrame(keyframe) && checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
   keyframes_to_marginalize_.push_back(keyframe);
+
+  // remove keyframe from active keyframes
+  std::vector<CameraForMapping*>& v = keyframes_active_;
+  int v_size = v.size();
+  v.erase(std::remove(v.begin(), v.end(), keyframe), v.end());
+  assert(v_size==v.size()+1);
 
 }
 void CamerasContainer::addKeyframeMarginalized(CameraForMapping* keyframe){

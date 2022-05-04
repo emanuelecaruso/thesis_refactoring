@@ -141,6 +141,7 @@ class Camera{
     bool projectPointInCamFrame(const Eigen::Vector3f& p, Eigen::Vector2f& uv) const;
     bool projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv) const;
     bool projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv, float& p_cam_z) const;
+    bool uvInRange(const Eigen::Vector2f& uv);
 
     // functions for images
     void clearImgs();

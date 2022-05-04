@@ -27,7 +27,8 @@ void Dso::startSequential(){
 
 void Dso::loadFrameCurrent(){
 
-  std::cout << frame_current_idx_ << " " << int(cameras_container_->frames_.size())-1 << "\n";
+  // sharedCoutDebug("\nFrame "+std::to_string(frame_current_idx_)+" ("+frame_current_->name_+") , frame delay: "+std::to_string(frame_delay));
+
   if(frame_current_idx_==int(cameras_container_->frames_.size())-1){
     waitForNewFrame();
   }
@@ -40,6 +41,8 @@ void Dso::loadFrameCurrent(){
     frame_current_idx_++;
     frame_current_=cameras_container_->frames_[frame_current_idx_];
   }
+
+  sharedCoutDebug("\nFrame "+std::to_string(frame_current_idx_)+" ("+frame_current_->name_+")");
 }
 
 void Dso::setFirstKeyframe(){
@@ -75,115 +78,66 @@ void Dso::initialize(){
 
 
     // project candidates and active points on last frame
-    points_handler_->projectCandidatesOnLastFrame();
-    points_handler_->projectActivePointsOnLastFrame();
     candidates_activator_->activateCandidates();
-    points_handler_->generateCoarseActivePoints();
 
     points_handler_->sampleCandidates(); // sample candidates as high gradient points
 
     if(parameters_->debug_mapping){
-      // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
+      cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(1);
+      cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
+      cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(3);
       // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
       // points_handler_->sampleCandidates();
       // points_handler_->showCandidates();
-      points_handler_->showProjectedCandidates();
-      points_handler_->showProjectedActivePoints();
+      // points_handler_->showProjectedCandidates();
+      // points_handler_->showProjectedActivePoints();
     }
 
-
-
     to_initialize_=false;
-
-    // bundle_adj_->projectActivePoints_prepMarg(0);
-    // bundle_adj_->activateNewPoints();
-    // bundle_adj_->collectCoarseActivePoints();
-    //
-    // keyframe_handler_->prepareDataForBA();
-    // int test_single = bundle_adj_->test_single_;
-    // bundle_adj_->test_single_=TEST_ONLY_POINTS;
-    // bundle_adj_->optimize();
-    // bundle_adj_->test_single_=test_single;
-    //
-    // mapper_->selectNewCandidates();
-    //
-    // initialization_done=true;
-    //
-    // double t_end=getTime();
-    // int deltaTime=(t_end-t_start);
-    // sharedCoutDebug("   - INITIALIZATION of frame "+std::to_string(frame_current_)+", computation time: "+ std::to_string(deltaTime)+" ms");
-    // if(initialization_done){
-    //   sharedCoutDebug("\nINITIALIZATION ENDED");
-    // }
 
   }
 
 }
 
 
-void Dso::doDso(){
+bool Dso::doDso(){
 
   // track cam
   tracker_->trackCam(parameters_->take_gt_poses);
-  // tracker_->trackCam(true); //groundtruth
 
   // add keyframe
-  keyframe_handler_->addKeyframe(false); // add keyframe
+  bool kf_added = keyframe_handler_->addKeyframe(false); // add keyframe
+  if(kf_added){
 
-  points_handler_->trackCandidates(parameters_->take_gt_points); // track existing candidates
+    // track existing candidates
+    points_handler_->trackCandidates(parameters_->take_gt_points);
 
-  // activate points
-  points_handler_->projectCandidatesOnLastFrame();
-  points_handler_->projectActivePointsOnLastFrame();
-  candidates_activator_->activateCandidates();
-  points_handler_->generateCoarseActivePoints();  // generate coarse active points for tracking
+    // activate points
+    candidates_activator_->activateCandidates();
 
-  points_handler_->sampleCandidates(); // sample candidates as high gradient points
+    // sample new candidates
+    points_handler_->sampleCandidates(); // sample candidates as high gradient points
 
-  bundle_adj_->optimize();
-  // bundle adjustment
-
-
-  if(parameters_->debug_mapping){
-    // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
-    // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
-    // points_handler_->sampleCandidates();
-    // points_handler_->showCandidates();
-    points_handler_->showProjectedCandidates();
-    points_handler_->showProjectedActivePoints();
+    // debug mapping
+    if(parameters_->debug_mapping){
+      // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
+      // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
+      // points_handler_->showCandidates();
+      points_handler_->showProjectedCandidates();
+      points_handler_->showProjectedActivePoints();
+    }
   }
 
-  // tracker->track
-  // bool keyframe_taken = keyframe handler -> choose kf
-  // if (keyframe_taken){
-  //  trackCandidates()
-  // points_handler_->projectCandidatesOnLastFrame();
-  // points_handler_->projectActivePointsOnLastFrame();
-  // candidates_activator_->activateCandidates();
+  // bundle adjustment optimization
+  bundle_adj_->optimize();
 
-  // optimize()
-  // }
+  // marginalize points not in last camera
+  bundle_adj_->marginalizePointsAndKeyframes();
 
+  points_handler_->projectActivePointsOnLastFrame();
+  points_handler_->generateCoarseActivePoints();
 
-  // tracker_->trackCam(take_gt_poses,0,guess_type,debug_tracking);
-  //
-  // if(keyframe_handler_->addKeyframe(all_keyframes)){
-  //
-  //   mapper_->trackExistingCandidates(take_gt_points,debug_mapping);
-  //
-  //   bundle_adj_->projectActivePoints_prepMarg(0);
-  //   bundle_adj_->activateNewPoints();
-  //   bundle_adj_->collectCoarseActivePoints();
-  //
-  //   keyframe_handler_->prepareDataForBA();
-  //   bundle_adj_->optimize();
-  //
-  //   mapper_->selectNewCandidates();
-  // }
-  // double t_end=getTime();
-  // int deltaTime=(t_end-t_start);
-  // sharedCoutDebug("FRONT END part of frame: "+std::to_string(frame_current_)+", time: "+ std::to_string(deltaTime)+" ms");
-
+  return true;
 
 }
 

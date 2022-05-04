@@ -5995,6 +5995,7 @@ executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o
  /home/manu/Desktop/thesis_refactoring/code/src/Pyramid.h
  /home/manu/Desktop/thesis_refactoring/code/src/CamCouple.h
  /home/manu/Desktop/thesis_refactoring/code/src/CoarseRegions.h
+ /home/manu/Desktop/thesis_refactoring/code/src/LinSystemBA.h
 
 executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o
  /home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.cpp

@@ -8,6 +8,7 @@ class Dso;
 class MeasBA{
   public:
     // ********** members **********
+    ActivePoint* active_point_;
     CamCouple* cam_couple_;
     bool valid_;
     bool occlusion_;
@@ -20,12 +21,13 @@ class MeasBA{
     pixelIntensity error;
 
     // ********** constructor **********
-    MeasBA(ActivePoint* active_point, CamCouple* cam_couple, float thresh ):
+    MeasBA(ActivePoint* active_point, CamCouple* cam_couple, float chi_occlusion_threshold ):
     valid_(true),
     occlusion_(false),
+    active_point_(active_point),
     cam_couple_(cam_couple)
     {
-      init(active_point, cam_couple, thresh);
+      init(active_point, cam_couple, chi_occlusion_threshold);
     }
 
 
@@ -74,7 +76,45 @@ class LinSysBA{
     bool visualizeH();
     // void clear();
   protected:
-    float getWeight(float error);
+    float getWeight(MeasBA* measurement);
     float addMeasurement(MeasBA* measurement, int p_idx);
+
+};
+
+class Prior{
+  public:
+    // ********** members **********
+    bool valid_;
+    // ********** constructor **********
+    Prior(ActivePoint* active_pt, CamCouple* cam_couple):
+    valid_(true){
+      init(active_pt, cam_couple);
+    }
+
+    // ********** methods **********
+    bool init(ActivePoint* active_pt, CamCouple* cam_couple);
+};
+
+class LinSysBAMarg{
+  public:
+    // ********** members **********
+    LinSysBA* lin_sys_ba_;
+
+    int c_size;
+    int p_size;
+    Eigen::Matrix<float,1,6> H_cc;
+    Eigen::MatrixXf H_cp;
+    Eigen::VectorXf H_pp;
+    Eigen::VectorXf b_c;
+    Eigen::VectorXf b_p;
+
+    // ********** constructor **********
+    LinSysBAMarg(LinSysBA* lin_sys_ba):
+    lin_sys_ba_(lin_sys_ba){
+      init();
+    }
+
+    // ********** methods **********
+    void init();
 
 };

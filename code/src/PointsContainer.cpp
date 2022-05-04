@@ -1,6 +1,7 @@
 #include "PointsContainer.h"
 #include "CamCouple.h"
 #include "CoarseRegions.h"
+#include "LinSystemBA.h"
 #include <algorithm>    // std::max
 
 
@@ -171,6 +172,19 @@ void ActivePoint::updateInvdepthVarAndP(float invdepth, float invdepth_var){
 void ActivePoint::remove(){
   // remove candidate from vector
   std::vector<ActivePoint*>& v = cam_->points_container_->active_points_;
+  int v_size = v.size();
+  v.erase(std::remove(v.begin(), v.end(), this), v.end());
+  assert(v_size==v.size()+1);
+
+  delete this;
+}
+
+
+
+
+void MarginalizedPoint::remove(){
+  // remove candidate from vector
+  std::vector<MarginalizedPoint*>& v = cam_->points_container_->marginalized_points_;
   int v_size = v.size();
   v.erase(std::remove(v.begin(), v.end(), this), v.end());
   assert(v_size==v.size()+1);

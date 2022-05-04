@@ -29,6 +29,20 @@ void Tracker::setInitialGuess(){
   }
 }
 
+
+bool Tracker::checkConvergence(float chi){
+
+  bool out = false;
+  if ( abs(chi_history_.back()-chi) < dso_->parameters_->conv_threshold ){
+    out = true;
+  }
+
+
+  chi_history_.push_back(chi);
+  return out;
+}
+
+
 bool Tracker::chiUpdateAndCheck(float chi){
 
   bool out = false;
@@ -44,7 +58,7 @@ bool Tracker::chiUpdateAndCheck(float chi){
 
 void Tracker::showProjectedActivePoints(int level, CamCoupleContainer& cam_couple_container){
 
-  Image<colorRGB>* show_img( dso_->frame_current_->pyramid_->getC(level)->returnColoredImgFromIntensityImg("PORCODDIOINFAME") );
+  Image<colorRGB>* show_img( dso_->frame_current_->pyramid_->getC(level)->returnColoredImgFromIntensityImg("Tracking debug") );
 
   // iterate through keyframes (except last)
   for( int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1 ; i++){
@@ -83,8 +97,8 @@ void Tracker::trackCam(){
   for (int level=dso_->parameters_->coarsest_level-1; level>=0 ; level--){
   // for (int level=0; level<1 ; level++){
 
-    for(int iteration=0; iteration<dso_->parameters_->max_iterations_ls; iteration++){
-    // while(true){
+    // for(int iteration=0; iteration<dso_->parameters_->max_iterations_ls; iteration++){
+    while(true){
       double t_start=getTime();
 
       int n_meas =0;
@@ -125,7 +139,7 @@ void Tracker::trackCam(){
       if(dso_->parameters_->debug_tracking){
 
         // std::cout << "level " << level << std::endl;
-        // std::cout << "chi " << lin_sys_tracking->chi << std::endl;
+        std::cout << "level " << level << ", chi " << lin_sys_tracking.chi << std::endl;
 
         dso_->points_handler_->projectActivePointsOnLastFrame();
         // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
@@ -139,6 +153,10 @@ void Tracker::trackCam(){
 
       if(level>0){
         stop = chiUpdateAndCheck(lin_sys_tracking.chi);
+      }
+      else{
+        if (checkConvergence(lin_sys_tracking.chi))
+          break;
       }
       lin_sys_tracking.clear();
 

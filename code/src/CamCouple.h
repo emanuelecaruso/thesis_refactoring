@@ -93,6 +93,13 @@ class CamCoupleContainer{
       init();
     }
 
+    CamCoupleContainer(Dso* dso, CameraForMapping* cam_r):
+    dso_( dso ),
+    type_(KF_ON_ALL_KFS)
+    {
+      init(cam_r);
+    }
+
     ~CamCoupleContainer(){
       for(int i=0; i<cam_couple_mat_.size(); i++){
         for(int j=0; j<cam_couple_mat_[i].size(); j++){
@@ -105,6 +112,7 @@ class CamCoupleContainer{
     void update();
     CamCouple* get(int cam_r_idx, int cam_m_idx);
     void init();
+    void init(CameraForMapping* cam_r);
 
   protected:
     void clear();

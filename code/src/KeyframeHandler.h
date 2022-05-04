@@ -1,5 +1,6 @@
 #pragma once
 #include "camera.h"
+#include "CameraForMapping.h"
 
 class Dso;
 
@@ -13,5 +14,13 @@ class KeyframeHandler{
     dso_(dso){};
 
     // ********** methods **********
-    void addKeyframe(bool fixed);
+    bool addKeyframe(bool fixed);
+
+  protected:
+    float getFlowDist();
+    bool marginalizeKeyframe();
+    float getPercentuageMarg(CameraForMapping* keyframe);
+    void marginalize(CameraForMapping* keyframe);
+    float getScore(CameraForMapping* keyframe);
+
 };

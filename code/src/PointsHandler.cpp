@@ -11,8 +11,8 @@ void PointsHandler::sampleCandidates(){
   double t_start=getTime();
 
   int count = 0;
-  int n_pixels_tot = dso_->frame_current_->cam_parameters_->resolution_x*dso_->frame_current_->cam_parameters_->resolution_y;
-  int reg_level = trunc(std::log((float)(n_pixels_tot/(pow(4,dso_->parameters_->candidate_level)))/(dso_->parameters_->num_candidates))/std::log(4))+1;
+  int n_pixels_tot = dso_->frame_current_->cam_parameters_->resolution_x*dso_->frame_current_->cam_parameters_->resolution_y/(pow(4,dso_->parameters_->candidate_level));
+  int reg_level = trunc(std::log( (float)(n_pixels_tot)/(dso_->parameters_->num_candidates))/std::log(4));
   reg_level=std::min(reg_level,5);
   reg_level=std::max(reg_level,1);
 
@@ -76,11 +76,13 @@ void PointsHandler::sampleCandidates(){
     if(!points_taken || num_cand_less<0)
       break;
 
-    float ratio = ((float)num_cand_less)/(float)num_cand_taken;
+    // float ratio = ((float)num_cand_less)/(float)num_cand_taken;
+    float ratio = (float)num_cand_taken/((float)num_cand_less);
     int diff = std::log(ratio)/std::log(4);
     reg_level+=diff;
     reg_level=std::min(reg_level,5);
     reg_level=std::max(reg_level,1);
+
   }
 
   double t_end=getTime();
@@ -337,7 +339,8 @@ bool CandTracker::searchMin( ){
     float cost_phase=0;
     bool valid = getPhaseCostContribute(pixel_m, uv_m, cost_phase);
     if(!valid)
-      return false;
+      continue;
+      // return false;
 
     float cost=cost_magn+cost_phase;
     // float cost=cost_magn;
@@ -418,16 +421,19 @@ bool CandTracker::getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, fl
   // std::cout << "\n1:\n" << direction_m << " 2:\n " << grad_direction_r << std::endl;
 
   float phase_m_hat = std::atan2(direction_m.y(),direction_m.x());
+  if(!std::isfinite(phase_m_hat))
+    return false;
 
   if (phase_m_hat<0)
     phase_m_hat+=2*PI;
   if (phase_m<0)
     phase_m+=2*PI;
 
-  if(abs(phase_m)>10 || abs(phase_m_hat)>10){
+  if(abs(phase_m)>=5 || abs(phase_m_hat)>=5){
     return false;
   }
-
+  // if(abs(phase_m_hat)>=10){
+  // }
   // if( (phase_far < phase_m && phase_m < phase_close) || (phase_far > phase_m && phase_m > phase_close) ){
   assert(abs(phase_m_hat)<10);
   assert(abs(phase_m)<10);

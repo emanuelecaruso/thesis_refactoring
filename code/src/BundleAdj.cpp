@@ -33,13 +33,19 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
 
   // evaluate occlusion ratio
   float occlusion_valid_ratio = (float)n_occlusions/(float)n_valid;
-  if(occlusion_valid_ratio>0.5){
+  // evaluate non valid proj ratio
+  float valid_ratio = (float)n_valid/((float)dso_->cameras_container_->keyframes_active_.size()-1);
+
+  // if(occlusion_valid_ratio>0.25){
+  if(occlusion_valid_ratio>dso_->parameters_->occlusion_valid_ratio_thresh ||
+     valid_ratio<dso_->parameters_->valid_ratio_thresh){
     // clear vector
     for( MeasBA* measurement : *measurement_vector ){
       delete measurement;
     }
     return false;
   }
+
 
   // load jacobians
   // iterate through all active keyframes
@@ -63,6 +69,84 @@ void BundleAdj::setCamData(){
   }
 }
 
+void BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* cam_couple_container){
+  // remove candidate from vector
+  std::vector<ActivePoint*>& v = active_point->cam_->points_container_->active_points_;
+  int v_size = v.size();
+  v.erase(std::remove(v.begin(), v.end(), active_point), v.end());
+  assert(v_size==v.size()+1);
+
+  MarginalizedPoint* marg_pt = new MarginalizedPoint(active_point);
+
+  // push marginalized point
+  active_point->cam_->points_container_->marginalized_points_.push_back(marg_pt);
+
+  // crete prior
+  // iterate through all active keyframes
+  for (int i=0; i<cam_couple_container->cam_couple_mat_[0].size(); i++){
+    CamCouple* cam_couple = cam_couple_container->get(0,i);
+    Prior* prior = new Prior(active_point, cam_couple);
+    if(!prior->valid_){
+      delete prior;
+      continue;
+    }
+    else{
+      cam_couple->cam_m_->data_for_ba_->priors_.push_back(prior);
+    }
+  }
+
+  // delete active point
+  delete active_point;
+
+}
+
+
+void BundleAdj::marginalizePointsAndKeyframes(){
+
+
+
+  CameraForMapping* curr_frame = dso_->frame_current_;
+
+  // iterate through keyframes to be marginalized
+  for (CameraForMapping* keyframe_to_marg : dso_->cameras_container_->keyframes_to_marginalize_){
+
+    // create cam couple vector
+    CamCoupleContainer* cam_couple_container = new CamCoupleContainer(dso_,keyframe_to_marg);
+
+    // marginalize also all active points
+    for(int i=keyframe_to_marg->points_container_->active_points_.size()-1; i>=0; i--){
+      ActivePoint* active_pt = keyframe_to_marg->points_container_->active_points_[i];
+      marginalizePoint(active_pt, cam_couple_container);
+    }
+
+    delete cam_couple_container;
+  }
+
+  // marginalize points not in last cam
+  // iterate through all keyframe (except the last)
+  for (int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1; i++){
+    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
+    // CamCouple* cam_couple_curr_frame = new CamCouple(keyframe,curr_frame);
+
+    CamCoupleContainer* cam_couple_container = new CamCoupleContainer(dso_,keyframe);
+
+    // iterate along all active points
+    for(int i=keyframe->points_container_->active_points_.size()-1; i>=0; i--){
+      ActivePoint* active_pt = keyframe->points_container_->active_points_[i];
+
+      Eigen::Vector2f uv_curr;
+      cam_couple_container->get(0,dso_->cameras_container_->keyframes_active_.size()-1)->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_curr.x(),uv_curr.y() );
+      bool uv_in_range = keyframe->uvInRange(uv_curr);
+      if(!uv_in_range){
+        marginalizePoint(active_pt, cam_couple_container);
+      }
+    }
+
+    delete cam_couple_container;
+    // delete cam_couple_curr_frame;
+  }
+
+}
 
 void BundleAdj::optimize(){
 
@@ -110,6 +194,11 @@ void BundleAdj::optimize(){
     lin_sys_tracking.updateState();
 
     cam_couple_container_->init();
+
+    if(dso_->parameters_->debug_optimization){
+      dso_->spectator_->renderState();
+      dso_->spectator_->showSpectator();
+    }
 
   }
 

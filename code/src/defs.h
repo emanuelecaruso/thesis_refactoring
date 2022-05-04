@@ -502,6 +502,7 @@ inline Eigen::Isometry3f v2t_inv(Vector6f& t){
 
 #define ALL_KFS_ON_LAST 0
 #define ALL_KFS_ON_ALL_KFS 1
+#define KF_ON_ALL_KFS 2
 
 
 
@@ -561,24 +562,16 @@ inline float getPinvThreshold(const Eigen::VectorXf& singular_values){
 }
 
 
-inline Eigen::DiagonalMatrix<float,Eigen::Dynamic> pinvDiagonalMatrix(Eigen::VectorXf& vec_in){
+inline Eigen::DiagonalMatrix<float,Eigen::Dynamic> invDiagonalMatrix(Eigen::VectorXf& vec_in){
 
   Eigen::DiagonalMatrix<float,Eigen::Dynamic> mat_out;
   int size = vec_in.size();
   mat_out.resize(size);
-  // float thresh = getPinvThreshold(vec_in);
-  // int count = 0;
+
   for(int i=0; i<size; i++){
     float val = vec_in[i];
-    // if(val>thresh)
-    // if(val!=0)
       mat_out.diagonal()[i]=(1.0/val);
-    // else{
-    //   mat_out.diagonal()[i]=0;
-    //   count++;
-    // }
   }
-  // std::cout << "discarded: " << count << " out of " << size << std::endl;
 
   return mat_out;
 }

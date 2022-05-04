@@ -63,18 +63,18 @@ bool MeasTracking::init(ActivePoint* active_point, CamCouple* cam_couple){
   error=0;  // initialize error
 
   // get Jm_
-  Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_(active_point);
-  // Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_old_(active_point);
+  // Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_(active_point);
+  Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_old_(active_point);
 
   // update J_m and error for intensity
   Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian(pixel, active_point, cam_couple, INTENSITY_ID);
   J_m += image_jacobian_intensity*Jm_;
   error += getError( pixel,  active_point, cam_couple, INTENSITY_ID);
 
-  // // update J_m and error for gradient
-  // Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian(pixel, active_point, cam_couple, GRADIENT_ID);
-  // J_m += image_jacobian_gradient*Jm_;
-  // error += getError( pixel,  active_point, cam_couple, GRADIENT_ID);
+  // update J_m and error for gradient
+  Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian(pixel, active_point, cam_couple, GRADIENT_ID);
+  J_m += image_jacobian_gradient*Jm_;
+  error += getError( pixel,  active_point, cam_couple, GRADIENT_ID);
 
   J_m_transpose= J_m.transpose();
   return true;
@@ -85,7 +85,7 @@ bool MeasTracking::init(ActivePoint* active_point, CamCouple* cam_couple){
 void LinSysTracking::addMeasurement( MeasTracking& measurement ){
 
   // get weight
-  float weight = getWeight(measurement.error);
+  float weight = getWeight(measurement);
 
   // update H
   H.triangularView<Eigen::Upper>() += measurement.J_m_transpose*weight*measurement.J_m;
@@ -100,7 +100,9 @@ void LinSysTracking::addMeasurement( MeasTracking& measurement ){
 void LinSysTracking::updateCameraPose(){
 
   // get dx
-  dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
+  // dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
+  H=H.selfadjointView<Eigen::Upper>();
+  dx = H.completeOrthogonalDecomposition().pseudoInverse()*(-b);
 
   // update pose
   Eigen::Isometry3f new_guess = (*(dso_->frame_current_->frame_camera_wrt_world_))*v2t_inv(dx);
@@ -115,28 +117,29 @@ void LinSysTracking::clear(){
   chi=0;
 }
 
-float LinSysTracking::getWeight(float error){
-  float weight;
+float LinSysTracking::getWeight(MeasTracking& measurement){
+  float weight=1;
+  // float weight=1.0/measurement.active_point_->invdepth_var_;
 
   // huber robustifier
   if(dso_->parameters_->opt_norm==HUBER){
     float huber_threshold=dso_->parameters_->huber_threshold;
-    float u = abs(error);
+    float u = abs(measurement.error);
 
     if (u<=huber_threshold){
-      weight=1/huber_threshold;
+      weight *= 1/huber_threshold;
     }
     else{
       // float rho_der = huberNormDerivative(error,dso_->parameters_->huber_threshold);
       float rho_der = huberNormDerivative(u,dso_->parameters_->huber_threshold);
       float gamma=(1/u)*rho_der;
-      weight=gamma;
+      weight *= gamma;
     }
 
   }
   // least square without robustifier
   else if (dso_->parameters_->opt_norm==QUADRATIC){
-    weight=1;
+
   }
   else{
     throw std::invalid_argument( "optimization norm has wrong value" );

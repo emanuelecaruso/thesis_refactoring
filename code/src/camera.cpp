@@ -219,6 +219,16 @@ bool Camera::projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv, float&
 
 }
 
+bool Camera::uvInRange(const Eigen::Vector2f& uv){
+  if( uv.x()<cam_parameters_->pixel_width/2 || uv.y()<cam_parameters_->pixel_width/2 )
+    return false;
+  if( uv.x()>cam_parameters_->width-cam_parameters_->pixel_width/2 || uv.y()> cam_parameters_->height-cam_parameters_->pixel_width/2)
+    return false;
+
+  return true;
+}
+
+
 void Camera::saveRGB(const std::string& path) const {
   cv::imwrite(path+ "/rgb_" +name_+".png", image_intensity_->image_);
 }

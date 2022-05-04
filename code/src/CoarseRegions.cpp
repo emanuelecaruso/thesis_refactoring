@@ -26,7 +26,7 @@ void CoarseRegion::updateFromSubregions(){
 }
 
 ActivePoint* CoarseRegion::generateCoarseActivePoint(){
-  ActivePoint* active_pt(new ActivePoint(cam_, pixel_, level_+1, invdepth_, invdepth_var_));
+  ActivePoint* active_pt = new ActivePoint(cam_, pixel_, level_+1, invdepth_, invdepth_var_);
   return active_pt;
 }
 
@@ -157,7 +157,7 @@ void CoarseRegions::showCoarseLevel(int level){
 
   double alpha = 1;
 
-  std::string name = points_container_->cam_->name_+" , "+std::to_string(vector_of_coarse_active_points.size())+" coarse active points";
+  std::string name = points_container_->cam_->name_+" , "+std::to_string(vector_of_coarse_active_points.size())+" coarse active points, level: "+std::to_string(level);
   Image<colorRGB>* show_img( points_container_->cam_->pyramid_->getC(level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through active points

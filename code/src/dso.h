@@ -78,7 +78,7 @@ class Dso : public std::enable_shared_from_this<Dso>{
     void loadFrameCurrent();
     void setFirstKeyframe();
     void initialize();
-    void doDso();
+    bool doDso();
 
   private:
 

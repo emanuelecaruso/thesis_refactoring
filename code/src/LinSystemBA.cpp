@@ -56,7 +56,8 @@ void MeasBA::loadJacobians(ActivePoint* active_point){
 
 
     // get Jm_
-    Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_(active_point);
+    // Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_(active_point);
+    Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_old_(active_point);
     Eigen::Matrix<float,2,6> Jr_ = cam_couple_->getJr_(active_point);
     Eigen::Matrix<float,2,1> Jd_ = cam_couple_->getJd_(active_point);
 
@@ -66,18 +67,18 @@ void MeasBA::loadJacobians(ActivePoint* active_point){
     J_r += image_jacobian_intensity*Jr_;
     J_d += image_jacobian_intensity*Jd_;
 
-    // // update J_m and error for gradient
-    // Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian(pixel_, active_point, cam_couple, GRADIENT_ID);
-    // J_m += image_jacobian_gradient*Jm_;
-    // J_r += image_jacobian_gradient*Jr_;
-    // J_d += image_jacobian_gradient*Jd_;
+    // update J_m and error for gradient
+    Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian(pixel_, active_point, cam_couple_, GRADIENT_ID);
+    J_m += image_jacobian_gradient*Jm_;
+    J_r += image_jacobian_gradient*Jr_;
+    J_d += image_jacobian_gradient*Jd_;
 
     J_m_transpose= J_m.transpose();
     J_r_transpose= J_r.transpose();
 }
 
 
-bool MeasBA::init(ActivePoint* active_point, CamCouple* cam_couple, float thresh){
+bool MeasBA::init(ActivePoint* active_point, CamCouple* cam_couple, float chi_occlusion_threshold){
   assert(active_point->cam_==cam_couple->cam_r_);
 
   // project active point and get pixel coordinates
@@ -93,7 +94,7 @@ bool MeasBA::init(ActivePoint* active_point, CamCouple* cam_couple, float thresh
   // error += getError( pixel_,  active_point, cam_couple, GRADIENT_ID);
 
   // control on error
-  if(abs(error)>thresh){
+  if(abs(error)>chi_occlusion_threshold){
     occlusion_ = true;
     return false;
   }
@@ -145,7 +146,7 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
   assert(p_idx < p_size);
 
   // get weight
-  float weight = getWeight(measurement->error);
+  float weight = getWeight(measurement);
 
   // ********* H *********
 
@@ -153,27 +154,17 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
 
   // m-m
   if(!no_m){
-    // Eigen::Matrix<float,6,6> mm_block;
-    // mm_block.triangularView<Eigen::Upper>() = measurement->J_m_transpose*weight*measurement->J_m;
-    // Eigen::Matrix<float,6,6> mm_block = measurement->J_m_transpose*weight*measurement->J_m;
     H_cc.block<6,6>(m_idx,m_idx).triangularView<Eigen::Upper>() += measurement->J_m_transpose*weight*measurement->J_m;
-    // H_cc.block<6,6>(m_idx,m_idx) += measurement->J_m_transpose*weight*measurement->J_m;;
   }
 
   // // r-r
   if(!no_r){
     H_cc.block<6,6>(r_idx,r_idx).triangularView<Eigen::Upper>() += measurement->J_r_transpose*weight*measurement->J_r;
   }
-  // Eigen::Matrix<float,6,6> rr_block;
-  // rr_block.triangularView<Eigen::Upper>() = measurement->J_r_transpose*weight*measurement->J_r;
-  // H_cc.block<6,6>(r_idx,r_idx) += mm_block;
 
   // m-r
   if(!no_r && !no_m){
-    // H_cc.block<6,6>(m_idx,r_idx) += measurement->J_m_transpose*weight*measurement->J_r;
-    // H_cc.block<6,6>(r_idx,m_idx) += measurement->J_r_transpose*weight*measurement->J_m;
-
-    if(m_idx<=r_idx){
+    if(m_idx<r_idx){
       H_cc.block<6,6>(m_idx,r_idx) += measurement->J_m_transpose*weight*measurement->J_r;
     }
     else{
@@ -219,14 +210,25 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
 
 
 void LinSysBA::buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement_vec_vec ){
+  int count = 0;
+
   // iterate through all measurements
   for(int i=0; i<measurement_vec_vec.size(); i++){
     std::vector<MeasBA*>* v = measurement_vec_vec[i];
     for(MeasBA* measurement : *v){
-
+      count++;
       chi += addMeasurement(measurement, i);
     }
   }
+
+  // *********  MARG PRIORS  *********
+
+  // build linear system marg
+  // LinSysBAMarg lin_sys_marg(this);
+  // lin_sys_marg.loadMargPriors();
+
+
+  chi /= (float)count;
 
   // visualizeH();
   // iterate through all marginalized measurements
@@ -246,12 +248,12 @@ bool LinSysBA::visualizeH(){
   for(int i=0; i<c_size; i++){
     for(int j=0; j<c_size; j++){
       float val;
-      val=H_cc(i,j);
-      // if(i<j){
-      // }
-      // else{
-      //   val=H_cc(j,i);
-      // }
+      if(i<j){
+        val=H_cc(i,j);
+      }
+      else{
+        val=H_cc(j,i);
+      }
       if (val!=0){
         img_H->setPixel(i,j, red);
       }
@@ -322,8 +324,7 @@ void LinSysBA::updateCameras(){
   }
 
 
-  dso_->spectator_->renderState();
-  dso_->spectator_->showSpectator();
+
 }
 
 void LinSysBA::updatePoints(){
@@ -334,7 +335,10 @@ void LinSysBA::updatePoints(){
     for( ActivePoint* active_pt : cam_r->points_container_->active_points_ ){
       if(active_pt->p_idx_!=-1){
 
-        active_pt->updateInvdepthVarAndP( active_pt->invdepth_ + dx_p(active_pt->p_idx_) , active_pt->invdepth_var_);
+        float new_invdepth = active_pt->invdepth_ + dx_p(active_pt->p_idx_);
+        new_invdepth = std::min(new_invdepth,(float)1.0/cam_r->cam_parameters_->min_depth);
+        new_invdepth = std::max(new_invdepth,(float)1.0/cam_r->cam_parameters_->max_depth);
+        active_pt->updateInvdepthVarAndP( new_invdepth , (1.0/(H_pp[active_pt->p_idx_]+0.001))+0.001 );
       }
     }
   }
@@ -348,27 +352,21 @@ void LinSysBA::updateState(){
   // dx_p = H_pp_inv*(-b_p);
 
 
-
   // get inverse of schur -> (H_cc - H_cp H_pp_inv H_pc)_inv
   Eigen::VectorXf H_pp_damped = H_pp + dso_->parameters_->damp_point_invdepth * Eigen::VectorXf::Ones(H_pp.size());
-  Eigen::DiagonalMatrix<float,Eigen::Dynamic> H_pp_inv = pinvDiagonalMatrix(H_pp_damped );
-  // H_cc = H_cc.selfadjointView<Eigen::Upper>();
-  // Eigen::MatrixXf H_cc_inv = H_cc.completeOrthogonalDecomposition().pseudoInverse();
-  // Eigen::MatrixXf I = Eigen::MatrixXf::Identity(H_pp.size(), H_pp.size());
+  Eigen::DiagonalMatrix<float,Eigen::Dynamic> H_pp_inv = invDiagonalMatrix(H_pp_damped );
+  H_cc = H_cc.selfadjointView<Eigen::Upper>();
   Eigen::MatrixXf H_pc = H_cp.transpose();
-  // Eigen::MatrixXf Schur_inv = H_cc_inv + H_cc_inv * H_cp * H_pp_inv * ( I + H_pc * H_cc_inv * H_cp * H_pp_inv ).inverse() * H_pc * H_cc_inv;
   Eigen::MatrixXf Schur_inv = (H_cc - H_cp * H_pp_inv * H_pc).inverse();
 
   dx_c = Schur_inv * ( -b_c + H_cp * H_pp_inv * b_p);
   dx_p = H_pp_inv * ( -b_p - H_pc * dx_c );
-  // H_cc = H_cc.selfadjointView<Eigen::Upper>();
-  // Eigen::MatrixXf H_cc_inv = H_cc.completeOrthogonalDecomposition().pseudoInverse();
-  // dx_c = -H_cc_inv*b_c;
-
 
   updateCameras();
   updatePoints();
 
+  dso_->spectator_->renderState();
+  dso_->spectator_->showSpectator();
   std::cout << "chi " << chi << std::endl;
 
 }
@@ -395,28 +393,29 @@ void LinSysBA::init(){
 
 }
 
-float LinSysBA::getWeight(float error){
-  float weight;
+float LinSysBA::getWeight(MeasBA* measurement){
+  float weight=1;
+  // float weight=1.0/measurement->active_point_->invdepth_var_;
 
   // huber robustifier
   if(dso_->parameters_->opt_norm==HUBER){
     float huber_threshold=dso_->parameters_->huber_threshold;
-    float u = abs(error);
+    float u = abs(measurement->error);
 
     if (u<=huber_threshold){
-      weight=1/huber_threshold;
+      weight*=1/huber_threshold;
     }
     else{
       // float rho_der = huberNormDerivative(error,dso_->parameters_->huber_threshold);
       float rho_der = huberNormDerivative(u,dso_->parameters_->huber_threshold);
       float gamma=(1/u)*rho_der;
-      weight=gamma;
+      weight*=gamma;
     }
 
   }
   // least square without robustifier
   else if (dso_->parameters_->opt_norm==QUADRATIC){
-    weight=1;
+
   }
   else{
     throw std::invalid_argument( "optimization norm has wrong value" );
@@ -435,4 +434,35 @@ float LinSysBA::getWeight(float error){
   // return weight;
   return weight;
 
+}
+
+bool Prior::init(ActivePoint* active_pt, CamCouple* cam_couple){
+  assert(cam_couple->cam_r_==active_pt->cam_);
+  // project active point
+  Eigen::Vector2f uv;
+  cam_couple->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv.x(),uv.y() );
+  bool uv_in_range = active_pt->cam_->uvInRange(uv);
+
+  if(!uv_in_range)
+    return false;
+
+
+  return true;
+
+}
+
+void LinSysBAMarg::init(){
+
+  // iterate through keyframes
+  for(int i=0; i<lin_sys_ba_->dso_->cameras_container_->keyframes_active_.size(); i++){
+    CameraForMapping* keyframe = lin_sys_ba_->dso_->cameras_container_->keyframes_active_[i];
+
+    // if keyframe has priors
+
+      // set index
+
+      // iterate through priors
+
+
+  }
 }

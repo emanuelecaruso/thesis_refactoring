@@ -7,6 +7,7 @@ class Dso;
 class MeasTracking{
   public:
     // ********** members **********
+    ActivePoint* active_point_;
     bool valid_;
     Eigen::Matrix<float,1,6> J_m;
     Eigen::Matrix<float,6,1> J_m_transpose;
@@ -14,7 +15,8 @@ class MeasTracking{
 
     // ********** constructor **********
     MeasTracking(ActivePoint* active_point, CamCouple* cam_couple ):
-    valid_(true){
+    valid_(true),
+    active_point_(active_point){
       init(active_point, cam_couple);
     }
 
@@ -48,6 +50,6 @@ class LinSysTracking{
     void clear();
 
   protected:
-    float getWeight(float error);
+    float getWeight(MeasTracking& measurement);
 
 };

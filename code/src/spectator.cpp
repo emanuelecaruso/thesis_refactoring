@@ -66,13 +66,14 @@ void Spectator::renderPoints(){
   for ( int i = 0; i<num_kfs; i++){
     CameraForMapping* cam = dso_->cameras_container_->frames_[i];
     if (cam->keyframe_){
-      // // iterate through all marginalized points
-      // int num_marg_pts = cam->marginalized_points_->size();
+      // // render marginalized points
+      // int num_marg_pts = cam->points_container_->marginalized_points_.size();
       // for ( int j = num_marg_pts-1; j>=0; j--){
-      //   ActivePoint* marg_pt = cam->marginalized_points_->at(j);
+      //   MarginalizedPoint* marg_pt = cam->points_container_->marginalized_points_[j];
       //   plotPt(marg_pt, black);
       // }
-      //
+
+      // render active points
       std::vector<CameraForMapping*>& v = dso_->cameras_container_->keyframes_active_;
       if (std::count(v.begin(), v.end(), cam)) {
         int num_act_pts = cam->points_container_->active_points_.size();
@@ -127,6 +128,11 @@ Eigen::Isometry3f Spectator::getSpectatorPose(){
 
 }
 
+bool Spectator::plotPt(MarginalizedPoint* pt, const colorRGB& color){
+  bool success = plotPt( pt->p_, color);
+  return success;
+}
+
 bool Spectator::plotPt(ActivePoint* pt, const colorRGB& color){
   bool success = plotPt( pt->p_, color);
   return success;
@@ -139,6 +145,11 @@ bool Spectator::plotPt(Eigen::Vector3f& pt, const colorRGB& color){
 }
 
 bool Spectator::plotPt(ActivePoint* pt, const colorRGB& color, pxl& pixel){
+  bool success = plotPt( pt->p_, color, pixel);
+  return success;
+}
+
+bool Spectator::plotPt(MarginalizedPoint* pt, const colorRGB& color, pxl& pixel){
   bool success = plotPt( pt->p_, color, pixel);
   return success;
 }

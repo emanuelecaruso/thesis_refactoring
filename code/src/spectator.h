@@ -45,8 +45,10 @@ class Spectator{
 
     Eigen::Isometry3f getSpectatorPose();
 
+    bool plotPt(MarginalizedPoint* pt, const colorRGB& color);
     bool plotPt(ActivePoint* pt, const colorRGB& color);
     bool plotPt(Eigen::Vector3f& pt, const colorRGB& color);
+    bool plotPt(MarginalizedPoint* pt, const colorRGB& color, pxl& pixel);
     bool plotPt(ActivePoint* pt, const colorRGB& color, pxl& pixel);
     bool plotPt(Eigen::Vector3f& pt, const colorRGB& color, pxl& pixel);
     bool plotLine(pxl& pixel1, pxl& pixel2, const colorRGB& color );

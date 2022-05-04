@@ -1,31 +1,5 @@
-- pyramid
-- initialization
-
-- tracking
-- spectator
-
-- plan ba
-- come back on mapping
-
-1) add measurement
-2) updateCameraPose
-
-
-
-
-
-
-
-- include corners ... no?
-
-- doOptimization -> test type as input
-
-- solve numerical stability problem
-
-- make sequential version
 - check sequential version with parallel for
 - work on parallel version using more threads
 
-- experiments
-  - include initial corners or not
-  - do initial ba on points or not
+- solve bug candidates sample, seems done
+- implement marg priors

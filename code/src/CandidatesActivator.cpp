@@ -329,6 +329,9 @@ void CandidatesActivator::removeEmptyRegion(Region* reg){
 
 void CandidatesActivator::activateCandidates(){
 
+  dso_->points_handler_->projectActivePointsOnLastFrame();
+  dso_->points_handler_->projectCandidatesOnLastFrame();
+
   double t_start=getTime();
 
   reset();
@@ -408,6 +411,8 @@ void CandidatesActivator::activateCandidates(){
 
     }
   }
+
+  dso_->points_handler_->generateCoarseActivePoints();  // generate coarse active points for tracking
 
   double t_end=getTime();
   int deltaTime=(t_end-t_start);

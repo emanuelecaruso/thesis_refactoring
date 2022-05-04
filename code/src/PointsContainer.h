@@ -5,6 +5,7 @@
 
 class CoarseRegions;
 class CamCouple;
+class Dso;
 
 class Point{
   public:
@@ -142,6 +143,47 @@ public:
 
 };
 
+class MarginalizedPoint : public Point{
+public:
+
+  // ********** members **********
+  Eigen::Vector3f p_;
+
+  // ********** constructor **********
+
+  // create from active point
+  MarginalizedPoint(ActivePoint* active_pt):
+  Point(active_pt->cam_, active_pt->pixel_, active_pt->level_ ),
+  p_(active_pt->p_)
+  {}
+
+
+  // ********** methods **********
+  void remove();
+
+};
+
+class MarginalizedPointProjected : public Point{
+public:
+
+  // ********** members **********
+  MarginalizedPoint* marg_pt_;
+
+  // ********** constructor **********
+  // project active point
+  MarginalizedPointProjected(MarginalizedPoint* marg_pt, CamCouple* cam_couple_ ):
+  Point()
+  ,marg_pt_( marg_pt )
+  {
+    init(marg_pt,cam_couple_);
+  }
+
+  // ********** methods **********
+  void init(MarginalizedPoint* marg_pt, CamCouple* cam_couple_);
+
+
+};
+
 
 class ActivePointProjected : public Point{
 public:
@@ -181,8 +223,8 @@ class PointsContainer{
     std::vector<CandidateProjected*> candidates_projected_;
     std::vector<ActivePoint*> active_points_;
     std::vector<ActivePointProjected*> active_points_projected_;
-    std::vector<Point*> marginalized_points_;
-    std::vector<Point*> marginalized_points_projected_;
+    std::vector<MarginalizedPoint*> marginalized_points_;
+    std::vector<MarginalizedPointProjected*> marginalized_points_projected_;
     CoarseRegions* coarse_regions_;
 
 

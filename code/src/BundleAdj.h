@@ -22,8 +22,10 @@ class BundleAdj{
 
     // ********** methods **********
     void optimize();
+    void marginalizePointsAndKeyframes();
     void setCamData();
     bool getMeasurements(ActivePoint* active_point, int i, std::vector<MeasBA*>* measurement_vector);
+    void marginalizePoint(ActivePoint* active_point, CamCoupleContainer* cam_couple_container);
 
 
 };
@@ -32,10 +34,13 @@ class DataForBA{
   public:
     // ********** members **********
     int c_idx_;
-    // std::vector<> // vector of marginalized measurements
+    int c_marg_idx_;
+    std::vector<Prior*> priors_; // vector of priors
 
     // ********** constructor **********
     DataForBA():
-    c_idx_(-1){}
+    c_idx_(-1),
+    c_marg_idx_(-1)
+    {}
 
 };
