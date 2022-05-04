@@ -128,7 +128,7 @@ void Dso::doDso(){
   // tracker_->trackCam(true); //groundtruth
 
   // add keyframe
-  keyframe_handler_->addKeyframe(true); // add fixed keyframe
+  keyframe_handler_->addKeyframe(false); // add keyframe
 
   points_handler_->trackCandidates(parameters_->take_gt_points); // track existing candidates
 
@@ -140,6 +140,7 @@ void Dso::doDso(){
 
   points_handler_->sampleCandidates(); // sample candidates as high gradient points
 
+  bundle_adj_->optimize();
   // bundle adjustment
 
 

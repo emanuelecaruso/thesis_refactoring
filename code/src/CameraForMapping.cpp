@@ -1,4 +1,5 @@
 #include "CameraForMapping.h"
+#include "BundleAdj.h"
 #include "PointsContainer.h"
 
 void CameraForMapping::setGrountruthPose(){
@@ -7,5 +8,9 @@ void CameraForMapping::setGrountruthPose(){
 
 PointsContainer* CameraForMapping::initializePointsContainer(Params* parameters){
   PointsContainer* ptr = new PointsContainer(this, parameters);
+  return ptr;
+}
+DataForBA* CameraForMapping::initializeDataForBA(){
+  DataForBA* ptr = new DataForBA();
   return ptr;
 }

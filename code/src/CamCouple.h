@@ -104,9 +104,10 @@ class CamCoupleContainer{
     // ********** methods **********
     void update();
     CamCouple* get(int cam_r_idx, int cam_m_idx);
+    void init();
 
   protected:
-    void init();
+    void clear();
 
 
 };

@@ -298,29 +298,53 @@ __/src/KeyframeHandler.cpp.s:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.s
 .PHONY : __/src/KeyframeHandler.cpp.s
 
-__/src/LinSystem.o: __/src/LinSystem.cpp.o
-.PHONY : __/src/LinSystem.o
+__/src/LinSystemBA.o: __/src/LinSystemBA.cpp.o
+.PHONY : __/src/LinSystemBA.o
 
 # target to build an object file
-__/src/LinSystem.cpp.o:
-	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.o
-.PHONY : __/src/LinSystem.cpp.o
+__/src/LinSystemBA.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystemBA.cpp.o
+.PHONY : __/src/LinSystemBA.cpp.o
 
-__/src/LinSystem.i: __/src/LinSystem.cpp.i
-.PHONY : __/src/LinSystem.i
+__/src/LinSystemBA.i: __/src/LinSystemBA.cpp.i
+.PHONY : __/src/LinSystemBA.i
 
 # target to preprocess a source file
-__/src/LinSystem.cpp.i:
-	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.i
-.PHONY : __/src/LinSystem.cpp.i
+__/src/LinSystemBA.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystemBA.cpp.i
+.PHONY : __/src/LinSystemBA.cpp.i
 
-__/src/LinSystem.s: __/src/LinSystem.cpp.s
-.PHONY : __/src/LinSystem.s
+__/src/LinSystemBA.s: __/src/LinSystemBA.cpp.s
+.PHONY : __/src/LinSystemBA.s
 
 # target to generate assembly for a file
-__/src/LinSystem.cpp.s:
-	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.s
-.PHONY : __/src/LinSystem.cpp.s
+__/src/LinSystemBA.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystemBA.cpp.s
+.PHONY : __/src/LinSystemBA.cpp.s
+
+__/src/LinSystemTracking.o: __/src/LinSystemTracking.cpp.o
+.PHONY : __/src/LinSystemTracking.o
+
+# target to build an object file
+__/src/LinSystemTracking.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystemTracking.cpp.o
+.PHONY : __/src/LinSystemTracking.cpp.o
+
+__/src/LinSystemTracking.i: __/src/LinSystemTracking.cpp.i
+.PHONY : __/src/LinSystemTracking.i
+
+# target to preprocess a source file
+__/src/LinSystemTracking.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystemTracking.cpp.i
+.PHONY : __/src/LinSystemTracking.cpp.i
+
+__/src/LinSystemTracking.s: __/src/LinSystemTracking.cpp.s
+.PHONY : __/src/LinSystemTracking.s
+
+# target to generate assembly for a file
+__/src/LinSystemTracking.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/LinSystemTracking.cpp.s
+.PHONY : __/src/LinSystemTracking.cpp.s
 
 __/src/PointsContainer.o: __/src/PointsContainer.cpp.o
 .PHONY : __/src/PointsContainer.o
@@ -664,9 +688,12 @@ help:
 	@echo "... __/src/KeyframeHandler.o"
 	@echo "... __/src/KeyframeHandler.i"
 	@echo "... __/src/KeyframeHandler.s"
-	@echo "... __/src/LinSystem.o"
-	@echo "... __/src/LinSystem.i"
-	@echo "... __/src/LinSystem.s"
+	@echo "... __/src/LinSystemBA.o"
+	@echo "... __/src/LinSystemBA.i"
+	@echo "... __/src/LinSystemBA.s"
+	@echo "... __/src/LinSystemTracking.o"
+	@echo "... __/src/LinSystemTracking.i"
+	@echo "... __/src/LinSystemTracking.s"
 	@echo "... __/src/PointsContainer.o"
 	@echo "... __/src/PointsContainer.i"
 	@echo "... __/src/PointsContainer.s"

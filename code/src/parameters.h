@@ -60,13 +60,13 @@ static float flow_dist_threshold_=0.0001;
 static float percentage_marg_pts_threshold_ = 0.1;
 
 // optimization
-static int max_iterations_ba_=20;
+static int max_iterations_ba_=10;
 static int max_num_active_points_=2000;
 static float huber_threshold_=0.02;
 // static float huber_threshold_=0.07;
 // static float huber_threshold_=0.5;
-static float chi_occlusion_threshold_=(0.12-huber_threshold_/2);
-// static float chi_occlusion_threshold_=1000;
+// static float chi_occlusion_threshold_=(0.12-huber_threshold_/2);
+static float chi_occlusion_threshold_=0.1;
 // static float chi_occlusion_threshold_=(pow(0.2,2));
 static int max_occlusions_ = num_active_keyframes_/2;
 static float intensity_coeff_ = 1;

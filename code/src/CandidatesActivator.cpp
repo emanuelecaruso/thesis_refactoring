@@ -332,7 +332,7 @@ void CandidatesActivator::activateCandidates(){
   double t_start=getTime();
 
   reset();
-  int num_candidates_to_activate = dso_->parameters_->max_num_active_points-num_current_active_points_;
+  int num_candidates_to_activate = dso_->parameters_->max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size();
   int num_candidates_activated = 0;
   for(int level=dso_->parameters_->reg_level-1; level>0; level--){
     for(int i=0; i<4; i++){
@@ -401,7 +401,7 @@ void CandidatesActivator::activateCandidates(){
           // removeEmptyRegion(reg);
         }
 
-        num_current_active_points_++;
+        // num_current_active_points_++;
         num_candidates_to_activate--;
 
       }

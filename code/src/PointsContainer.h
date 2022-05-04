@@ -106,6 +106,7 @@ public:
   Eigen::Vector3f p_incamframe_;
   pixelIntensity c_;
   pixelIntensity magn_cd_;
+  int p_idx_;
   // current guess
   // invdepth_(cand->invdepth_),
   // p_incamframe_( new Eigen::Vector3f ),
@@ -119,6 +120,7 @@ public:
   Point(cand->cam_, cand->pixel_, cand->level_ )
   ,c_(cand->c_)
   ,magn_cd_(cand->magn_cd_)
+  ,p_idx_(-1)
   {
     updateInvdepthVarAndP(cand->invdepth_, cand->invdepth_var_);
   }
@@ -136,6 +138,7 @@ public:
   // Point(coarse_reg->cam_, coarse_reg->pixel_, coarse_reg->level_, coarse_reg->invdepth_, coarse_reg->invdepth_var_){}
   // ********** methods **********
   void updateInvdepthVarAndP( float invdepth, float invdepth_var);
+  void remove();
 
 };
 

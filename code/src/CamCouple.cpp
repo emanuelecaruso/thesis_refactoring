@@ -456,10 +456,20 @@ bool CamCouple::getD2(float u1, float v1, float d1, float& d2){
 // //
 // // }
 
-void CamCoupleContainer::init(){
+void CamCoupleContainer::clear(){
+  for( int i=0; i<cam_couple_mat_.size() ; i++){
+    for( int j=0; j<cam_couple_mat_[i].size() ; j++){
+      delete cam_couple_mat_[i][j];
+    }
+  }
 
-   // cam_couple_mat_[cam_m][cam_r]
-   int n_active_kfs = dso_->cameras_container_->keyframes_active_.size();
+}
+
+void CamCoupleContainer::init(){
+  clear();
+
+  // cam_couple_mat_[cam_m][cam_r]
+  int n_active_kfs = dso_->cameras_container_->keyframes_active_.size();
   if(type_==ALL_KFS_ON_LAST){
     CameraForMapping* cam_m = dso_->frame_current_;
     cam_couple_mat_.resize(1);  //
@@ -481,9 +491,16 @@ void CamCoupleContainer::init(){
       CameraForMapping* cam_m = dso_->cameras_container_->keyframes_active_[i];
       cam_couple_mat_[i].resize(n_active_kfs-1);
       for( int j=0; j<n_active_kfs-1 ; j++){
+
+        if (i==j){
+          cam_couple_mat_[i][j]=nullptr;
+          continue;
+        }
+
         CameraForMapping* cam_r = dso_->cameras_container_->keyframes_active_[j];
 
         CamCouple* cam_couple = new CamCouple( cam_r, cam_m );
+        cam_couple->getJrParameters();
         cam_couple_mat_[i][j]= cam_couple;
       }
     }

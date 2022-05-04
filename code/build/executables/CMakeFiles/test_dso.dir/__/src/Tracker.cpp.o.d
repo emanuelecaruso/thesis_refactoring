@@ -519,13 +519,14 @@ executables/CMakeFiles/test_dso.dir/__/src/Tracker.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/environment.h \
  /home/manu/Desktop/thesis_refactoring/code/src/CandidatesActivator.h \
  /home/manu/Desktop/thesis_refactoring/code/src/BundleAdj.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/LinSystemBA.h \
  /home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.h \
  /home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.h \
  /home/manu/Desktop/thesis_refactoring/code/src/epline.h \
  /usr/include/c++/7/condition_variable \
  /home/manu/Desktop/thesis_refactoring/code/src/spectator.h \
  /home/manu/Desktop/thesis_refactoring/code/src/CoarseRegions.h \
- /home/manu/Desktop/thesis_refactoring/code/src/LinSystem.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/LinSystemTracking.h \
  /home/manu/Desktop/thesis_refactoring/code/src/utils.h \
  /usr/include/c++/7/future /usr/include/c++/7/thread \
  /usr/include/c++/7/atomic /usr/include/c++/7/bits/atomic_futex.h

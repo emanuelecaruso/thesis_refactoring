@@ -167,3 +167,13 @@ void ActivePoint::updateInvdepthVarAndP(float invdepth, float invdepth_var){
   invdepth_var_ = invdepth_var;
   cam_->pointAtDepth(uv_, 1.0/invdepth, p_, p_incamframe_);
 }
+
+void ActivePoint::remove(){
+  // remove candidate from vector
+  std::vector<ActivePoint*>& v = cam_->points_container_->active_points_;
+  int v_size = v.size();
+  v.erase(std::remove(v.begin(), v.end(), this), v.end());
+  assert(v_size==v.size()+1);
+
+  delete this;
+}

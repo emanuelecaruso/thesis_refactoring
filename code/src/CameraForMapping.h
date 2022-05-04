@@ -1,9 +1,11 @@
 #pragma once
 #include "camera.h"
+// #include "BundleAdj.h"
 #include "Pyramid.h"
 // #include "PointsContainer.h"
 
 class PointsContainer;
+class DataForBA;
 
 class CameraForMapping : public Camera, public std::enable_shared_from_this<CameraForMapping>{
   // class CameraForMapping : public Camera{
@@ -13,6 +15,7 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
     Pyramid* pyramid_;
     // Pyramid pyramid_;
     PointsContainer* points_container_;
+    DataForBA* data_for_ba_;
 
     // flags
     bool fixed_;
@@ -24,6 +27,7 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
       Camera(env_cam,false)
       ,grountruth_camera_(env_cam)
       ,pyramid_( new Pyramid(env_cam,parameters->coarsest_level) )
+      ,data_for_ba_( initializeDataForBA() )
       // ,points_container_( new PointsContainer(this) )
       ,points_container_( initializePointsContainer(parameters) )
       ,fixed_(false)
@@ -38,6 +42,7 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
     void setGrountruthPose();
   protected:
     PointsContainer* initializePointsContainer(Params* parameters);
+    DataForBA* initializeDataForBA();
 
 
 };

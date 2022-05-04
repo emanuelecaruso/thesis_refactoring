@@ -212,7 +212,6 @@ class CandidatesActivator{
     ActptpresenceMatVec actptpresencemat_vec_;
     RegMatVec regmat_vec_;
     RegVecMat regvec_mat_;
-    int num_current_active_points_;
     CandprojpresenceMat candprojpresencemat_;
 
 
@@ -223,7 +222,6 @@ class CandidatesActivator{
     ,actptpresencemat_vec_(dso_)
     ,regmat_vec_(dso_)
     ,regvec_mat_(this)
-    ,num_current_active_points_(0)
     ,candprojpresencemat_(dso_)
     {};
 

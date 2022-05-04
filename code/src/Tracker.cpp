@@ -3,7 +3,7 @@
 #include "dso.h"
 #include "CamCouple.h"
 #include "CoarseRegions.h"
-#include "LinSystem.h"
+#include "LinSystemTracking.h"
 #include "utils.h"
 
 
@@ -69,12 +69,14 @@ void Tracker::showProjectedActivePoints(int level, CamCoupleContainer& cam_coupl
 
 void Tracker::trackCam(){
 
-  int deltaTime_tot = 0;
+  double deltaTime_tot = 0;
 
   setInitialGuess();
 
+  // create cam couple container
   CamCoupleContainer cam_couple_container(dso_,ALL_KFS_ON_LAST);
-  // LinSysTracking* lin_sys_tracking( new LinSysTracking(dso_));
+
+  // create linear system
   LinSysTracking lin_sys_tracking(dso_);
 
   // iterate through levels
@@ -118,6 +120,7 @@ void Tracker::trackCam(){
 
 
       double t_end=getTime();
+      deltaTime_tot+=(t_end-t_start);
 
       if(dso_->parameters_->debug_tracking){
 
@@ -144,11 +147,10 @@ void Tracker::trackCam(){
       }
     }
 
-    // std::cout << "tracking time step: " << deltaTime_tot << std::endl;
     chi_history_.clear();
   }
   dso_->spectator_->renderState();
   dso_->spectator_->showSpectator();
-  sharedCoutDebug("   - Frame tracked: " + std::to_string(deltaTime_tot) + " ms");
+  sharedCoutDebug("   - Frame tracked: " + std::to_string((int)deltaTime_tot) + " ms");
 
 }
