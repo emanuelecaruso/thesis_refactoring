@@ -40,9 +40,7 @@ float KeyframeHandler::getPercentuageMarg(CameraForMapping* keyframe){
   float percentage_marg = 1;
   if(num_tot_pts>0){
     percentage_marg= (((float)num_active_pts)/((float)(num_tot_pts)));
-    assert(std::isfinite(percentage_marg));
   }
-  std::cout << keyframe->name_ << " "<< percentage_marg << " IAFJIFJA " << keyframe->points_container_->marginalized_points_.size() << " " << keyframe->points_container_->active_points_.size() << std::endl;
   return percentage_marg;
 }
 

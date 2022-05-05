@@ -58,13 +58,13 @@ static float percentage_marg_pts_threshold_ = 0.1;
 
 // optimization
 static int max_iterations_ba_=10;
-static int max_num_active_points_=3000;
+static int max_num_active_points_=2000;
 static float intensity_coeff_ = 1;
 static float gradient_coeff_ = 0.25;
 static float phase_coeff_ = 1./(4.*PI);
 static float damp_point_invdepth_ = 10;
 static float huber_threshold_=0.01;
-static float sat_threshold_=0.05;
+static float sat_threshold_=0.04;
 // static float sat_threshold_=2;
 static float chi_occlusion_threshold_=0.06;
 static float occlusion_valid_ratio_thresh_ = 0.5;
