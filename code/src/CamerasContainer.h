@@ -36,6 +36,7 @@ class CamerasContainer{
 
     CameraForMapping* getLastActiveKeyframe();
     CameraForMapping* getSecondLastFrame();
+    CameraForMapping* getThirdLastFrame();
 
   protected:
     // check functions

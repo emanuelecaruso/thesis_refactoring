@@ -486,6 +486,8 @@ inline Eigen::Isometry3f v2t_inv(Vector6f& t){
 
 #define POSE_CONSTANT 0
 #define VELOCITY_CONSTANT 1
+#define PERS_GUESS 2
+
 #define HUBER 0
 #define QUADRATIC 1
 #define LINEAR 2

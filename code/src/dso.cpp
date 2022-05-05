@@ -1,7 +1,6 @@
 #include "dso.h"
 #include "utils.h"
 #include "PointsContainer.h"
-#include "CoarseRegions.h"
 #include "CameraForMapping.h"
 
 void Dso::startSequential(){
@@ -66,7 +65,7 @@ void Dso::initialize(){
 
   // if a good pose is found ...
   if(initializer_->findPose()){
-    tracker_->trackCam(true); //groundtruth
+
     sharedCoutDebug("   - Pose found");
     if(parameters_->debug_initialization){
       initializer_->showCornersTrackCurr();
@@ -83,9 +82,7 @@ void Dso::initialize(){
     points_handler_->sampleCandidates(); // sample candidates as high gradient points
 
     if(parameters_->debug_mapping){
-      cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(1);
-      cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
-      cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(3);
+
       // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
       // points_handler_->sampleCandidates();
       // points_handler_->showCandidates();
@@ -135,7 +132,6 @@ bool Dso::doDso(){
   bundle_adj_->marginalizePointsAndKeyframes();
 
   points_handler_->projectActivePointsOnLastFrame();
-  points_handler_->generateCoarseActivePoints();
 
   return true;
 

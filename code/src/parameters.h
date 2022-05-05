@@ -15,8 +15,8 @@
 // static bool use_fast_cam_coupling_ = false;
 static bool debug_initialization_=false;
 static bool debug_mapping_=false;
-static bool debug_tracking_=true;
-static bool debug_optimization_= true;
+static bool debug_tracking_=false;
+static bool debug_optimization_= false;
 static bool use_spectator_ = true;
 
 // code parameters
@@ -24,6 +24,7 @@ static bool take_gt_poses_=false;
 static bool take_gt_points_=false;
 static int guess_type_=POSE_CONSTANT;
 // static int guess_type_=VELOCITY_CONSTANT;
+// static int guess_type_=PERS_GUESS;
 static int opt_norm_=HUBER;
 // static int opt_norm_=QUADRATIC;
 static int test_single_=TEST_ALL;
@@ -41,42 +42,45 @@ static int candidate_level_ = 0;
 static int coarsest_level_= candidate_level_+4; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 // static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
-// static float grad_threshold_=0.02;
-static float grad_threshold_=0.1;
-static int num_candidates_=4000;
+static float grad_threshold_=0.02;
+// static float grad_threshold_=0.1;
+static int num_candidates_=500;
 static float der_threshold_=0.01;
 
 // mapping
-static float cost_threshold_=0.05;
+static float cost_threshold_=0.02;
+static float var_threshold_ = 0.1;
 
 // keyframe selection
-static int num_active_keyframes_=6;
-static float flow_dist_threshold_=0.0003;
+static int num_active_keyframes_=7;
+static float flow_dist_threshold_=0.0005;
 static float percentage_marg_pts_threshold_ = 0.1;
 
 // optimization
 static int max_iterations_ba_=10;
-static int max_num_active_points_=4000;
-static float huber_threshold_=0.07;
-static int max_occlusions_ = num_active_keyframes_/2;
+static int max_num_active_points_=3000;
 static float intensity_coeff_ = 1;
-static float gradient_coeff_ = 1;
+static float gradient_coeff_ = 0.25;
 static float phase_coeff_ = 1./(4.*PI);
-static float damp_point_invdepth_ = 1;
-static float chi_occlusion_threshold_=0.03;
-static float occlusion_valid_ratio_thresh_ = 0.75;
-static float valid_ratio_thresh_ = 0.75;
+static float damp_point_invdepth_ = 10;
+static float huber_threshold_=0.01;
+static float sat_threshold_=0.05;
+// static float sat_threshold_=2;
+static float chi_occlusion_threshold_=0.06;
+static float occlusion_valid_ratio_thresh_ = 0.5;
+static float valid_ratio_thresh_ = 0.0;
 
 // tracking
 static int max_iterations_ls_=100;
 static float variance_ = 0.1;
-static int robustifier_dofs_=2;
-static float ratio_for_convergence_ = 0.001;
-static float stop_threshold_ = 0.75;
-static float conv_threshold_ = 0.0001;
+static int robustifier_dofs_=1;
+static float ratio_for_convergence_ = 0.1;
+static float stop_threshold_ = 0.0001;
+static float conv_threshold_ = 0.001;
+
 
 //  video streaming
-static int end_frame_=60;
+static int end_frame_=160;
 static int fps_=30;
 
 // initializer parameters
@@ -95,7 +99,7 @@ const float spec_width_ = 0.024;
 const float spec_lens_ = 0.035;
 const float spec_min_depth_ = 0.01;
 const float spec_max_depth_ = 20;
-const float spec_distance_ = 5;
+const float spec_distance_ = 10;
 const float rendered_cams_size_ = 0.01;
 
 
@@ -138,8 +142,8 @@ struct Params{
   int end_frame=end_frame_;
   int fps=fps_;
   float huber_threshold=huber_threshold_;
+  float sat_threshold=sat_threshold_;
   float chi_occlusion_threshold=chi_occlusion_threshold_;
-  float max_occlusions=max_occlusions_;
 
   float intensity_coeff=intensity_coeff_;
   float gradient_coeff=gradient_coeff_;
@@ -151,6 +155,8 @@ struct Params{
   int max_iterations_ls=max_iterations_ls_;
   float stop_threshold=stop_threshold_;
   float conv_threshold=conv_threshold_;
+  float var_threshold=var_threshold_;
+
   float variance=variance_;
   int robustifier_dofs=robustifier_dofs_;
   int ratio_for_convergence=ratio_for_convergence_;

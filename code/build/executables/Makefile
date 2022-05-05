@@ -250,30 +250,6 @@ __/src/CandidatesActivator.cpp.s:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.s
 .PHONY : __/src/CandidatesActivator.cpp.s
 
-__/src/CoarseRegions.o: __/src/CoarseRegions.cpp.o
-.PHONY : __/src/CoarseRegions.o
-
-# target to build an object file
-__/src/CoarseRegions.cpp.o:
-	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CoarseRegions.cpp.o
-.PHONY : __/src/CoarseRegions.cpp.o
-
-__/src/CoarseRegions.i: __/src/CoarseRegions.cpp.i
-.PHONY : __/src/CoarseRegions.i
-
-# target to preprocess a source file
-__/src/CoarseRegions.cpp.i:
-	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CoarseRegions.cpp.i
-.PHONY : __/src/CoarseRegions.cpp.i
-
-__/src/CoarseRegions.s: __/src/CoarseRegions.cpp.s
-.PHONY : __/src/CoarseRegions.s
-
-# target to generate assembly for a file
-__/src/CoarseRegions.cpp.s:
-	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/CoarseRegions.cpp.s
-.PHONY : __/src/CoarseRegions.cpp.s
-
 __/src/KeyframeHandler.o: __/src/KeyframeHandler.cpp.o
 .PHONY : __/src/KeyframeHandler.o
 
@@ -682,9 +658,6 @@ help:
 	@echo "... __/src/CandidatesActivator.o"
 	@echo "... __/src/CandidatesActivator.i"
 	@echo "... __/src/CandidatesActivator.s"
-	@echo "... __/src/CoarseRegions.o"
-	@echo "... __/src/CoarseRegions.i"
-	@echo "... __/src/CoarseRegions.s"
 	@echo "... __/src/KeyframeHandler.o"
 	@echo "... __/src/KeyframeHandler.i"
 	@echo "... __/src/KeyframeHandler.s"

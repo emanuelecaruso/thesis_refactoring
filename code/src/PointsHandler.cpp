@@ -2,7 +2,6 @@
 #include "dso.h"
 #include "CamCouple.h"
 #include "epline.h"
-#include "CoarseRegions.h"
 #include "utils.h"
 #include <algorithm>    // std::max
 
@@ -17,7 +16,7 @@ void PointsHandler::sampleCandidates(){
   reg_level=std::max(reg_level,1);
 
   // get image
-  Image<pixelIntensity>* img  = dso_->frame_current_->pyramid_->getMagn(dso_->parameters_->candidate_level);
+  Image<pixelIntensity>* img  = new Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn(dso_->parameters_->candidate_level));
 
   while(true){
 
@@ -34,8 +33,8 @@ void PointsHandler::sampleCandidates(){
     bool points_taken=false;
 
     int num_cand_taken = 0;
-    for (int row=0; row<n_regions_y; row++){
-      for (int col=0; col<n_regions_x; col++){
+    for (int row=1; row<n_regions_y-1; row++){
+      for (int col=1; col<n_regions_x-1; col++){
 
         int row_coord = row*region_height;
         int col_coord = col*region_width;
@@ -46,6 +45,7 @@ void PointsHandler::sampleCandidates(){
         double* maxVal = new double;
 
         cv::minMaxLoc( cropped_image,nullptr,maxVal,nullptr,maxLoc );
+
         maxLoc->x+=col_coord;
         maxLoc->y+=row_coord;
 
@@ -55,8 +55,6 @@ void PointsHandler::sampleCandidates(){
         points_taken=true;
 
         pxl pixel = cvpoint2pxl(*maxLoc);
-
-        img->image_(maxLoc->x,maxLoc->y)=0;
 
         Candidate* cand = new Candidate(dso_->frame_current_, pixel, dso_->parameters_->candidate_level);
 
@@ -100,9 +98,7 @@ void PointsHandler::showProjectedCandidates(){
 void PointsHandler::showActivePoints(){
   dso_->frame_current_->points_container_->showActivePoints();
 }
-void PointsHandler::showCoarseActivePoints(int level){
-  dso_->frame_current_->points_container_->showCoarseActivePoints(level);
-}
+
 void PointsHandler::showProjectedActivePoints(){
   dso_->frame_current_->points_container_->showProjectedActivePoints();
 }
@@ -132,15 +128,6 @@ void PointsHandler::projectActivePointsOnLastFrame(){
   }
 }
 
-void PointsHandler::generateCoarseActivePoints(){
-
-  // iterate through keyframes (except last)
-  for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
-    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
-    keyframe->points_container_->coarse_regions_->generateCoarseActivePoints();
-  }
-
-}
 
 void PointsHandler::projectCandidates(CameraForMapping* cam_r, CameraForMapping* cam_m ){
   CamCouple* cam_couple = new CamCouple(cam_r, cam_m);
@@ -227,10 +214,10 @@ bool PointsHandler::trackCandidate(Candidate* cand, CamCouple* cam_couple){
   cam_couple->getUv(cand->uv_.x(),cand->uv_.y(),cand->depth_min_,uv_min.x(),uv_min.y());
   cam_couple->getUv(cand->uv_.x(),cand->uv_.y(),cand->depth_max_,uv_max.x(),uv_max.y());
 
-  // check if dp/dinvdpth is too small
-  float der = (uv_min-uv_max).norm()/((1.0/cand->depth_min_)-(1.0/cand->depth_max_));
-  if(der<dso_->parameters_->der_threshold)
-    return false;
+  // // check if dp/dinvdpth is too small
+  // float der = (uv_min-uv_max).norm()/((1.0/cand->depth_min_)-(1.0/cand->depth_max_));
+  // if(der<dso_->parameters_->der_threshold)
+  //   return false;
 
   // create epipolar line
   EpipolarLine ep_segment( cam_couple->cam_m_, uv_min, uv_max, cand->level_) ;
@@ -241,8 +228,7 @@ bool PointsHandler::trackCandidate(Candidate* cand, CamCouple* cam_couple){
 
   // if min has been found
   if(min_found){
-    CandTracker.updateCand();
-    return true;
+    return CandTracker.updateCand();
   }
   else{
     return false;
@@ -290,7 +276,7 @@ float CandTracker::getStandardDeviation( ){
 }
 
 
-void CandTracker::updateCand(){
+bool CandTracker::updateCand(){
 
   float coord;
   if(ep_segment_.u_or_v)
@@ -317,6 +303,10 @@ void CandTracker::updateCand(){
 
   cand_->invdepth_var_= (1./cand_->depth_min_)-(1./cand_->depth_max_);
 
+  if(cand_->invdepth_var_>parameters_->var_threshold){
+    return false;
+  }
+  return true;
 
 }
 

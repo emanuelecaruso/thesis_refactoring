@@ -69,5 +69,13 @@ CameraForMapping* CamerasContainer::getLastActiveKeyframe(){
 }
 
 CameraForMapping* CamerasContainer::getSecondLastFrame(){
-  return frames_[dso_->frame_current_idx_-1];
+  int idx = dso_->frame_current_idx_-1;
+  assert(idx>=0 && idx<frames_.size());
+  return frames_[idx];
+}
+
+CameraForMapping* CamerasContainer::getThirdLastFrame(){
+  int idx = dso_->frame_current_idx_-2;
+  assert(idx>=0 && idx<frames_.size());
+  return frames_[idx];
 }

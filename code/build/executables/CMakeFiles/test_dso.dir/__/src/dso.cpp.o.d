@@ -527,5 +527,4 @@ executables/CMakeFiles/test_dso.dir/__/src/dso.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/spectator.h \
  /home/manu/Desktop/thesis_refactoring/code/src/utils.h \
  /usr/include/c++/7/future /usr/include/c++/7/thread \
- /usr/include/c++/7/atomic /usr/include/c++/7/bits/atomic_futex.h \
- /home/manu/Desktop/thesis_refactoring/code/src/CoarseRegions.h
+ /usr/include/c++/7/atomic /usr/include/c++/7/bits/atomic_futex.h

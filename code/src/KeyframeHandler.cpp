@@ -34,9 +34,14 @@ bool KeyframeHandler::addKeyframe(bool fixed){
 
 float KeyframeHandler::getPercentuageMarg(CameraForMapping* keyframe){
   int num_active_pts = keyframe->points_container_->active_points_.size();
-  int num_non_active_pts = keyframe->points_container_->marginalized_points_.size();
+  int num_non_active_pts = keyframe->points_container_->marginalized_points_.size()+keyframe->points_container_->n_active_points_removed_;
+  int num_tot_pts = num_active_pts+num_non_active_pts;
 
-  float percentage_marg= (((float)num_active_pts)/((float)(num_active_pts+num_non_active_pts)));
+  float percentage_marg = 1;
+  if(num_tot_pts>0){
+    percentage_marg= (((float)num_active_pts)/((float)(num_tot_pts)));
+    assert(std::isfinite(percentage_marg));
+  }
   std::cout << keyframe->name_ << " "<< percentage_marg << " IAFJIFJA " << keyframe->points_container_->marginalized_points_.size() << " " << keyframe->points_container_->active_points_.size() << std::endl;
   return percentage_marg;
 }
@@ -98,8 +103,8 @@ bool KeyframeHandler::marginalizeKeyframe(){
 
     CameraForMapping* keyframe_to_marg;
     float max_score = 0;
-    // iterate through all keyframe (except the last two)
-    for (int i=0; i<dso_->cameras_container_->keyframes_active_.size()-2; i++){
+    // iterate through all keyframe (except the last)
+    for (int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1; i++){
       CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
 
       float score = getScore(keyframe);

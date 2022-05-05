@@ -66,12 +66,12 @@ void Spectator::renderPoints(){
   for ( int i = 0; i<num_kfs; i++){
     CameraForMapping* cam = dso_->cameras_container_->frames_[i];
     if (cam->keyframe_){
-      // // render marginalized points
-      // int num_marg_pts = cam->points_container_->marginalized_points_.size();
-      // for ( int j = num_marg_pts-1; j>=0; j--){
-      //   MarginalizedPoint* marg_pt = cam->points_container_->marginalized_points_[j];
-      //   plotPt(marg_pt, black);
-      // }
+      // render marginalized points
+      int num_marg_pts = cam->points_container_->marginalized_points_.size();
+      for ( int j = num_marg_pts-1; j>=0; j--){
+        MarginalizedPoint* marg_pt = cam->points_container_->marginalized_points_[j];
+        plotPt(marg_pt, black);
+      }
 
       // render active points
       std::vector<CameraForMapping*>& v = dso_->cameras_container_->keyframes_active_;

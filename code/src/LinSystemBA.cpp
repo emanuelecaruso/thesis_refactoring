@@ -49,15 +49,13 @@ Eigen::Matrix<float,1,2> MeasBA::getImageJacobian(pxl& pixel_m, ActivePoint* act
 void MeasBA::loadJacobians(ActivePoint* active_point){
 
     J_m.setZero();  // initialize J_m
-    J_m_transpose.setZero();  // initialize J_m_transpose
     J_r.setZero();  // initialize J_m
-    J_r_transpose.setZero();  // initialize J_m_transpose
     J_d=0;
 
 
     // get Jm_
-    // Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_(active_point);
-    Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_old_(active_point);
+    Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_(active_point);
+    // Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_old_(active_point);
     Eigen::Matrix<float,2,6> Jr_ = cam_couple_->getJr_(active_point);
     Eigen::Matrix<float,2,1> Jd_ = cam_couple_->getJd_(active_point);
 
@@ -67,11 +65,11 @@ void MeasBA::loadJacobians(ActivePoint* active_point){
     J_r += image_jacobian_intensity*Jr_;
     J_d += image_jacobian_intensity*Jd_;
 
-    // update J_m and error for gradient
-    Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian(pixel_, active_point, cam_couple_, GRADIENT_ID);
-    J_m += image_jacobian_gradient*Jm_;
-    J_r += image_jacobian_gradient*Jr_;
-    J_d += image_jacobian_gradient*Jd_;
+    // // update J_m and error for gradient
+    // Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian(pixel_, active_point, cam_couple_, GRADIENT_ID);
+    // J_m += image_jacobian_gradient*Jm_;
+    // J_r += image_jacobian_gradient*Jr_;
+    // J_d += image_jacobian_gradient*Jd_;
 
     J_m_transpose= J_m.transpose();
     J_r_transpose= J_r.transpose();
@@ -365,9 +363,12 @@ void LinSysBA::updateState(){
   updateCameras();
   updatePoints();
 
-  dso_->spectator_->renderState();
-  dso_->spectator_->showSpectator();
-  std::cout << "chi " << chi << std::endl;
+  if(dso_->parameters_->debug_optimization){
+
+    dso_->spectator_->renderState();
+    dso_->spectator_->showSpectator();
+    std::cout << "chi " << chi << std::endl;
+  }
 
 }
 

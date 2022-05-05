@@ -1,7 +1,5 @@
 #include "PointsContainer.h"
 #include "CamCouple.h"
-#include "CoarseRegions.h"
-#include "LinSystemBA.h"
 #include <algorithm>    // std::max
 
 
@@ -29,10 +27,6 @@ void Candidate::remove(){
 }
 
 
-CoarseRegions* PointsContainer::initCoarseRegions(){
-   CoarseRegions* coarse_regions(new CoarseRegions(this, parameters_->coarsest_level-1));
-   return coarse_regions;
-}
 
 void PointsContainer::drawPoint(Point* point, Image<colorRGB>* show_img, bool circle){
   pxl pixel= point->pixel_;
@@ -98,11 +92,6 @@ void PointsContainer::showActivePoints(){
 
 }
 
-void PointsContainer::showCoarseActivePoints(int level){
-  coarse_regions_->showCoarseLevel(level);
-
-
-}
 
 void PointsContainer::showProjectedActivePoints(){
   std::string name = cam_->name_+" , "+std::to_string(active_points_projected_.size())+" projected active points";
@@ -125,23 +114,6 @@ void PointsContainer::showProjectedActivePoints(const std::string& name){
 
 }
 
-
-
-std::vector<ActivePoint*>& PointsContainer::getActivePoints(){
-  return getActivePoints(0);
-}
-
-std::vector<ActivePoint*>& PointsContainer::getActivePoints(int level){
-  assert(level>=0 && level<parameters_->coarsest_level);
-  if(level==0){
-    std::vector<ActivePoint*>& out = active_points_;
-    return out;
-  }
-  else{
-    return (coarse_regions_->getCoarseActivePoints(level));
-
-  }
-}
 
 
 void CandidateProjected::init(Candidate* cand, CamCouple* cam_couple_){
@@ -175,6 +147,8 @@ void ActivePoint::remove(){
   int v_size = v.size();
   v.erase(std::remove(v.begin(), v.end(), this), v.end());
   assert(v_size==v.size()+1);
+
+  cam_->points_container_->n_active_points_removed_++;
 
   delete this;
 }

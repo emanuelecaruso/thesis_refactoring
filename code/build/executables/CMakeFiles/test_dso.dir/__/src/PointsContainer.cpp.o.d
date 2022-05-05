@@ -511,6 +511,4 @@ executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/image.h \
  /home/manu/Desktop/thesis_refactoring/code/src/CameraForMapping.h \
  /home/manu/Desktop/thesis_refactoring/code/src/Pyramid.h \
- /home/manu/Desktop/thesis_refactoring/code/src/CamCouple.h \
- /home/manu/Desktop/thesis_refactoring/code/src/CoarseRegions.h \
- /home/manu/Desktop/thesis_refactoring/code/src/LinSystemBA.h
+ /home/manu/Desktop/thesis_refactoring/code/src/CamCouple.h

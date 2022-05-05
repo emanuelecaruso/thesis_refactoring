@@ -1,6 +1,5 @@
 #include "CandidatesActivator.h"
 #include "CameraForMapping.h"
-#include "CoarseRegions.h"
 #include "utils.h"
 #include "dso.h"
 
@@ -293,9 +292,6 @@ void CandidatesActivator::activateCandidate(CandidateProjected* cand_proj){
   // push active point
   cand_proj->cand_->cam_->points_container_->active_points_.push_back(active_point);
 
-  // add active point in coarse region
-  active_point->cam_->points_container_->coarse_regions_->addActivePoint(active_point);
-
   // create projected active point
   ActivePointProjected* active_pt_proj (new ActivePointProjected(active_point, cand_proj));
 
@@ -412,7 +408,6 @@ void CandidatesActivator::activateCandidates(){
     }
   }
 
-  dso_->points_handler_->generateCoarseActivePoints();  // generate coarse active points for tracking
 
   double t_end=getTime();
   int deltaTime=(t_end-t_start);

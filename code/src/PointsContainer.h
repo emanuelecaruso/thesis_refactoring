@@ -1,9 +1,7 @@
 #pragma once
-// #include "CoarseRegions.h"
 #include "camera.h"
 #include "CameraForMapping.h"
 
-class CoarseRegions;
 class CamCouple;
 class Dso;
 
@@ -126,17 +124,6 @@ public:
     updateInvdepthVarAndP(cand->invdepth_, cand->invdepth_var_);
   }
 
-  // used for coarse active points
-  ActivePoint(CameraForMapping* cam, pxl& pixel, int level, float invdepth, float invdepth_var):
-  Point(cam, pixel, level)
-  ,c_(cam_->pyramid_->getC(level_)->evalPixel(pixel_))
-  ,magn_cd_(cam_->pyramid_->getMagn(level_)->evalPixel(pixel_)){
-    updateInvdepthVarAndP(invdepth, invdepth_var);
-  }
-
-  // create coarse active point from coarse region
-  // ActivePoint(CoarseRegion* coarse_reg):
-  // Point(coarse_reg->cam_, coarse_reg->pixel_, coarse_reg->level_, coarse_reg->invdepth_, coarse_reg->invdepth_var_){}
   // ********** methods **********
   void updateInvdepthVarAndP( float invdepth, float invdepth_var);
   void remove();
@@ -225,17 +212,15 @@ class PointsContainer{
     std::vector<ActivePointProjected*> active_points_projected_;
     std::vector<MarginalizedPoint*> marginalized_points_;
     std::vector<MarginalizedPointProjected*> marginalized_points_projected_;
-    CoarseRegions* coarse_regions_;
+    int n_active_points_removed_;
 
 
     // ********** constructor **********
     PointsContainer(CameraForMapping* cam, Params* parameters):
     parameters_(parameters)
     ,cam_(cam)
-    ,coarse_regions_(initCoarseRegions())
+    ,n_active_points_removed_(0)
     {};
-
-    CoarseRegions* initCoarseRegions();
 
 
     // ********** methods **********
@@ -245,7 +230,6 @@ class PointsContainer{
     void showCandidates();
     void showProjectedCandidates();
     void showActivePoints();
-    void showCoarseActivePoints(int level);
     void showProjectedActivePoints();
     void showProjectedActivePoints( const std::string& name );
 

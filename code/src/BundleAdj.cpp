@@ -10,7 +10,7 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
 
   // get only errors
   // iterate through all active keyframes
-  for( int j=0; j<dso_->cameras_container_->keyframes_active_.size() ; j++){
+  for( int j=dso_->cameras_container_->keyframes_active_.size()-1; j>=0 ; j--){
 
     // avoid self projections
     if (i==j)
@@ -22,6 +22,10 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
 
     MeasBA* measurement = new MeasBA(active_point, cam_couple, dso_->parameters_->chi_occlusion_threshold);
     if(measurement->occlusion_){
+      // if points is an occlusion in the first keyframe, remove it
+      if(j==dso_->cameras_container_->keyframes_active_.size()-1)
+        return false;
+
       n_occlusions++;
     }
     else if(measurement->valid_){
@@ -32,7 +36,7 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
   }
 
   // evaluate occlusion ratio
-  float occlusion_valid_ratio = (float)n_occlusions/(float)n_valid;
+  float occlusion_valid_ratio = (float)n_occlusions/(float)(n_valid+n_occlusions);
   // evaluate non valid proj ratio
   float valid_ratio = (float)n_valid/((float)dso_->cameras_container_->keyframes_active_.size()-1);
 
@@ -137,6 +141,7 @@ void BundleAdj::marginalizePointsAndKeyframes(){
       Eigen::Vector2f uv_curr;
       cam_couple_container->get(0,dso_->cameras_container_->keyframes_active_.size()-1)->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_curr.x(),uv_curr.y() );
       bool uv_in_range = keyframe->uvInRange(uv_curr);
+
       if(!uv_in_range){
         marginalizePoint(active_pt, cam_couple_container);
       }
@@ -196,6 +201,8 @@ void BundleAdj::optimize(){
     cam_couple_container_->init();
 
     if(dso_->parameters_->debug_optimization){
+      dso_->points_handler_->projectActivePointsOnLastFrame();
+      dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
       dso_->spectator_->renderState();
       dso_->spectator_->showSpectator();
     }
