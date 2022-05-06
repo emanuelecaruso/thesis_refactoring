@@ -5,7 +5,7 @@
 // frame management functions
 void CamerasContainer::addFrame(Camera* frame){
   // create CameraForMapping
-  CameraForMapping* frame_ = new CameraForMapping(frame,dso_->parameters_);
+  CameraForMapping* frame_ = new CameraForMapping(frame);
 
   frames_.push_back(frame_);
 }

@@ -18,7 +18,7 @@ void Tracker::trackCam(bool groundtruth){
 
 void Tracker::setInitialGuess(){
 
-  switch (dso_->parameters_->guess_type)
+  switch (guess_type)
   {
     case POSE_CONSTANT:{
       dso_->frame_current_->assignPose( *(dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_) );
@@ -41,7 +41,7 @@ void Tracker::setInitialGuess(){
   // if(==POSE_CONSTANT){
   //   dso_->frame_current_->assignPose( *(dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_) );
   // }
-  // else if(dso_->parameters_->guess_type==VELOCITY_CONSTANT){
+  // else if(guess_type==VELOCITY_CONSTANT){
   //   Eigen::Isometry3f transf = (*dso_->cameras_container_->getThirdLastFrame()->frame_world_wrt_camera_)*(*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_);
   //   Eigen::Isometry3f pose = (*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_)*transf;
   //   dso_->frame_current_->assignPose( pose );
@@ -56,7 +56,7 @@ bool Tracker::checkConvergence(float chi){
 
   bool out = false;
   if(chi_history_.size()>0){
-    if ( abs(chi_history_.back()-chi) < dso_->parameters_->conv_threshold ){
+    if ( abs(chi_history_.back()-chi) < conv_threshold ){
       out = true;
     }
   }
@@ -70,7 +70,7 @@ bool Tracker::chiUpdateAndCheck(float chi){
 
   bool out = false;
   if(chi_history_.size()>1){
-    if ( (chi_history_.back()-chi) < (chi_history_[0]-chi_history_[1])*dso_->parameters_->stop_threshold ){
+    if ( (chi_history_.back()-chi) < (chi_history_[0]-chi_history_[1])*stop_threshold ){
       out = true;
     }
   }
@@ -128,10 +128,10 @@ void Tracker::trackCam(){
   LinSysTracking lin_sys_tracking(dso_);
 
   // iterate through levels
-  for (int level=dso_->parameters_->coarsest_level-1; level>=0 ; level--){
+  for (int level=coarsest_level-1; level>=0 ; level--){
   // for (int level=0; level<1 ; level++){
 
-    for(int iteration=0; iteration<dso_->parameters_->max_iterations_ls; iteration++){
+    for(int iteration=0; iteration<max_iterations_ls; iteration++){
     // while(true){
       double t_start=getTime();
 
@@ -170,8 +170,8 @@ void Tracker::trackCam(){
       double t_end=getTime();
       deltaTime_tot+=(t_end-t_start);
 
-      // if(dso_->parameters_->debug_tracking || dso_->frame_current_idx_>50){
-      if(dso_->parameters_->debug_tracking ){
+      // if(debug_tracking || dso_->frame_current_idx_>50){
+      if(debug_tracking ){
 
         // std::cout << "level " << level << std::endl;
         // std::cout << "level " << level << ", chi " << lin_sys_tracking.chi << std::endl;

@@ -20,7 +20,7 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
     assert(cam_couple->cam_r_==active_point->cam_);
     assert(cam_couple->cam_m_==dso_->cameras_container_->keyframes_active_[j]);
 
-    MeasBA* measurement = new MeasBA(active_point, cam_couple, dso_->parameters_->chi_occlusion_threshold);
+    MeasBA* measurement = new MeasBA(active_point, cam_couple, chi_occlusion_threshold);
     if(measurement->occlusion_){
       // if points is an occlusion in the first keyframe, remove it
       if(j==dso_->cameras_container_->keyframes_active_.size()-1)
@@ -41,8 +41,8 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
   float valid_ratio = (float)n_valid/((float)dso_->cameras_container_->keyframes_active_.size()-1);
 
   // if(occlusion_valid_ratio>0.25){
-  if(occlusion_valid_ratio>dso_->parameters_->occlusion_valid_ratio_thresh ||
-     valid_ratio<dso_->parameters_->valid_ratio_thresh){
+  if(occlusion_valid_ratio>occlusion_valid_ratio_thresh ||
+     valid_ratio<valid_ratio_thresh){
     // clear vector
     for( MeasBA* measurement : *measurement_vector ){
       delete measurement;
@@ -215,7 +215,7 @@ void BundleAdj::optimize(){
   LinSysBA lin_sys_tracking(dso_);
 
   // iterations of bundle adjustment
-  for(int iteration=0; iteration<dso_->parameters_->max_iterations_ba; iteration++){
+  for(int iteration=0; iteration<max_iterations_ba; iteration++){
 
     int num_points = 0;
 
@@ -250,7 +250,7 @@ void BundleAdj::optimize(){
 
     cam_couple_container_->init();
 
-    if(dso_->parameters_->debug_optimization){
+    if(debug_optimization){
       dso_->points_handler_->projectActivePointsOnLastFrame();
       dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
       dso_->spectator_->renderState();

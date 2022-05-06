@@ -53,7 +53,7 @@ void Initializer::extractCorners(){
   errors_vec_->push_back(new std::vector<float>);
   status_vec_->push_back(new std::vector<uchar>);
   inliers_vec_->push_back(new std::vector<uchar>);
-  cv::goodFeaturesToTrack(ref_frame_->image_intensity_->image_,*(corners_vec_->at(0)),dso_->parameters_->n_corners,dso_->parameters_->quality_level,dso_->parameters_->min_distance);
+  cv::goodFeaturesToTrack(ref_frame_->image_intensity_->image_,*(corners_vec_->at(0)),n_corners,quality_level,min_distance);
 
 
 }
@@ -81,7 +81,7 @@ void Initializer::trackCornersLK(){
   int n = dso_->frame_current_idx_-ref_frame_idx_;
 
   // calculate optical flow
-  cv::Size size_win = cv::Size(dso_->parameters_->size_window,dso_->parameters_->size_window);
+  cv::Size size_win = cv::Size(size_window,size_window);
 
   corners_vec_->push_back(new std::vector<cv::Point2f>);
   errors_vec_->push_back(new std::vector<float>);
@@ -98,7 +98,7 @@ void Initializer::trackCornersLK(){
   // filter corners
   for (int i=status_vec_->at(n)->size()-1; i>=0; i--){
     // if(errors_vec_->at(n)->at(i)<10 || !(status_vec_->at(n)->at(i)) ){
-    if(errors_vec_->at(n)->at(i)>dso_->parameters_->err_threshold ){
+    if(errors_vec_->at(n)->at(i)>err_threshold ){
       for (int j=0; j<=n; j++){
         corners_vec_->at(j)->erase (corners_vec_->at(j)->begin()+i);
         if(j>0){
@@ -294,8 +294,8 @@ Eigen::Isometry3f Initializer::essential2pose(cv::Mat& E){
 
 cv::Mat Initializer::findEssentialMatrix(){
   int method = cv::RANSAC;
-  double prob = dso_->parameters_->confidence;
-  double threshold = dso_->parameters_->ransacReprojThreshold;
+  double prob = confidence;
+  double threshold = ransacReprojThreshold;
 
   // Eigen::Matrix3f K_ = *(dso_->camera_vector_->at(dso_->frame_current_)->K_);
   // cv::Mat K;

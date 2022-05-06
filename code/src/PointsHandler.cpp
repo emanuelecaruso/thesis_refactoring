@@ -10,9 +10,9 @@ bool PointsHandler::sampleCandidates(){
   double t_start=getTime();
 
   int count = 0;
-  int n_pixels_tot = dso_->frame_current_->cam_parameters_->resolution_x*dso_->frame_current_->cam_parameters_->resolution_y/(pow(4,dso_->parameters_->candidate_level));
-  // int reg_level = trunc(std::log( (float)(n_pixels_tot)/(dso_->parameters_->num_candidates))/std::log(4));
-  int reg_level = trunc(std::log( (float)(n_pixels_tot)/(dso_->parameters_->max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size()))/std::log(4));
+  int n_pixels_tot = dso_->frame_current_->cam_parameters_->resolution_x*dso_->frame_current_->cam_parameters_->resolution_y/(pow(4,candidate_level));
+  // int reg_level = trunc(std::log( (float)(n_pixels_tot)/(num_candidates))/std::log(4));
+  int reg_level = trunc(std::log( (float)(n_pixels_tot)/(max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size()))/std::log(4));
 
 
   std::cout << reg_level << std::endl;
@@ -20,11 +20,11 @@ bool PointsHandler::sampleCandidates(){
   reg_level=std::max(reg_level,1);
 
   // get image
-  Image<pixelIntensity>* img  = new Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn(dso_->parameters_->candidate_level));
+  Image<pixelIntensity>* img  = new Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn(candidate_level));
 
   while(true){
 
-    int factor = pow(2,reg_level-dso_->parameters_->candidate_level);
+    int factor = pow(2,reg_level-candidate_level);
 
     assert(!(img->image_.rows%factor));
     assert(!(img->image_.cols%factor));
@@ -53,14 +53,14 @@ bool PointsHandler::sampleCandidates(){
         maxLoc->x+=col_coord;
         maxLoc->y+=row_coord;
 
-        if(*maxVal<dso_->parameters_->grad_threshold)
+        if(*maxVal<grad_threshold)
           continue;
 
         points_taken=true;
 
         pxl pixel = cvpoint2pxl(*maxLoc);
 
-        Candidate* cand = new Candidate(dso_->frame_current_, pixel, dso_->parameters_->candidate_level);
+        Candidate* cand = new Candidate(dso_->frame_current_, pixel, candidate_level);
 
         dso_->frame_current_->points_container_->candidates_.push_back(cand);
         img->setPixel(pixel,0);
@@ -73,7 +73,7 @@ bool PointsHandler::sampleCandidates(){
     }
 
     count+=num_cand_taken;
-    int num_cand_less = dso_->parameters_->num_candidates-count;
+    int num_cand_less = num_candidates-count;
 
     if(!points_taken || num_cand_less<0)
       break;
@@ -222,14 +222,14 @@ bool PointsHandler::trackCandidate(Candidate* cand, CamCouple* cam_couple){
 
   // // check if dp/dinvdpth is too small
   // float der = (uv_min-uv_max).norm()/((1.0/cand->depth_min_)-(1.0/cand->depth_max_));
-  // if(der<dso_->parameters_->der_threshold)
+  // if(der<der_threshold)
   //   return false;
 
   // create epipolar line
   EpipolarLine ep_segment( cam_couple->cam_m_, uv_min, uv_max, cand->level_) ;
 
   // search pixel in epipolar line
-  CandTracker CandTracker(ep_segment, cand, cam_couple, dso_->parameters_);
+  CandTracker CandTracker(ep_segment, cand, cam_couple );
   bool min_found = CandTracker.searchMin();
 
   // if min has been found
@@ -265,7 +265,7 @@ float CandTracker::getStandardDeviation( ){
   float magn_g = magn_m;
   float g_p = g_dot_l*magn_g;
   // standard deviation img noise
-  // float sd_img_noise = parameters_->sd_img_noise;
+  // float sd_img_noise = sd_img_noise;
   float sd_img_noise = cand_->cam_->cam_parameters_->pixel_width/400;
   // standard deviation photometric
   float sd_disparity_photometric = abs(sd_img_noise/(g_p+0.01));
@@ -309,7 +309,7 @@ bool CandTracker::updateCand(){
 
   cand_->invdepth_var_= (1./cand_->depth_min_)-(1./cand_->depth_max_);
 
-  if(cand_->invdepth_var_>parameters_->var_threshold){
+  if(cand_->invdepth_var_>var_threshold){
     return false;
   }
   return true;
@@ -341,7 +341,7 @@ bool CandTracker::searchMin( ){
     float cost=cost_magn+cost_phase;
     // float cost=cost_magn;
 
-    if(cost>parameters_->cost_threshold){
+    if(cost>cost_threshold){
       if(min_segment_reached){
         min_segment_leaved=true;
       }
@@ -387,7 +387,7 @@ float CandTracker::getCostMagn(pxl& pixel){
 
   // std::cout << "c_m " << c_m << " c_r " << c_r << " magn_m " << magn_m << " magn_cd_r " << magn_cd_r << "\n";
   // return cost_magn_cd;
-  return parameters_->intensity_coeff*cost_c+parameters_->gradient_coeff*cost_magn_cd;
+  return intensity_coeff*cost_c+gradient_coeff*cost_magn_cd;
 }
 
 bool CandTracker::getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, float& phase_cost){
@@ -434,6 +434,6 @@ bool CandTracker::getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, fl
   assert(abs(phase_m_hat)<10);
   assert(abs(phase_m)<10);
 
-  phase_cost= abs(radiansSub(phase_m_hat,phase_m))*parameters_->phase_coeff;
+  phase_cost= abs(radiansSub(phase_m_hat,phase_m))*phase_coeff;
   return true;
 }

@@ -129,7 +129,8 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
   bool no_r = measurement->cam_couple_->cam_r_->fixed_;
   bool no_m = measurement->cam_couple_->cam_m_->fixed_;
 
-  int r_idx, m_idx;
+  int r_idx = measurement->cam_couple_->cam_r_->cam_data_for_ba_->c_idx_;
+  int m_idx = measurement->cam_couple_->cam_m_->cam_data_for_ba_->c_idx_;
 
   if(!no_r){
     assert(r_idx < c_size);
@@ -344,14 +345,14 @@ void LinSysBA::updatePoints(){
 
 void LinSysBA::updateState(){
 
-  // Eigen::VectorXf H_pp_damped = H_pp + dso_->parameters_->damp_point_invdepth * Eigen::VectorXf::Ones(H_pp.size());
+  // Eigen::VectorXf H_pp_damped = H_pp + damp_point_invdepth * Eigen::VectorXf::Ones(H_pp.size());
   // Eigen::DiagonalMatrix<float,Eigen::Dynamic> H_pp_inv = pinvDiagonalMatrix(H_pp_damped );
   // dx_c = H_cc.selfadjointView<Eigen::Upper>().ldlt().solve(-b_c);
   // dx_p = H_pp_inv*(-b_p);
 
 
   // get inverse of schur -> (H_cc - H_cp H_pp_inv H_pc)_inv
-  Eigen::VectorXf H_pp_damped = H_pp + dso_->parameters_->damp_point_invdepth * Eigen::VectorXf::Ones(H_pp.size());
+  Eigen::VectorXf H_pp_damped = H_pp + damp_point_invdepth * Eigen::VectorXf::Ones(H_pp.size());
   Eigen::DiagonalMatrix<float,Eigen::Dynamic> H_pp_inv = invDiagonalMatrix(H_pp_damped );
   H_cc = H_cc.selfadjointView<Eigen::Upper>();
   Eigen::MatrixXf H_pc = H_cp.transpose();
@@ -363,7 +364,7 @@ void LinSysBA::updateState(){
   updateCameras();
   updatePoints();
 
-  if(dso_->parameters_->debug_optimization){
+  if(debug_optimization){
 
     dso_->spectator_->renderState();
     dso_->spectator_->showSpectator();
@@ -399,23 +400,22 @@ float LinSysBA::getWeight(MeasBA* measurement){
   // float weight=1.0/measurement->active_point_->invdepth_var_;
 
   // huber robustifier
-  if(dso_->parameters_->opt_norm==HUBER){
-    float huber_threshold=dso_->parameters_->huber_threshold;
+  if(opt_norm==HUBER){
     float u = abs(measurement->error);
 
     if (u<=huber_threshold){
       weight*=1/huber_threshold;
     }
     else{
-      // float rho_der = huberNormDerivative(error,dso_->parameters_->huber_threshold);
-      float rho_der = huberNormDerivative(u,dso_->parameters_->huber_threshold);
+      // float rho_der = huberNormDerivative(error,huber_threshold);
+      float rho_der = huberNormDerivative(u,huber_threshold);
       float gamma=(1/u)*rho_der;
       weight*=gamma;
     }
 
   }
   // least square without robustifier
-  else if (dso_->parameters_->opt_norm==QUADRATIC){
+  else if (opt_norm==QUADRATIC){
 
   }
   else{
@@ -426,8 +426,8 @@ float LinSysBA::getWeight(MeasBA* measurement){
 
 
   // // weight
-  // float variance = dso_->parameters_->variance;
-  // int ni = dso_->parameters_->robustifier_dofs;
+  // float variance = dso_->variance;
+  // int ni = dso_->robustifier_dofs;
   // float weight = (ni+1.0)/(ni+(pow(error,2)/variance));
   //
   // float  weight = weight*gamma;
@@ -458,16 +458,16 @@ bool PriorMeas::init(ActivePoint* active_point, CamCouple* cam_couple){
   // Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_old_(active_point);
 
 
-  // update J_m and error for intensity
-  Eigen::Matrix<float,1,2> image_jacobian_intensity = dso->parameters_->intensity_coeff*getImageJacobian(pixel, active_point, cam_couple, level, INTENSITY_ID);
-  J_m += image_jacobian_intensity*Jm_;
-  error += dso->parameters_->intensity_coeff*getError( pixel,  active_point, cam_couple, level, INTENSITY_ID);
+  // // update J_m and error for intensity
+  // Eigen::Matrix<float,1,2> image_jacobian_intensity = intensity_coeff*getImageJacobian(pixel, active_point, cam_couple, level, INTENSITY_ID);
+  // J_m += image_jacobian_intensity*Jm_;
+  // error += intensity_coeff*getError( pixel,  active_point, cam_couple, level, INTENSITY_ID);
 
 
   // // update J_m and error for gradient
-  // Eigen::Matrix<float,1,2> image_jacobian_gradient = dso->parameters_->gradient_coeff*dso->parameters_->gradient_coeff*getImageJacobian(pixel, active_point, cam_couple, level, GRADIENT_ID);
+  // Eigen::Matrix<float,1,2> image_jacobian_gradient = gradient_coeff*gradient_coeff*getImageJacobian(pixel, active_point, cam_couple, level, GRADIENT_ID);
   // J_m += image_jacobian_gradient*Jm_;
-  // error += dso->parameters_->intensity_coeff*getError( pixel,  active_point, cam_couple, level, GRADIENT_ID);
+  // error += intensity_coeff*getError( pixel,  active_point, cam_couple, level, GRADIENT_ID);
 
   assert(abs(error)<1);
   J_m_transpose= J_m.transpose();

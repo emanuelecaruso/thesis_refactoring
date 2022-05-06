@@ -24,13 +24,13 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
 
     // ********** constructor **********
 
-    CameraForMapping(Camera* env_cam, Params* parameters):
+    CameraForMapping(Camera* env_cam):
       Camera(env_cam,false)
       ,grountruth_camera_(env_cam)
-      ,pyramid_( new Pyramid(env_cam,parameters->coarsest_level) )
+      ,pyramid_( new Pyramid(env_cam,coarsest_level) )
       ,cam_data_for_ba_( initializeDataForBA() )
       // ,points_container_( new PointsContainer(this) )
-      ,points_container_( initializePointsContainer(parameters) )
+      ,points_container_( initializePointsContainer() )
       ,fixed_(false)
       ,keyframe_(false)
       ,marginalized_(false)
@@ -43,7 +43,7 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
     // ********** methods **********
     void setGrountruthPose();
   protected:
-    PointsContainer* initializePointsContainer(Params* parameters);
+    PointsContainer* initializePointsContainer();
     CamDataForBA* initializeDataForBA();
 
 

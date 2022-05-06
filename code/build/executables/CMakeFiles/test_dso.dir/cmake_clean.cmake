@@ -35,6 +35,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/test_dso.dir/__/src/image.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/initializer.cpp.o"
   "CMakeFiles/test_dso.dir/__/src/initializer.cpp.o.d"
+  "CMakeFiles/test_dso.dir/__/src/parameters.cpp.o"
+  "CMakeFiles/test_dso.dir/__/src/parameters.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/spectator.cpp.o"
   "CMakeFiles/test_dso.dir/__/src/spectator.cpp.o.d"
   "CMakeFiles/test_dso.dir/__/src/utils.cpp.o"

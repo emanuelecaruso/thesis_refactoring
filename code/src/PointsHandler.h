@@ -45,7 +45,6 @@ class CandTracker{
     EpipolarLine& ep_segment_;
     Candidate* cand_;
     CamCouple* cam_couple_;
-    Params* parameters_;
     float phase_m;
     pixelIntensity magn_m;
     Eigen::Vector2f uv_;
@@ -54,13 +53,11 @@ class CandTracker{
     // ********** constructor **********
     CandTracker( EpipolarLine& ep_segment,
               Candidate* cand,
-              CamCouple* cam_couple,
-              Params* parameters
+              CamCouple* cam_couple
             ):
               ep_segment_(ep_segment),
               cand_(cand),
-              cam_couple_(cam_couple),
-              parameters_(parameters)
+              cam_couple_(cam_couple)
               {};
 
 

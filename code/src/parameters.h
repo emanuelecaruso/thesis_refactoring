@@ -12,172 +12,89 @@
 #include "defs.h"
 
 // debug parameters
-static bool debug_initialization_=false;
-static bool debug_mapping_=false;
-static bool debug_tracking_=false;
-static bool debug_optimization_= false;
-static bool use_spectator_ = true;
+extern bool debug_initialization;
+extern bool debug_mapping;
+extern bool debug_tracking;
+extern bool debug_optimization;
+extern bool use_spectator;
 
 // code parameters
-static bool take_gt_poses_=false;
-static bool take_gt_points_=false;
-static int guess_type_=POSE_CONSTANT;
-// static int guess_type_=VELOCITY_CONSTANT;
-// static int guess_type_=PERS_GUESS;
-static int opt_norm_=HUBER;
-// static int opt_norm_=QUADRATIC;
-static int test_single_=TEST_ALL;
-static int image_id_=INTENSITY_ID;
-// static int image_id_=GRADIENT_ID;
-static bool test_marginalization_=false;
-static bool active_all_candidates_=true;
-static bool show_spectator_=true;
-static bool get_current_frame_=false;
+extern bool take_gt_poses;
+extern bool take_gt_points;
+extern int guess_type;
+// extern int guess_type;
+// extern int guess_type;
+extern int opt_norm;
+// extern int opt_norm;
+extern int test_single;
+extern int image_id;
+// extern int image_id;
+extern bool test_marginalization;
+extern bool active_all_candidates;
+extern bool show_spectator;
+extern bool get_current_frame;
 
 // candidate selection
-static int candidate_level_ = 0;
-static int coarsest_level_= candidate_level_+4; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
-// static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
-static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
-static float grad_threshold_=0.02;
-// static float grad_threshold_=0.1;
-static int num_candidates_=700;
-static float der_threshold_=0.01;
+extern int candidate_level;
+extern int coarsest_level;
+// extern int reg_level;
+extern int reg_level;
+extern float grad_threshold;
+// extern float grad_threshold;
+extern int num_candidates;
+extern float der_threshold;
 
 // mapping
-static float cost_threshold_=0.02;
-static float var_threshold_ = 0.1;
+extern float cost_threshold;
+extern float var_threshold;
 
 // keyframe selection
-static int num_active_keyframes_=7;
-static float flow_dist_threshold_=0.0005;
-static float percentage_marg_pts_threshold_ = 0.1;
+extern int num_active_keyframes;
+extern float flow_dist_threshold;
+extern float percentage_marg_pts_threshold;
 
 // optimization
-static int max_iterations_ba_=10;
-static int max_num_active_points_=2000;
-static float intensity_coeff_ = 1;
-static float gradient_coeff_ = 0.25;
-static float phase_coeff_ = 1./(4.*PI);
-static float damp_point_invdepth_ = 10;
-static float huber_threshold_=0.01;
-static float sat_threshold_=0.04;
-// static float sat_threshold_=2;
-static float chi_occlusion_threshold_=0.06;
-static float occlusion_valid_ratio_thresh_ = 0.5;
-static float valid_ratio_thresh_ = 0.0;
+extern int max_iterations_ba;
+extern int max_num_active_points;
+extern float intensity_coeff;
+extern float gradient_coeff;
+extern float phase_coeff;
+extern float damp_point_invdepth;
+extern float huber_threshold;
+extern float sat_threshold;
+// extern float sat_threshold;
+extern float chi_occlusion_threshold;
+extern float occlusion_valid_ratio_thresh;
+extern float valid_ratio_thresh;
 
 // tracking
-static int max_iterations_ls_=100;
-static float variance_ = 0.1;
-static int robustifier_dofs_=1;
-static float ratio_for_convergence_ = 0.1;
-static float stop_threshold_ = 0.0001;
-static float conv_threshold_ = 0.001;
+extern int max_iterations_ls;
+extern float variance;
+extern int robustifier_dofs;
+extern float ratio_for_convergence;
+extern float stop_threshold;
+extern float conv_threshold;
 
 
 //  video streaming
-static int end_frame_=160;
-static int fps_=30;
+extern int end_frame;
+extern int fps;
 
 // initializer parameters
-static int n_corners_ = 1000;
-static float quality_level_ = 0.01;
-static float min_distance_ = 10;
-static float err_threshold_ = 5;
-static int size_window_ = 21;
-static float confidence_ = 0.999;
-static float ransacReprojThreshold_ = 1;
+extern int n_corners;
+extern float quality_level;
+extern float min_distance;
+extern float err_threshold;
+extern int size_window;
+extern float confidence;
+extern float ransacReprojThreshold;
 
 // spectator parameters
-const int spec_resolution_x_ = 1366;
-const int spec_resolution_y_ = 768;
-const float spec_width_ = 0.024;
-const float spec_lens_ = 0.035;
-const float spec_min_depth_ = 0.01;
-const float spec_max_depth_ = 20;
-const float spec_distance_ = 5;
-const float rendered_cams_size_ = 0.01;
-
-
-struct Params{
-  bool debug_initialization=debug_initialization_;
-  bool debug_mapping=debug_mapping_;
-  bool debug_tracking=debug_tracking_;
-  bool debug_optimization=debug_optimization_;
-  bool use_spectator=use_spectator_;
-
-  bool take_gt_poses=take_gt_poses_;
-  bool take_gt_points=take_gt_points_;
-  int guess_type=guess_type_;
-  int opt_norm=opt_norm_;
-  int test_single=test_single_;
-  int image_id=image_id_;
-  bool test_marginalization=test_marginalization_;
-  bool active_all_candidates=active_all_candidates_;
-  bool show_spectator=show_spectator_;
-  bool get_current_frame=get_current_frame_;
-
-  int candidate_level=candidate_level_;
-  int coarsest_level=coarsest_level_;
-  int reg_level=reg_level_;
-  float grad_threshold=grad_threshold_;
-  int num_candidates=num_candidates_;
-  int der_threshold=der_threshold_;
-
-  float cost_threshold=cost_threshold_;
-  // float cost_grad_threshold=cost_grad_threshold_;
-  // float cost_grad_threshold_DSO=cost_grad_threshold_DSO_;
-  int max_iterations_ba=max_iterations_ba_;
-  int max_num_active_points=max_num_active_points_;
-  int num_active_keyframes=num_active_keyframes_;
-  float flow_dist_threshold=flow_dist_threshold_;
-  float percentage_marg_pts_threshold=percentage_marg_pts_threshold_;
-
-  int end_frame=end_frame_;
-  int fps=fps_;
-  float huber_threshold=huber_threshold_;
-  float sat_threshold=sat_threshold_;
-  float chi_occlusion_threshold=chi_occlusion_threshold_;
-
-  float intensity_coeff=intensity_coeff_;
-  float gradient_coeff=gradient_coeff_;
-  float phase_coeff=phase_coeff_;
-  float damp_point_invdepth=damp_point_invdepth_;
-  float occlusion_valid_ratio_thresh=occlusion_valid_ratio_thresh_;
-  float valid_ratio_thresh=valid_ratio_thresh_;
-
-  int max_iterations_ls=max_iterations_ls_;
-  float stop_threshold=stop_threshold_;
-  float conv_threshold=conv_threshold_;
-  float var_threshold=var_threshold_;
-
-  float variance=variance_;
-  int robustifier_dofs=robustifier_dofs_;
-  int ratio_for_convergence=ratio_for_convergence_;
-  int n_corners=n_corners_;
-  float quality_level=quality_level_;
-  float min_distance=min_distance_;
-  float err_threshold=err_threshold_;
-  float size_window=size_window_;
-  float confidence=confidence_;
-  float ransacReprojThreshold=ransacReprojThreshold_;
-
-  int spec_resolution_x=spec_resolution_x_;
-  int spec_resolution_y=spec_resolution_y_;
-  float spec_width=spec_width_;
-  float spec_lens=spec_lens_;
-  float spec_min_depth=spec_min_depth_;
-  float spec_max_depth=spec_max_depth_;
-  float spec_distance=spec_distance_;
-  float rendered_cams_size=rendered_cams_size_;
-
-  Params(){
-    // if (coarsest_level<reg_level){
-    //   std::cout << "Error in parameters: coarsest level less than reg_level!" << std::endl;
-    //   exit(1);
-    // }
-  };
-
-
-};
+extern int spec_resolution_x;
+extern int spec_resolution_y;
+extern float spec_width;
+extern float spec_lens;
+extern float spec_min_depth;
+extern float spec_max_depth;
+extern float spec_distance;
+extern float rendered_cams_size;

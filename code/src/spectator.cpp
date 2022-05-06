@@ -6,8 +6,8 @@
 
 CamParameters* Spectator::initCamParams(){
   CamParameters* spectator_params (new CamParameters(
-  dso_->parameters_->spec_resolution_x, dso_->parameters_->spec_resolution_y, dso_->parameters_->spec_width,
-  dso_->parameters_->spec_lens, dso_->parameters_->spec_min_depth, dso_->parameters_->spec_max_depth));
+  spec_resolution_x, spec_resolution_y, spec_width,
+  spec_lens, spec_min_depth, spec_max_depth));
   return spectator_params;
 }
 
@@ -19,7 +19,7 @@ Camera* Spectator::initCam(){
 
 Image<colorRGB>* Spectator::initImage(){
   Image<colorRGB>* spectator_image( new Image<colorRGB> ("Spectator"));
-  spectator_image->initImage(dso_->parameters_->spec_resolution_y, dso_->parameters_->spec_resolution_x);
+  spectator_image->initImage(spec_resolution_y, spec_resolution_x);
   spectator_image->setAllPixels(background_color_);
   return spectator_image;
 }
@@ -47,7 +47,7 @@ void Spectator::renderState(){
 
 void Spectator::showSpectator(){
   spectator_image_->show(1);
-  // if(!(dso_->parameters_->debug_optimization))
+  // if(!(debug_optimization))
   //   waitkey(1);
   cv::waitKey(0);
 
@@ -115,8 +115,6 @@ void Spectator::renderCamsAndKFs(){
 Eigen::Isometry3f Spectator::getSpectatorPose(){
   // get first active keyframe
   CameraForMapping* first_keyframe = dso_->frame_current_;
-  // distance of spectator wrt first keyframe
-  float spec_distance = dso_->parameters_->spec_distance;
   // spec wrt first keyframe
   Eigen::Isometry3f kf1_T_spec;
   kf1_T_spec.linear().setIdentity();
@@ -186,8 +184,8 @@ bool Spectator::plotCam(Camera* cam, const colorRGB& color){
   Eigen::Isometry3f T = cam->access_frame_camera_wrt_world();
   Eigen::Matrix3f R = T.linear();
   Eigen::Vector3f p = T.translation();
-  float delta_d = dso_->parameters_->rendered_cams_size;
-  float delta_y = dso_->parameters_->rendered_cams_size/2;
+  float delta_d = rendered_cams_size;
+  float delta_y = rendered_cams_size/2;
   float delta_x = delta_y*spectator_params_->aspect;
   Eigen::Vector3f p_tr(delta_x,delta_y,delta_d);
   Eigen::Vector3f p_tl(-delta_x,delta_y,delta_d);

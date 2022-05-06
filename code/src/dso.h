@@ -21,7 +21,6 @@ class Dso : public std::enable_shared_from_this<Dso>{
 
 
     // main objects
-    Params* parameters_;
     Environment* environment_;
     CamParameters* cam_parameters_;
     CamerasContainer* cameras_container_;
@@ -50,9 +49,8 @@ class Dso : public std::enable_shared_from_this<Dso>{
 
 
     // ********** constructor **********
-    Dso(Environment* environment, Params* parameters):
-      parameters_(parameters)
-      ,environment_(environment)
+    Dso(Environment* environment):
+      environment_(environment)
       ,cam_parameters_(new CamParameters(environment_->cam_parameters_))
       ,cameras_container_( new CamerasContainer(this) )
       ,bundle_adj_( new BundleAdj(this))

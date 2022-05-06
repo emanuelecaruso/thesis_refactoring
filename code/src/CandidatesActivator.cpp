@@ -96,8 +96,8 @@ RegionsMat* RegionsMat::getHigherLevel(){
 void ActptpresenceMatVec::init(Dso* dso){
   int res_x = dso->cam_parameters_->resolution_x;
   int res_y = dso->cam_parameters_->resolution_y;
-  actptpresencemat_vec_.resize(dso->parameters_->reg_level);
-  for(int i=0; i<dso->parameters_->reg_level; i++){
+  actptpresencemat_vec_.resize(reg_level);
+  for(int i=0; i<reg_level; i++){
     ActptpresenceMat* ptr(new ActptpresenceMat(res_y/pow(2,i),res_x/pow(2,i)) );
     // actptpresencemat_vec_[i] = std::make_shared<ActptpresenceMat>(res_y/pow(2,i),res_x/pow(2,i));
     actptpresencemat_vec_[i] = ptr;
@@ -116,8 +116,8 @@ void RegMatVec::init(Dso* dso){
 
   int res_x = dso->cam_parameters_->resolution_x;
   int res_y = dso->cam_parameters_->resolution_y;
-  regionsmat_vec_.resize(dso->parameters_->reg_level);
-  for(int i=0; i<dso->parameters_->reg_level; i++){
+  regionsmat_vec_.resize(reg_level);
+  for(int i=0; i<reg_level; i++){
     if(i==0){
       RegionsMat* ptr(nullptr);
       regionsmat_vec_[i] = ptr;
@@ -137,8 +137,8 @@ void RegMatVec::clear(){
 }
 
 void RegVecMat::init(){
-  regs_.resize(cand_activator_->dso_->parameters_->reg_level);
-  for (int i = 0 ; i < cand_activator_->dso_->parameters_->reg_level ; i++) {
+  regs_.resize(reg_level);
+  for (int i = 0 ; i < reg_level ; i++) {
     if(i>0)
       regs_[i].resize(4);
   }
@@ -169,7 +169,7 @@ void RegVecMat::reset(){
     int row_prev = (int)(pixel_prev.y()-0.5);
     int col_prev = (int)(pixel_prev.x()-0.5);
 
-    for(int level=1; level<cand_activator_->dso_->parameters_->reg_level; level++){
+    for(int level=1; level<reg_level; level++){
 
       ActptpresenceMat* actptpresencemat =cand_activator_->actptpresencemat_vec_.actptpresencemat_vec_[level-1];
       if(actptpresencemat->mat_[row_prev][col_prev]){
@@ -306,7 +306,7 @@ void CandidatesActivator::removeEmptyRegion(Region* reg){
     // pass through subregs
 
     Region* reg_curr = reg;
-    for( int subreg_lev=2; subreg_lev<=dso_->parameters_->reg_level-1; subreg_lev++){
+    for( int subreg_lev=2; subreg_lev<=reg_level-1; subreg_lev++){
       std::vector<Region*>& v =reg_curr->parent_->subregions_;
 
       if(v.size()<=1){
@@ -331,9 +331,9 @@ void CandidatesActivator::activateCandidates(){
   double t_start=getTime();
 
   reset();
-  int num_candidates_to_activate = dso_->parameters_->max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size();
+  int num_candidates_to_activate = max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size();
   int num_candidates_activated = 0;
-  for(int level=dso_->parameters_->reg_level-1; level>0; level--){
+  for(int level=reg_level-1; level>0; level--){
     for(int i=0; i<4; i++){
       while(regvec_mat_.regs_[level][i].size()>0){
 

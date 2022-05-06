@@ -16,11 +16,10 @@ int main (int argc, char * argv[]) {
   const std::string path_name = "./dataset/"+dataset_name;
 
   // initialization
-  Params* parameters =  new Params();
 
-  Environment* environment = new Environment(path_name, dataset_name, parameters);
+  Environment* environment = new Environment(path_name, dataset_name);
 
-  Dso* dso = new Dso( environment, parameters); // dense mapper and tracker
+  Dso* dso = new Dso( environment ); // dense mapper and tracker
 
   dso->startSequential();
   // dtam->test_dso();

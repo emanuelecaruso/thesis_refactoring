@@ -6,8 +6,8 @@ void CameraForMapping::setGrountruthPose(){
   assignPose(*(grountruth_camera_->frame_camera_wrt_world_));
 }
 
-PointsContainer* CameraForMapping::initializePointsContainer(Params* parameters){
-  PointsContainer* ptr = new PointsContainer(this, parameters);
+PointsContainer* CameraForMapping::initializePointsContainer(){
+  PointsContainer* ptr = new PointsContainer(this);
   return ptr;
 }
 CamDataForBA* CameraForMapping::initializeDataForBA(){

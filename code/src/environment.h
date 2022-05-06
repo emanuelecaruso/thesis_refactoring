@@ -11,12 +11,12 @@ class Environment{
     const std::vector<Camera*>* camera_vector_; // vector containing pointers to camera objects
 
 
-    Environment(const std::string& path_name, const std::string& dataset_name, Params* parameters):
+    Environment(const std::string& path_name, const std::string& dataset_name):
     dataset_name_(dataset_name),
-    fps_(parameters->fps),
-    coarsest_level_(parameters->coarsest_level),
+    fps_(fps),
+    coarsest_level_(coarsest_level),
     cam_parameters_(loadCamParameters( path_name, dataset_name)),
-    camera_vector_(loadCameraVector( path_name, dataset_name, parameters->end_frame))
+    camera_vector_(loadCameraVector( path_name, dataset_name, end_frame))
     { };
 
     void debugAllCameras(bool show_imgs=false) const;

@@ -16,7 +16,7 @@ bool KeyframeHandler::addKeyframe(bool fixed){
     float flow_dist = getFlowDist();
 
     // eval optical flow distance
-    if(flow_dist>dso_->parameters_->flow_dist_threshold){
+    if(flow_dist>flow_dist_threshold){
       dso_->cameras_container_->addActiveKeyframe(dso_->frame_current_);
       sharedCoutDebug("   - Keyframe added");
       marginalizeKeyframe();
@@ -80,7 +80,7 @@ bool KeyframeHandler::marginalizeKeyframe(){
 
   bool percentage_marginalization = false;
 
-  if( dso_->cameras_container_->keyframes_active_.size() <= dso_->parameters_->num_active_keyframes )
+  if( dso_->cameras_container_->keyframes_active_.size() <= num_active_keyframes )
     return false;
 
   // iterate through all keyframe (except the last two)
@@ -89,7 +89,7 @@ bool KeyframeHandler::marginalizeKeyframe(){
 
     float percentage_marg = getPercentuageMarg(keyframe);
 
-    if(percentage_marg<dso_->parameters_->percentage_marg_pts_threshold){
+    if(percentage_marg<percentage_marg_pts_threshold){
       marginalize(keyframe);
       break;
       percentage_marginalization=true;

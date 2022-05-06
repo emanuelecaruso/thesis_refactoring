@@ -26,6 +26,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/manu/Desktop/thesis_refactoring/code/src/epline.cpp" "executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/image.cpp" "executables/CMakeFiles/test_dso.dir/__/src/image.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/image.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/initializer.cpp" "executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o.d"
+  "/home/manu/Desktop/thesis_refactoring/code/src/parameters.cpp" "executables/CMakeFiles/test_dso.dir/__/src/parameters.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/parameters.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/spectator.cpp" "executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/src/utils.cpp" "executables/CMakeFiles/test_dso.dir/__/src/utils.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/__/src/utils.cpp.o.d"
   "/home/manu/Desktop/thesis_refactoring/code/executables/test_dso.cpp" "executables/CMakeFiles/test_dso.dir/test_dso.cpp.o" "gcc" "executables/CMakeFiles/test_dso.dir/test_dso.cpp.o.d"

@@ -44,7 +44,7 @@ void PointsContainer::showCandidates(){
   double alpha = 1;
 
   std::string name = cam_->name_+" , "+std::to_string(candidates_.size())+" candidates";
-  Image<colorRGB>* show_img( cam_->pyramid_->getC(parameters_->candidate_level)->returnColoredImgFromIntensityImg(name) );
+  Image<colorRGB>* show_img( cam_->pyramid_->getC(candidate_level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through candidates
   for(int i=0; i<candidates_.size(); i++){
@@ -52,7 +52,7 @@ void PointsContainer::showCandidates(){
     drawPoint(candidate,show_img);
   }
 
-  show_img->show(pow(2,parameters_->candidate_level));
+  show_img->show(pow(2,candidate_level));
   cv::waitKey(0);
 
 }
@@ -61,7 +61,7 @@ void PointsContainer::showProjectedCandidates(){
   double alpha = 1;
 
   std::string name = cam_->name_+" , "+std::to_string(candidates_projected_.size())+" projected candidates";
-  Image<colorRGB>* show_img( cam_->pyramid_->getC(parameters_->candidate_level)->returnColoredImgFromIntensityImg(name) );
+  Image<colorRGB>* show_img( cam_->pyramid_->getC(candidate_level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through candidates
   for(int i=0; i<candidates_projected_.size(); i++){
@@ -69,7 +69,7 @@ void PointsContainer::showProjectedCandidates(){
     drawPoint(candidate_proj,show_img);
   }
 
-  show_img->show(pow(2,parameters_->candidate_level));
+  show_img->show(pow(2,candidate_level));
   cv::waitKey(0);
 
 }
@@ -80,7 +80,7 @@ void PointsContainer::showActivePoints(){
   double alpha = 1;
 
   std::string name = cam_->name_+" , "+std::to_string(active_points_.size())+" active points";
-  Image<colorRGB>* show_img( cam_->pyramid_->getC(parameters_->candidate_level)->returnColoredImgFromIntensityImg(name) );
+  Image<colorRGB>* show_img( cam_->pyramid_->getC(candidate_level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through candidates
   for(int i=0; i<active_points_.size(); i++){
@@ -88,7 +88,7 @@ void PointsContainer::showActivePoints(){
     drawPoint(active_pt,show_img);
   }
 
-  show_img->show(pow(2,parameters_->candidate_level));
+  show_img->show(pow(2,candidate_level));
   cv::waitKey(0);
 
 }
@@ -102,7 +102,7 @@ void PointsContainer::showProjectedActivePoints(){
 void PointsContainer::showProjectedActivePoints(const std::string& name){
   double alpha = 1;
 
-  Image<colorRGB>* show_img( cam_->pyramid_->getC(parameters_->candidate_level)->returnColoredImgFromIntensityImg(name) );
+  Image<colorRGB>* show_img( cam_->pyramid_->getC(candidate_level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through active points projected
   for(int i=0; i<active_points_projected_.size(); i++){
@@ -110,7 +110,7 @@ void PointsContainer::showProjectedActivePoints(const std::string& name){
     drawPoint(active_pt_proj,show_img);
   }
 
-  show_img->show(pow(2,parameters_->candidate_level));
+  show_img->show(pow(2,candidate_level));
   cv::waitKey(0);
 
 }

@@ -32,7 +32,7 @@ void Dso::loadFrameCurrent(){
     waitForNewFrame();
   }
 
-  if(parameters_->get_current_frame){
+  if(get_current_frame){
     frame_current_idx_=cameras_container_->frames_.size();
     frame_current_=cameras_container_->frames_.back();
   }
@@ -49,11 +49,11 @@ void Dso::setFirstKeyframe(){
   tracker_->trackCam(true); // fix first frame to groundtruth pose
   keyframe_handler_->addKeyframe(true);  // add fixed keyframe
   initializer_->extractCorners(); // extract corners from image
-  if(parameters_->debug_initialization){
+  if(debug_initialization){
     initializer_->showCornersTrackCurr();
   }
   points_handler_->sampleCandidates(); // sample candidates as high gradient points
-  if(parameters_->debug_mapping){
+  if(debug_mapping){
     points_handler_->showCandidates();
   }
   first_frame_to_set_=false;
@@ -67,13 +67,13 @@ void Dso::initialize(){
   if(initializer_->findPose()){
 
     sharedCoutDebug("   - Pose found");
-    if(parameters_->debug_initialization){
+    if(debug_initialization){
       initializer_->showCornersTrackCurr();
     }
 
     // ... add last keyframe
     keyframe_handler_->addKeyframe(true); // add fixed keyframe
-    points_handler_->trackCandidates(parameters_->take_gt_points); // track existing candidates
+    points_handler_->trackCandidates(take_gt_points); // track existing candidates
 
 
     // project candidates and active points on last frame
@@ -81,7 +81,7 @@ void Dso::initialize(){
 
     points_handler_->sampleCandidates(); // sample candidates as high gradient points
 
-    if(parameters_->debug_mapping){
+    if(debug_mapping){
 
       // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
       // points_handler_->sampleCandidates();
@@ -100,14 +100,14 @@ void Dso::initialize(){
 bool Dso::doDso(){
 
   // track cam
-  tracker_->trackCam(parameters_->take_gt_poses);
+  tracker_->trackCam(take_gt_poses);
 
   // add keyframe
   bool kf_added = keyframe_handler_->addKeyframe(false); // add keyframe
   if(kf_added){
 
     // track existing candidates
-    points_handler_->trackCandidates(parameters_->take_gt_points);
+    points_handler_->trackCandidates(take_gt_points);
 
     // activate points
     candidates_activator_->activateCandidates();
@@ -116,7 +116,7 @@ bool Dso::doDso(){
     points_handler_->sampleCandidates(); // sample candidates as high gradient points
 
     // debug mapping
-    if(parameters_->debug_mapping){
+    if(debug_mapping){
       // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
       // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
       // points_handler_->showCandidates();
@@ -131,7 +131,7 @@ bool Dso::doDso(){
   // marginalize points not in last camera
   bundle_adj_->marginalizePointsAndKeyframes();
 
-  if(parameters_->use_spectator){
+  if(use_spectator){
     spectator_->renderState();
     spectator_->showSpectator();
   }

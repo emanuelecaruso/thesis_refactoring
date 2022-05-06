@@ -562,6 +562,30 @@ __/src/initializer.cpp.s:
 	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.s
 .PHONY : __/src/initializer.cpp.s
 
+__/src/parameters.o: __/src/parameters.cpp.o
+.PHONY : __/src/parameters.o
+
+# target to build an object file
+__/src/parameters.cpp.o:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/parameters.cpp.o
+.PHONY : __/src/parameters.cpp.o
+
+__/src/parameters.i: __/src/parameters.cpp.i
+.PHONY : __/src/parameters.i
+
+# target to preprocess a source file
+__/src/parameters.cpp.i:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/parameters.cpp.i
+.PHONY : __/src/parameters.cpp.i
+
+__/src/parameters.s: __/src/parameters.cpp.s
+.PHONY : __/src/parameters.s
+
+# target to generate assembly for a file
+__/src/parameters.cpp.s:
+	cd /home/manu/Desktop/thesis_refactoring/code/build && $(MAKE) $(MAKESILENT) -f executables/CMakeFiles/test_dso.dir/build.make executables/CMakeFiles/test_dso.dir/__/src/parameters.cpp.s
+.PHONY : __/src/parameters.cpp.s
+
 __/src/spectator.o: __/src/spectator.cpp.o
 .PHONY : __/src/spectator.o
 
@@ -697,6 +721,9 @@ help:
 	@echo "... __/src/initializer.o"
 	@echo "... __/src/initializer.i"
 	@echo "... __/src/initializer.s"
+	@echo "... __/src/parameters.o"
+	@echo "... __/src/parameters.i"
+	@echo "... __/src/parameters.s"
 	@echo "... __/src/spectator.o"
 	@echo "... __/src/spectator.i"
 	@echo "... __/src/spectator.s"

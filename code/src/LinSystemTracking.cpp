@@ -87,15 +87,15 @@ bool MeasTracking::init(ActivePoint* active_point, CamCouple* cam_couple, int le
   Jm_/=pow(2,level);
 
   // update J_m and error for intensity
-  Eigen::Matrix<float,1,2> image_jacobian_intensity = dso->parameters_->intensity_coeff*getImageJacobian(pixel, active_point, cam_couple, level, INTENSITY_ID);
+  Eigen::Matrix<float,1,2> image_jacobian_intensity = intensity_coeff*getImageJacobian(pixel, active_point, cam_couple, level, INTENSITY_ID);
   J_m += image_jacobian_intensity*Jm_;
-  error += dso->parameters_->intensity_coeff*getError( pixel,  active_point, cam_couple, level, INTENSITY_ID);
+  error += intensity_coeff*getError( pixel,  active_point, cam_couple, level, INTENSITY_ID);
 
 
   // // update J_m and error for gradient
-  // Eigen::Matrix<float,1,2> image_jacobian_gradient = dso->parameters_->gradient_coeff*dso->parameters_->gradient_coeff*getImageJacobian(pixel, active_point, cam_couple, level, GRADIENT_ID);
+  // Eigen::Matrix<float,1,2> image_jacobian_gradient = gradient_coeff*gradient_coeff*getImageJacobian(pixel, active_point, cam_couple, level, GRADIENT_ID);
   // J_m += image_jacobian_gradient*Jm_;
-  // error += dso->parameters_->intensity_coeff*getError( pixel,  active_point, cam_couple, level, GRADIENT_ID);
+  // error += intensity_coeff*getError( pixel,  active_point, cam_couple, level, GRADIENT_ID);
 
   assert(abs(error)<1);
   J_m_transpose= J_m.transpose();
@@ -144,35 +144,42 @@ float LinSysTracking::getWeight(MeasTracking& measurement){
   float weight_mest;
   // m estimator
   float u = abs(measurement.error);
-  if(u>sat_threshold_){
-    weight_mest = sat_threshold_;
-  }
-  else if(dso_->parameters_->opt_norm==HUBER){
-    float huber_threshold=dso_->parameters_->huber_threshold;
-    if (u<=huber_threshold){
-      weight_mest=1/huber_threshold;
-    }
-    else{
-      float rho_der = huberNormDerivative(u,dso_->parameters_->huber_threshold);
-      float gamma=(1/u)*rho_der;
-      weight_mest = gamma;
-    }
-  }
-  // least square without robustifier
-  else if (dso_->parameters_->opt_norm==QUADRATIC){
-    weight_mest=1;
+  if(u>sat_threshold){
+    weight_mest = sat_threshold;
   }
   else{
-    throw std::invalid_argument( "optimization norm has wrong value" );
+    switch (opt_norm)
+    {
+      case HUBER:{
+        if (u<=huber_threshold){
+          weight_mest=1./huber_threshold;
+        }
+        else{
+          float rho_der = huberNormDerivative(u,huber_threshold);
+          float gamma=(1./u)*rho_der;
+          weight_mest = gamma;
+        }
+        break;
+      }
+      case QUADRATIC:{
+        weight_mest=1;
+        break;
+      }
+      default:{
+        throw std::invalid_argument( "optimization norm has wrong value" );
+      }
+    }
+
   }
 
+  // std::cout << huber_threshold << std::endl;
   assert(std::isfinite(weight_mest));
 
   // float weight=1.0/measurement.active_point_->invdepth_var_;
 
   // // weight
-  // float variance = dso_->parameters_->variance;
-  // int ni = dso_->parameters_->robustifier_dofs;
+  // float variance = variance;
+  // int ni = robustifier_dofs;
   // float weight = (ni+1.0)/(ni+(pow(error,2)/variance));
   //
   // float  weight = weight*gamma;

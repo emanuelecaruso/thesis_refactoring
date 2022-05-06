@@ -210,7 +210,6 @@ public:
 class PointsContainer{
   public:
     // ********** members **********
-    Params* parameters_;
     CameraForMapping* cam_;
     std::vector<Candidate*> candidates_;
     std::vector<CandidateProjected*> candidates_projected_;
@@ -222,9 +221,8 @@ class PointsContainer{
 
 
     // ********** constructor **********
-    PointsContainer(CameraForMapping* cam, Params* parameters):
-    parameters_(parameters)
-    ,cam_(cam)
+    PointsContainer(CameraForMapping* cam ):
+    cam_(cam)
     ,n_active_points_removed_(0)
     {};
 
