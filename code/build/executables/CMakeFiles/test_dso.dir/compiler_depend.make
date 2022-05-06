@@ -5377,7 +5377,9 @@ executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o: ../src/PointsC
   ../src/image.h \
   ../src/CameraForMapping.h \
   ../src/Pyramid.h \
-  ../src/CamCouple.h
+  ../src/CamCouple.h \
+  ../src/BundleAdj.h \
+  ../src/LinSystemBA.h
 
 executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o: ../src/PointsHandler.cpp \
   /usr/include/stdc-predef.h \

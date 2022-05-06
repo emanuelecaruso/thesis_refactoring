@@ -12,7 +12,6 @@
 #include "defs.h"
 
 // debug parameters
-// static bool use_fast_cam_coupling_ = false;
 static bool debug_initialization_=false;
 static bool debug_mapping_=false;
 static bool debug_tracking_=false;
@@ -30,9 +29,7 @@ static int opt_norm_=HUBER;
 static int test_single_=TEST_ALL;
 static int image_id_=INTENSITY_ID;
 // static int image_id_=GRADIENT_ID;
-// int image_id_=PHASE_ID;
 static bool test_marginalization_=false;
-static bool all_keyframes_=false;
 static bool active_all_candidates_=true;
 static bool show_spectator_=true;
 static bool get_current_frame_=false;
@@ -44,7 +41,7 @@ static int coarsest_level_= candidate_level_+4; // e.g. level = 3 -> 0,1,2,*3* (
 static int reg_level_=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 static float grad_threshold_=0.02;
 // static float grad_threshold_=0.1;
-static int num_candidates_=500;
+static int num_candidates_=700;
 static float der_threshold_=0.01;
 
 // mapping
@@ -99,12 +96,11 @@ const float spec_width_ = 0.024;
 const float spec_lens_ = 0.035;
 const float spec_min_depth_ = 0.01;
 const float spec_max_depth_ = 20;
-const float spec_distance_ = 10;
+const float spec_distance_ = 5;
 const float rendered_cams_size_ = 0.01;
 
 
 struct Params{
-  // bool use_fast_cam_coupling=use_fast_cam_coupling_;
   bool debug_initialization=debug_initialization_;
   bool debug_mapping=debug_mapping_;
   bool debug_tracking=debug_tracking_;
@@ -118,7 +114,6 @@ struct Params{
   int test_single=test_single_;
   int image_id=image_id_;
   bool test_marginalization=test_marginalization_;
-  bool all_keyframes=all_keyframes_;
   bool active_all_candidates=active_all_candidates_;
   bool show_spectator=show_spectator_;
   bool get_current_frame=get_current_frame_;

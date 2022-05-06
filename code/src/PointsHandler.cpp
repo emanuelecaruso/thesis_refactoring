@@ -5,13 +5,17 @@
 #include "utils.h"
 #include <algorithm>    // std::max
 
-void PointsHandler::sampleCandidates(){
+bool PointsHandler::sampleCandidates(){
 
   double t_start=getTime();
 
   int count = 0;
   int n_pixels_tot = dso_->frame_current_->cam_parameters_->resolution_x*dso_->frame_current_->cam_parameters_->resolution_y/(pow(4,dso_->parameters_->candidate_level));
-  int reg_level = trunc(std::log( (float)(n_pixels_tot)/(dso_->parameters_->num_candidates))/std::log(4));
+  // int reg_level = trunc(std::log( (float)(n_pixels_tot)/(dso_->parameters_->num_candidates))/std::log(4));
+  int reg_level = trunc(std::log( (float)(n_pixels_tot)/(dso_->parameters_->max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size()))/std::log(4));
+
+
+  std::cout << reg_level << std::endl;
   reg_level=std::min(reg_level,5);
   reg_level=std::max(reg_level,1);
 
@@ -80,6 +84,7 @@ void PointsHandler::sampleCandidates(){
     reg_level+=diff;
     reg_level=std::min(reg_level,5);
     reg_level=std::max(reg_level,1);
+    std::cout << reg_level << std::endl;
 
   }
 
@@ -87,6 +92,7 @@ void PointsHandler::sampleCandidates(){
   int deltaTime=(t_end-t_start);
   sharedCoutDebug("   - Candidates sampled: "+ std::to_string(count) + ", " + std::to_string(deltaTime)+" ms");
 
+  return true;
 }
 
 void PointsHandler::showCandidates(){

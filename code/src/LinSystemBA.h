@@ -81,18 +81,31 @@ class LinSysBA{
 
 };
 
-class Prior{
+class PriorMeas{
   public:
     // ********** members **********
+    ActivePoint* active_point_;
+    CamCouple* cam_couple_;
     bool valid_;
+    bool occlusion_;
+    pxl pixel_;
+    float J_d;
+    Eigen::Matrix<float,1,6> J_m;
+    Eigen::Matrix<float,6,1> J_m_transpose;
+    pixelIntensity error;
+
     // ********** constructor **********
-    Prior(ActivePoint* active_pt, CamCouple* cam_couple):
-    valid_(true){
-      init(active_pt, cam_couple);
+    PriorMeas(ActivePoint* active_point, CamCouple* cam_couple):
+    valid_(true),
+    occlusion_(false),
+    active_point_(active_point),
+    cam_couple_(cam_couple)
+    {
+      init(active_point, cam_couple);
     }
 
     // ********** methods **********
-    bool init(ActivePoint* active_pt, CamCouple* cam_couple);
+    bool init(ActivePoint* active_point, CamCouple* cam_couple);
 };
 
 class LinSysBAMarg{

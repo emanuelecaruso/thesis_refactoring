@@ -1,5 +1,6 @@
 #include "PointsContainer.h"
 #include "CamCouple.h"
+#include "BundleAdj.h"
 #include <algorithm>    // std::max
 
 
@@ -154,7 +155,10 @@ void ActivePoint::remove(){
 }
 
 
-
+PtDataForBA* MarginalizedPoint::initializeDataForBA(){
+  PtDataForBA* ptr = new PtDataForBA();
+  return ptr;
+}
 
 void MarginalizedPoint::remove(){
   // remove candidate from vector

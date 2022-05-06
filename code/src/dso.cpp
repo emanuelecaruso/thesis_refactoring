@@ -41,7 +41,7 @@ void Dso::loadFrameCurrent(){
     frame_current_=cameras_container_->frames_[frame_current_idx_];
   }
 
-  sharedCoutDebug("\nFrame "+std::to_string(frame_current_idx_)+" ("+frame_current_->name_+")");
+  sharedCoutDebug("\nFrame "+std::to_string(frame_current_idx_)+", delay: "+std::to_string(cameras_container_->frames_.size()-frame_current_idx_));
 }
 
 void Dso::setFirstKeyframe(){
@@ -131,7 +131,10 @@ bool Dso::doDso(){
   // marginalize points not in last camera
   bundle_adj_->marginalizePointsAndKeyframes();
 
-  points_handler_->projectActivePointsOnLastFrame();
+  if(parameters_->use_spectator){
+    spectator_->renderState();
+    spectator_->showSpectator();
+  }
 
   return true;
 

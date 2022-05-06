@@ -4,6 +4,7 @@
 
 class CamCouple;
 class Dso;
+class PtDataForBA;
 
 class Point{
   public:
@@ -130,23 +131,28 @@ public:
 
 };
 
+
 class MarginalizedPoint : public Point{
 public:
 
   // ********** members **********
   Eigen::Vector3f p_;
+  PtDataForBA* pt_data_for_ba_;
+  // data for bundle adjustment
 
   // ********** constructor **********
 
   // create from active point
   MarginalizedPoint(ActivePoint* active_pt):
   Point(active_pt->cam_, active_pt->pixel_, active_pt->level_ ),
-  p_(active_pt->p_)
+  p_(active_pt->p_),
+  pt_data_for_ba_(initializeDataForBA())
   {}
 
 
   // ********** methods **********
   void remove();
+  PtDataForBA* initializeDataForBA();
 
 };
 

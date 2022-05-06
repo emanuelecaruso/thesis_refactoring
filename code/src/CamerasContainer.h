@@ -27,8 +27,8 @@ class CamerasContainer{
     // frame management functions
     void addFrame(Camera* frame);
     void addActiveKeyframe(CameraForMapping* keyframe);
-    void addKeyframeToMarginalize(CameraForMapping* keyframe);
-    void addKeyframeMarginalized(CameraForMapping* keyframe);
+    void moveKeyframeToMarginalize(CameraForMapping* keyframe);
+    void moveKeyframeMarginalized(CameraForMapping* keyframe);
     void removeFrame(Camera* frame);
     void removeActiveKeyframe(CameraForMapping* keyframe);
     void removeKeyframeToMarginalize(CameraForMapping* keyframe);

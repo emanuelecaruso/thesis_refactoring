@@ -133,12 +133,12 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
 
   if(!no_r){
     assert(r_idx < c_size);
-    r_idx = measurement->cam_couple_->cam_r_->data_for_ba_->c_idx_*6;
+    r_idx = measurement->cam_couple_->cam_r_->cam_data_for_ba_->c_idx_*6;
   }
 
   if(!no_m){
     assert(m_idx < c_size);
-    m_idx = measurement->cam_couple_->cam_m_->data_for_ba_->c_idx_*6;
+    m_idx = measurement->cam_couple_->cam_m_->cam_data_for_ba_->c_idx_*6;
   }
 
   assert(p_idx < p_size);
@@ -314,7 +314,7 @@ void LinSysBA::updateCameras(){
     if (keyframe->fixed_)
       continue;
 
-    Vector6f dx_curr = dx_c.segment<6>(keyframe->data_for_ba_->c_idx_*6);
+    Vector6f dx_curr = dx_c.segment<6>(keyframe->cam_data_for_ba_->c_idx_*6);
 
     Eigen::Isometry3f frame_camera_wrt_world =(*(keyframe->frame_camera_wrt_world_))*v2t_inv(dx_curr);
     keyframe->assignPose( frame_camera_wrt_world );
@@ -381,7 +381,7 @@ void LinSysBA::init(){
   for(int i=0; i<dso_->cameras_container_->keyframes_active_.size(); i++){
     CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
     if(!keyframe->fixed_){
-      keyframe->data_for_ba_->c_idx_=count;
+      keyframe->cam_data_for_ba_->c_idx_=count;
       count++;
     }
   }
@@ -437,16 +437,40 @@ float LinSysBA::getWeight(MeasBA* measurement){
 
 }
 
-bool Prior::init(ActivePoint* active_pt, CamCouple* cam_couple){
-  assert(cam_couple->cam_r_==active_pt->cam_);
+bool PriorMeas::init(ActivePoint* active_point, CamCouple* cam_couple){
+  assert(cam_couple->cam_r_==active_point->cam_);
   // project active point
   Eigen::Vector2f uv;
-  cam_couple->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv.x(),uv.y() );
-  bool uv_in_range = active_pt->cam_->uvInRange(uv);
+  cam_couple->getUv( active_point->uv_.x(),active_point->uv_.y(),1./active_point->invdepth_,uv.x(),uv.y() );
+  bool uv_in_range = active_point->cam_->uvInRange(uv);
 
-  if(!uv_in_range)
+  if(!uv_in_range){
+    valid_=false;
     return false;
+  }
 
+
+  J_m.setZero();  // initialize J_m
+  error=0;  // initialize error
+
+  // get Jm_
+  Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_(active_point);
+  // Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_old_(active_point);
+
+
+  // update J_m and error for intensity
+  Eigen::Matrix<float,1,2> image_jacobian_intensity = dso->parameters_->intensity_coeff*getImageJacobian(pixel, active_point, cam_couple, level, INTENSITY_ID);
+  J_m += image_jacobian_intensity*Jm_;
+  error += dso->parameters_->intensity_coeff*getError( pixel,  active_point, cam_couple, level, INTENSITY_ID);
+
+
+  // // update J_m and error for gradient
+  // Eigen::Matrix<float,1,2> image_jacobian_gradient = dso->parameters_->gradient_coeff*dso->parameters_->gradient_coeff*getImageJacobian(pixel, active_point, cam_couple, level, GRADIENT_ID);
+  // J_m += image_jacobian_gradient*Jm_;
+  // error += dso->parameters_->intensity_coeff*getError( pixel,  active_point, cam_couple, level, GRADIENT_ID);
+
+  assert(abs(error)<1);
+  J_m_transpose= J_m.transpose();
 
   return true;
 

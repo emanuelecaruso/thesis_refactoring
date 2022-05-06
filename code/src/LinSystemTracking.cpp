@@ -52,15 +52,15 @@ float MeasTracking::getError(pxl& pixel_m, ActivePoint* active_point, CamCouple*
 
 }
 
-Eigen::Matrix<float,1,2> MeasTracking::getImageJacobian(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int level, Dso* dso, int image_type){
+Eigen::Matrix<float,1,2> MeasTracking::getImageJacobian(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int level, int image_type){
 
   Eigen::Matrix<float,1,2> image_jacobian;
 
   if(image_type==INTENSITY_ID){
-    image_jacobian << dso->parameters_->intensity_coeff*cam_couple->cam_m_->pyramid_->getCDX(level)->evalPixelBilinear(pixel_m), dso->parameters_->intensity_coeff*cam_couple->cam_m_->pyramid_->getCDY(level)->evalPixelBilinear(pixel_m);
+    image_jacobian << cam_couple->cam_m_->pyramid_->getCDX(level)->evalPixelBilinear(pixel_m), cam_couple->cam_m_->pyramid_->getCDY(level)->evalPixelBilinear(pixel_m);
   }
   else if(image_type==GRADIENT_ID){
-    image_jacobian << dso->parameters_->gradient_coeff*cam_couple->cam_m_->pyramid_->getMagnDX(level)->evalPixelBilinear(pixel_m), dso->parameters_->gradient_coeff*cam_couple->cam_m_->pyramid_->getMagnDY(level)->evalPixelBilinear(pixel_m);
+    image_jacobian << cam_couple->cam_m_->pyramid_->getMagnDX(level)->evalPixelBilinear(pixel_m), cam_couple->cam_m_->pyramid_->getMagnDY(level)->evalPixelBilinear(pixel_m);
   }
 
   return image_jacobian;
@@ -79,7 +79,6 @@ bool MeasTracking::init(ActivePoint* active_point, CamCouple* cam_couple, int le
   }
 
   J_m.setZero();  // initialize J_m
-  J_m_transpose.setZero();  // initialize J_m_transpose
   error=0;  // initialize error
 
   // get Jm_
@@ -88,13 +87,13 @@ bool MeasTracking::init(ActivePoint* active_point, CamCouple* cam_couple, int le
   Jm_/=pow(2,level);
 
   // update J_m and error for intensity
-  Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian(pixel, active_point, cam_couple, level, dso, INTENSITY_ID);
+  Eigen::Matrix<float,1,2> image_jacobian_intensity = dso->parameters_->intensity_coeff*getImageJacobian(pixel, active_point, cam_couple, level, INTENSITY_ID);
   J_m += image_jacobian_intensity*Jm_;
   error += dso->parameters_->intensity_coeff*getError( pixel,  active_point, cam_couple, level, INTENSITY_ID);
 
 
   // // update J_m and error for gradient
-  // Eigen::Matrix<float,1,2> image_jacobian_gradient = dso->parameters_->gradient_coeff*getImageJacobian(pixel, active_point, cam_couple, level, dso, GRADIENT_ID);
+  // Eigen::Matrix<float,1,2> image_jacobian_gradient = dso->parameters_->gradient_coeff*dso->parameters_->gradient_coeff*getImageJacobian(pixel, active_point, cam_couple, level, GRADIENT_ID);
   // J_m += image_jacobian_gradient*Jm_;
   // error += dso->parameters_->intensity_coeff*getError( pixel,  active_point, cam_couple, level, GRADIENT_ID);
 

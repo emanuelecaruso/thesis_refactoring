@@ -45,7 +45,7 @@ float KeyframeHandler::getPercentuageMarg(CameraForMapping* keyframe){
 }
 
 void KeyframeHandler::marginalize(CameraForMapping* keyframe){
-  dso_->cameras_container_->addKeyframeToMarginalize(keyframe);
+  dso_->cameras_container_->moveKeyframeToMarginalize(keyframe);
   sharedCoutDebug("   - "+keyframe->name_+" to marginalize");
 
 

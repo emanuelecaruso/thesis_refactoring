@@ -15,19 +15,27 @@ void CamerasContainer::addActiveKeyframe(CameraForMapping* keyframe){
   keyframe->keyframe_=true;
 
 }
-void CamerasContainer::addKeyframeToMarginalize(CameraForMapping* keyframe){
+void CamerasContainer::moveKeyframeToMarginalize(CameraForMapping* keyframe){
   assert(checkFrame(keyframe) && checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
-  keyframes_to_marginalize_.push_back(keyframe);
 
   // remove keyframe from active keyframes
-  std::vector<CameraForMapping*>& v = keyframes_active_;
-  int v_size = v.size();
-  v.erase(std::remove(v.begin(), v.end(), keyframe), v.end());
-  assert(v_size==v.size()+1);
+  removeActiveKeyframe(keyframe);
+
+  // push keyframe to marginalize
+  keyframes_to_marginalize_.push_back(keyframe);
+
 
 }
-void CamerasContainer::addKeyframeMarginalized(CameraForMapping* keyframe){
-  assert(checkFrame(keyframe) && !checkActiveKeyframe(keyframe) && checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
+void CamerasContainer::moveKeyframeMarginalized(CameraForMapping* keyframe){
+  // assert(checkFrame(keyframe) && !checkActiveKeyframe(keyframe) && checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
+  assert(checkFrame(keyframe) && !checkActiveKeyframe(keyframe) );
+  assert(checkKeyframeToBeMarginalized(keyframe) );
+  assert(!checkMarginalizedKeyframe(keyframe));
+
+  // remove keyframe from keyframes to be marginalized
+  removeKeyframeToMarginalize(keyframe);
+
+  // push keyframe marginalized
   keyframes_marginalized_.push_back(keyframe);
 }
 void CamerasContainer::removeFrame(Camera* frame){
@@ -35,19 +43,31 @@ void CamerasContainer::removeFrame(Camera* frame){
   // frames_.push_back(frame);
 }
 void CamerasContainer::removeActiveKeyframe(CameraForMapping* keyframe){
-  assert(checkFrame(keyframe) && checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
+  // assert(checkFrame(keyframe) && checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
+  assert(checkFrame(keyframe) && checkActiveKeyframe(keyframe) );
+  assert(!checkKeyframeToBeMarginalized(keyframe) );
+  assert(!checkMarginalizedKeyframe(keyframe));
 
+  int v_size = keyframes_active_.size();
   keyframes_active_.erase(std::remove(keyframes_active_.begin(), keyframes_active_.end(), keyframe), keyframes_active_.end());
+  assert(v_size==keyframes_active_.size()+1);
+
 }
 void CamerasContainer::removeKeyframeToMarginalize(CameraForMapping* keyframe){
-  assert(checkFrame(keyframe) && checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
-
-  keyframes_active_.erase(std::remove(keyframes_to_marginalize_.begin(), keyframes_to_marginalize_.end(), keyframe), keyframes_to_marginalize_.end());
-}
-void CamerasContainer::removeKeyframeMarginalized(CameraForMapping* keyframe){
+  // assert(checkFrame(keyframe) && checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
   assert(checkFrame(keyframe) && !checkActiveKeyframe(keyframe) && checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
 
+  int v_size = keyframes_to_marginalize_.size();
+  keyframes_to_marginalize_.erase(std::remove(keyframes_to_marginalize_.begin(), keyframes_to_marginalize_.end(), keyframe), keyframes_to_marginalize_.end());
+  assert(v_size==keyframes_to_marginalize_.size()+1);
+
+}
+void CamerasContainer::removeKeyframeMarginalized(CameraForMapping* keyframe){
+  assert(checkFrame(keyframe) && !checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && checkMarginalizedKeyframe(keyframe));
+
+  int v_size = keyframes_marginalized_.size();
   keyframes_marginalized_.erase(std::remove(keyframes_marginalized_.begin(), keyframes_marginalized_.end(), keyframe), keyframes_marginalized_.end());
+  assert(v_size==keyframes_marginalized_.size()+1);
 }
 
 // check functions

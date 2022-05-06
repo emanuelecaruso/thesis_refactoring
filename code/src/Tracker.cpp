@@ -200,8 +200,7 @@ void Tracker::trackCam(){
 
     chi_history_.clear();
   }
-  dso_->spectator_->renderState();
-  dso_->spectator_->showSpectator();
+
   sharedCoutDebug("   - Frame tracked: " + std::to_string((int)deltaTime_tot) + " ms");
 
 }

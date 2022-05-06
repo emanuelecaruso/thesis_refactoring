@@ -24,7 +24,7 @@ class MeasTracking{
 
     // ********** methods **********
     bool init(ActivePoint* active_point, CamCouple* cam_couple, int level, Dso* dso);
-    Eigen::Matrix<float,1,2> getImageJacobian(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int level, Dso* dso, int image_type);
+    Eigen::Matrix<float,1,2> getImageJacobian(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int level, int image_type);
     float getError(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int level, int image_type);
     bool getPixelOfProjectedActivePoint(ActivePoint* active_point, CamCouple* cam_couple, pxl& pixel, int level);
 

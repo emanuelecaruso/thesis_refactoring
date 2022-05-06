@@ -5,7 +5,7 @@
 // #include "PointsContainer.h"
 
 class PointsContainer;
-class DataForBA;
+class CamDataForBA;
 
 class CameraForMapping : public Camera, public std::enable_shared_from_this<CameraForMapping>{
   // class CameraForMapping : public Camera{
@@ -15,11 +15,12 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
     Pyramid* pyramid_;
     // Pyramid pyramid_;
     PointsContainer* points_container_;
-    DataForBA* data_for_ba_;
+    CamDataForBA* cam_data_for_ba_;
 
     // flags
     bool fixed_;
     bool keyframe_;
+    bool marginalized_;
 
     // ********** constructor **********
 
@@ -27,11 +28,12 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
       Camera(env_cam,false)
       ,grountruth_camera_(env_cam)
       ,pyramid_( new Pyramid(env_cam,parameters->coarsest_level) )
-      ,data_for_ba_( initializeDataForBA() )
+      ,cam_data_for_ba_( initializeDataForBA() )
       // ,points_container_( new PointsContainer(this) )
       ,points_container_( initializePointsContainer(parameters) )
       ,fixed_(false)
       ,keyframe_(false)
+      ,marginalized_(false)
       { };
 
     ~CameraForMapping(){
@@ -42,7 +44,7 @@ class CameraForMapping : public Camera, public std::enable_shared_from_this<Came
     void setGrountruthPose();
   protected:
     PointsContainer* initializePointsContainer(Params* parameters);
-    DataForBA* initializeDataForBA();
+    CamDataForBA* initializeDataForBA();
 
 
 };

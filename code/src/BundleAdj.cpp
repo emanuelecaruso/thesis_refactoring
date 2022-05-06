@@ -67,11 +67,48 @@ void BundleAdj::setCamData(){
   for(int i=0; i<dso_->cameras_container_->keyframes_active_.size(); i++){
     CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
     if(!keyframe->fixed_){
-      keyframe->data_for_ba_->c_idx_=count;
+      keyframe->cam_data_for_ba_->c_idx_=count;
       count++;
     }
   }
 }
+
+void BundleAdj::marginalizeKeyframe(CameraForMapping* keyframe){
+  // set flag
+  keyframe->marginalized_=true;
+  dso_->cameras_container_->moveKeyframeMarginalized(keyframe);
+
+}
+
+void BundleAdj::createPrior(ActivePoint* active_point, CamCouple* cam_couple){
+
+  assert(active_point->cam_==cam_couple->cam_r_);
+
+
+
+  // get Jd, and Jm
+
+
+  // update H kk
+  // Eigen::Matrix<float,6,6> H_kk = ;
+  // float b_k = ;
+  // cam_couple->cam_m_->cam_data_for_ba_->H_kk_+=H_kk;
+  // cam_couple->cam_m_->cam_data_for_ba_->b_k_+=b_k;
+
+  // add cam Hku couple
+  // Eigen::Matrix<float,6,1> H_ku = ;
+  // CamHkuCouple* cam_Hku_couple = new CamHkuCouple(H_ku, cam_couple->cam_m_);
+  // marg_pt->pt_data_for_ba_->cam_Hku_couples_.push_back(cam_Hku_couple);
+
+  // set H uu
+  // float H_uu = ;
+  // float b_u = ;
+  // marg_pt->pt_data_for_ba_->H_uu_=H_uu;
+  // marg_pt->pt_data_for_ba_->b_u_=b_u;
+
+}
+
+
 
 void BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* cam_couple_container){
   // remove candidate from vector
@@ -85,18 +122,28 @@ void BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* 
   // push marginalized point
   active_point->cam_->points_container_->marginalized_points_.push_back(marg_pt);
 
+
+
   // crete prior
   // iterate through all active keyframes
   for (int i=0; i<cam_couple_container->cam_couple_mat_[0].size(); i++){
     CamCouple* cam_couple = cam_couple_container->get(0,i);
-    Prior* prior = new Prior(active_point, cam_couple);
-    if(!prior->valid_){
-      delete prior;
+
+    if(cam_couple->cam_m_==active_point->cam_)
       continue;
-    }
-    else{
-      cam_couple->cam_m_->data_for_ba_->priors_.push_back(prior);
-    }
+
+    // // push marg_pt in bundle adjustment vector
+    // priors_.push_back(marg_pt);
+
+    createPrior(active_point, cam_couple);
+    // Prior* prior = new Prior(active_point, cam_couple);
+    // if(!prior->valid_){
+    //   delete prior;
+    //   continue;
+    // }
+    // else{
+    //   // cam_couple->cam_m_->cam_data_for_ba_->priors_.push_back(prior);
+    // }
   }
 
   // delete active point
@@ -117,11 +164,14 @@ void BundleAdj::marginalizePointsAndKeyframes(){
     // create cam couple vector
     CamCoupleContainer* cam_couple_container = new CamCoupleContainer(dso_,keyframe_to_marg);
 
-    // marginalize also all active points
+    // marginalize all active points
     for(int i=keyframe_to_marg->points_container_->active_points_.size()-1; i>=0; i--){
       ActivePoint* active_pt = keyframe_to_marg->points_container_->active_points_[i];
       marginalizePoint(active_pt, cam_couple_container);
     }
+
+    // marginalize keyframe
+    marginalizeKeyframe(keyframe_to_marg);
 
     delete cam_couple_container;
   }
