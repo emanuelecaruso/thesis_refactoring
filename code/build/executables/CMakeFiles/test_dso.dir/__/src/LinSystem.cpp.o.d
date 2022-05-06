@@ -1,7 +1,7 @@
-executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.o: \
- /home/manu/Desktop/thesis_refactoring/code/src/CandidatesActivator.cpp \
+executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.o: \
+ /home/manu/Desktop/thesis_refactoring/code/src/LinSystem.cpp \
  /usr/include/stdc-predef.h \
- /home/manu/Desktop/thesis_refactoring/code/src/CandidatesActivator.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/LinSystem.h \
  /home/manu/Desktop/thesis_refactoring/code/src/camera.h \
  /usr/include/c++/7/string \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++config.h \
@@ -512,20 +512,17 @@ executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/PointsContainer.h \
  /home/manu/Desktop/thesis_refactoring/code/src/CameraForMapping.h \
  /home/manu/Desktop/thesis_refactoring/code/src/Pyramid.h \
- /home/manu/Desktop/thesis_refactoring/code/src/utils.h \
- /usr/include/c++/7/future /usr/include/c++/7/thread \
- /usr/include/c++/7/condition_variable /usr/include/c++/7/atomic \
- /usr/include/c++/7/bits/atomic_futex.h \
  /home/manu/Desktop/thesis_refactoring/code/src/dso.h \
  /home/manu/Desktop/thesis_refactoring/code/src/CamerasContainer.h \
  /home/manu/Desktop/thesis_refactoring/code/src/initializer.h \
  /home/manu/Desktop/thesis_refactoring/code/src/environment.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/CandidatesActivator.h \
  /home/manu/Desktop/thesis_refactoring/code/src/BundleAdj.h \
  /home/manu/Desktop/thesis_refactoring/code/src/CamCouple.h \
  /home/manu/Desktop/thesis_refactoring/code/src/LinSystemBA.h \
- /home/manu/Desktop/thesis_refactoring/code/src/LinSystem.h \
  /home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.h \
  /home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.h \
  /home/manu/Desktop/thesis_refactoring/code/src/epline.h \
  /home/manu/Desktop/thesis_refactoring/code/src/Tracker.h \
+ /usr/include/c++/7/condition_variable \
  /home/manu/Desktop/thesis_refactoring/code/src/spectator.h

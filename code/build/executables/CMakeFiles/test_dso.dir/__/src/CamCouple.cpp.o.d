@@ -519,6 +519,7 @@ executables/CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/CandidatesActivator.h \
  /home/manu/Desktop/thesis_refactoring/code/src/BundleAdj.h \
  /home/manu/Desktop/thesis_refactoring/code/src/LinSystemBA.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/LinSystem.h \
  /home/manu/Desktop/thesis_refactoring/code/src/KeyframeHandler.h \
  /home/manu/Desktop/thesis_refactoring/code/src/PointsHandler.h \
  /home/manu/Desktop/thesis_refactoring/code/src/epline.h \

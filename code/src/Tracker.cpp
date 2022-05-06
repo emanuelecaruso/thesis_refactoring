@@ -66,18 +66,6 @@ bool Tracker::checkConvergence(float chi){
 }
 
 
-bool Tracker::chiUpdateAndCheck(float chi){
-
-  bool out = false;
-  if(chi_history_.size()>1){
-    if ( (chi_history_.back()-chi) < (chi_history_[0]-chi_history_[1])*stop_threshold ){
-      out = true;
-    }
-  }
-
-  chi_history_.push_back(chi);
-  return out;
-}
 
 void Tracker::showProjectedActivePoints(int level, CamCoupleContainer& cam_couple_container){
 
@@ -127,10 +115,13 @@ void Tracker::trackCam(){
   // create linear system
   LinSysTracking lin_sys_tracking(dso_);
 
+  int iterations = 0;
+
   // iterate through levels
   for (int level=coarsest_level-1; level>=0 ; level--){
   // for (int level=0; level<1 ; level++){
 
+    int iterations_increment = max_iterations_ls;
     for(int iteration=0; iteration<max_iterations_ls; iteration++){
     // while(true){
       double t_start=getTime();
@@ -153,8 +144,10 @@ void Tracker::trackCam(){
           // get measurement
           MeasTracking measurement(MeasTracking(active_point, cam_couple_container.get(i,0), level ));
 
-          if(measurement.valid_){
+          // if(measurement.valid_){
+          if(measurement.valid_ && !measurement.occlusion_){
             // update linear system with that measurement
+            measurement.loadJacobians(active_point);
             lin_sys_tracking.addMeasurement(measurement);
             n_meas++;
           }
@@ -163,6 +156,7 @@ void Tracker::trackCam(){
 
       }
 
+
       assert(n_meas>0);
       lin_sys_tracking.updateCameraPose();
 
@@ -170,7 +164,7 @@ void Tracker::trackCam(){
       double t_end=getTime();
       deltaTime_tot+=(t_end-t_start);
 
-      // if(debug_tracking || dso_->frame_current_idx_>50){
+      // if(debug_tracking || dso_->frame_current_idx_>100){
       if(debug_tracking ){
 
         // std::cout << "level " << level << std::endl;
@@ -187,20 +181,23 @@ void Tracker::trackCam(){
 
       bool stop = false;
 
-      if (checkConvergence(lin_sys_tracking.chi))
+
+      if (checkConvergence(lin_sys_tracking.chi)){
+        stop=iteration;
+        iterations_increment=iteration+1;
         break;
+      }
 
 
       lin_sys_tracking.clear();
 
-      if(stop){
-        break;
-      }
+
     }
+    iterations+=iterations_increment;
 
     chi_history_.clear();
   }
 
-  sharedCoutDebug("   - Frame tracked: " + std::to_string((int)deltaTime_tot) + " ms");
+  sharedCoutDebug("   - Frame tracked, " + std::to_string(iterations) + " iterations, "+std::to_string((int)deltaTime_tot)+" ms");
 
 }

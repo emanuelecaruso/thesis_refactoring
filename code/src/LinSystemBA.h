@@ -1,49 +1,36 @@
 #pragma once
 #include "camera.h"
+#include "LinSystem.h"
 #include "PointsContainer.h"
 
 class Dso;
 
 
-class MeasBA{
+class MeasBA : public Meas {
   public:
+
+
     // ********** members **********
-    ActivePoint* active_point_;
-    CamCouple* cam_couple_;
-    bool valid_;
-    bool occlusion_;
-    pxl pixel_;
-    float J_d;
     Eigen::Matrix<float,1,6> J_r;
     Eigen::Matrix<float,6,1> J_r_transpose;
     Eigen::Matrix<float,1,6> J_m;
     Eigen::Matrix<float,6,1> J_m_transpose;
-    pixelIntensity error;
+    float J_d;
 
     // ********** constructor **********
-    MeasBA(ActivePoint* active_point, CamCouple* cam_couple, float chi_occlusion_threshold ):
-    valid_(true),
-    occlusion_(false),
-    active_point_(active_point),
-    cam_couple_(cam_couple)
-    {
-      init(active_point, cam_couple, chi_occlusion_threshold);
-    }
+    MeasBA(ActivePoint* active_point, CamCouple* cam_couple ):
+    Meas(active_point, cam_couple, active_point->level_)
+    { }
 
 
     // ********** methods **********
-    bool init(ActivePoint* active_point, CamCouple* cam_couple, float thresh);
     void loadJacobians(ActivePoint* active_point);
-    Eigen::Matrix<float,1,2> getImageJacobian(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int image_type);
-    float getError(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int image_type);
-    bool getPixelOfProjectedActivePoint(ActivePoint* active_point, CamCouple* cam_couple, pxl& pixel);
 
 };
 
-class LinSysBA{
+class LinSysBA : public LinSys{
   public:
     // ********** members **********
-    Dso* dso_;
 
     int c_size;
     int p_size;
@@ -55,11 +42,9 @@ class LinSysBA{
     Eigen::VectorXf dx_c;
     Eigen::VectorXf dx_p;
 
-    float chi;
-
     // ********** constructor **********
     LinSysBA(Dso* dso):
-    dso_(dso)
+    LinSys(dso)
     {
       init();
     };
@@ -76,7 +61,6 @@ class LinSysBA{
     bool visualizeH();
     // void clear();
   protected:
-    float getWeight(MeasBA* measurement);
     float addMeasurement(MeasBA* measurement, int p_idx);
 
 };

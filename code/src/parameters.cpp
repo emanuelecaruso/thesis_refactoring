@@ -16,7 +16,6 @@ int guess_type=POSE_CONSTANT;
 // int guess_type=PERS_GUESS;
 int opt_norm=HUBER;
 // int opt_norm=QUADRATIC;
-int test_single=TEST_ALL;
 int image_id=INTENSITY_ID;
 // int image_id=GRADIENT_ID;
 bool test_marginalization=false;
@@ -26,21 +25,21 @@ bool get_current_frame=false;
 
 // candidate selection
 int candidate_level= 0;
-int coarsest_level= candidate_level+4; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
-// int reg_level=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 int reg_level=candidate_level+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
-float grad_threshold=0.02;
-// float grad_threshold=0.1;
-int num_candidates=700;
-float der_threshold=0.01;
+// float grad_threshold=0.02;
+float grad_threshold=0.05;
+int num_candidates=2000;
 
 // mapping
-float cost_threshold=0.02;
-float var_threshold= 0.1;
+float cost_threshold=0.03;
+float var_threshold= 1;
+float der_threshold=0.001;
+// float var_threshold= 1;
 
 // keyframe selection
 int num_active_keyframes=7;
-float flow_dist_threshold=0.0005;
+// float flow_dist_threshold=0.0005;
+float flow_dist_threshold=0.0002;
 float percentage_marg_pts_threshold= 0.1;
 
 // optimization
@@ -49,20 +48,22 @@ int max_num_active_points=2000;
 float intensity_coeff= 1;
 float gradient_coeff= 0.25;
 float phase_coeff= 1./(4.*PI);
-float damp_point_invdepth= 10;
-float huber_threshold=0.01;
-float sat_threshold=0.04;
-// float sat_threshold=2;
+float damp_point_invdepth= 1;
+float huber_threshold=0.02;
+// float sat_threshold=0.04;
+float sat_threshold=2;
 float chi_occlusion_threshold=0.06;
-float occlusion_valid_ratio_thresh= 0.5;
-float valid_ratio_thresh= 0.0;
+// float occlusion_valid_ratio_thresh= 0.5;
+float occlusion_valid_ratio_thresh= 0.8;
+float valid_ratio_thresh= 0.2;
 
 // tracking
+int coarsest_level= candidate_level+4; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
+// int reg_level=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 int max_iterations_ls=100;
 float variance= 0.1;
 int robustifier_dofs=1;
 float ratio_for_convergence= 0.1;
-float stop_threshold= 0.0001;
 float conv_threshold= 0.001;
 
 

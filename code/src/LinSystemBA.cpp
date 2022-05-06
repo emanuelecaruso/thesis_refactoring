@@ -4,47 +4,6 @@
 #include "dso.h"
 #include "CamCouple.h"
 
-bool MeasBA::getPixelOfProjectedActivePoint(ActivePoint* active_point, CamCouple* cam_couple, pxl& pixel){
-  // project active point get pixel of projected active point
-  Eigen::Vector2f uv;
-  cam_couple->getUv( active_point->uv_.x(),active_point->uv_.y(),1./active_point->invdepth_,uv.x(),uv.y() );
-  cam_couple->cam_m_->uv2pixelCoords( uv, pixel, active_point->level_ );
-
-  if(cam_couple->cam_m_->pyramid_->getC(active_point->level_)->pixelInRange(pixel))
-    return true;
-  return false;
-}
-
-float MeasBA::getError(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int image_type){
-  float z, z_hat;
-  float error;
-  if(image_type==INTENSITY_ID){
-    z = active_point->c_;
-    z_hat = cam_couple->cam_m_->pyramid_->getC(active_point->level_)->evalPixelBilinear(pixel_m);
-    error = (z_hat-z);
-  }
-  else if(image_type==GRADIENT_ID){
-    z = active_point->magn_cd_;
-    z_hat = cam_couple->cam_m_->pyramid_->getMagn(active_point->level_)->evalPixelBilinear(pixel_m);
-    error = (z_hat-z);
-  }
-  return error;
-
-}
-
-Eigen::Matrix<float,1,2> MeasBA::getImageJacobian(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int image_type){
-
-  Eigen::Matrix<float,1,2> image_jacobian;
-
-  if(image_type==INTENSITY_ID){
-    image_jacobian << cam_couple->cam_m_->pyramid_->getCDX(active_point->level_)->evalPixelBilinear(pixel_m), cam_couple->cam_m_->pyramid_->getCDY(active_point->level_)->evalPixelBilinear(pixel_m);
-  }
-  else if(image_type==GRADIENT_ID){
-    image_jacobian << cam_couple->cam_m_->pyramid_->getMagnDX(active_point->level_)->evalPixelBilinear(pixel_m), cam_couple->cam_m_->pyramid_->getMagnDY(active_point->level_)->evalPixelBilinear(pixel_m);
-  }
-
-  return image_jacobian;
-}
 
 void MeasBA::loadJacobians(ActivePoint* active_point){
 
@@ -60,46 +19,23 @@ void MeasBA::loadJacobians(ActivePoint* active_point){
     Eigen::Matrix<float,2,1> Jd_ = cam_couple_->getJd_(active_point);
 
     // update J_m and error for intensity
-    Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian(pixel_, active_point, cam_couple_, INTENSITY_ID);
+    Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian( INTENSITY_ID);
     J_m += image_jacobian_intensity*Jm_;
     J_r += image_jacobian_intensity*Jr_;
     J_d += image_jacobian_intensity*Jd_;
 
-    // // update J_m and error for gradient
-    // Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian(pixel_, active_point, cam_couple_, GRADIENT_ID);
-    // J_m += image_jacobian_gradient*Jm_;
-    // J_r += image_jacobian_gradient*Jr_;
-    // J_d += image_jacobian_gradient*Jd_;
+
+    // update J_m and error for gradient
+    if(image_id==GRADIENT_ID){
+      Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian( GRADIENT_ID);
+      J_m += image_jacobian_gradient*Jm_;
+      J_r += image_jacobian_gradient*Jr_;
+      J_d += image_jacobian_gradient*Jd_;
+    }
 
     J_m_transpose= J_m.transpose();
     J_r_transpose= J_r.transpose();
 }
-
-
-bool MeasBA::init(ActivePoint* active_point, CamCouple* cam_couple, float chi_occlusion_threshold){
-  assert(active_point->cam_==cam_couple->cam_r_);
-
-  // project active point and get pixel coordinates
-  bool pixel_in_cam = getPixelOfProjectedActivePoint(active_point, cam_couple, pixel_);
-  // if pixel is outside of frustum
-  if(!pixel_in_cam){
-    valid_ = false;
-    return false;
-  }
-
-  error=0;  // initialize error
-  error += getError( pixel_,  active_point, cam_couple, INTENSITY_ID);
-  // error += getError( pixel_,  active_point, cam_couple, GRADIENT_ID);
-
-  // control on error
-  if(abs(error)>chi_occlusion_threshold){
-    occlusion_ = true;
-    return false;
-  }
-
-  return true;
-}
-
 
 
 
@@ -145,7 +81,7 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
   assert(p_idx < p_size);
 
   // get weight
-  float weight = getWeight(measurement);
+  float weight = measurement->getWeight();
 
   // ********* H *********
 
@@ -395,82 +331,43 @@ void LinSysBA::init(){
 
 }
 
-float LinSysBA::getWeight(MeasBA* measurement){
-  float weight=1;
-  // float weight=1.0/measurement->active_point_->invdepth_var_;
-
-  // huber robustifier
-  if(opt_norm==HUBER){
-    float u = abs(measurement->error);
-
-    if (u<=huber_threshold){
-      weight*=1/huber_threshold;
-    }
-    else{
-      // float rho_der = huberNormDerivative(error,huber_threshold);
-      float rho_der = huberNormDerivative(u,huber_threshold);
-      float gamma=(1/u)*rho_der;
-      weight*=gamma;
-    }
-
-  }
-  // least square without robustifier
-  else if (opt_norm==QUADRATIC){
-
-  }
-  else{
-    throw std::invalid_argument( "optimization norm has wrong value" );
-  }
-  assert(!std::isnan(weight));
-  assert(!std::isinf(weight));
-
-
-  // // weight
-  // float variance = dso_->variance;
-  // int ni = dso_->robustifier_dofs;
-  // float weight = (ni+1.0)/(ni+(pow(error,2)/variance));
-  //
-  // float  weight = weight*gamma;
-
-  // return weight;
-  return weight;
-
-}
 
 bool PriorMeas::init(ActivePoint* active_point, CamCouple* cam_couple){
   assert(cam_couple->cam_r_==active_point->cam_);
   // project active point
-  Eigen::Vector2f uv;
-  cam_couple->getUv( active_point->uv_.x(),active_point->uv_.y(),1./active_point->invdepth_,uv.x(),uv.y() );
-  bool uv_in_range = active_point->cam_->uvInRange(uv);
-
-  if(!uv_in_range){
-    valid_=false;
-    return false;
-  }
-
-
-  J_m.setZero();  // initialize J_m
-  error=0;  // initialize error
-
-  // get Jm_
-  Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_(active_point);
-  // Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_old_(active_point);
-
-
-  // // update J_m and error for intensity
-  // Eigen::Matrix<float,1,2> image_jacobian_intensity = intensity_coeff*getImageJacobian(pixel, active_point, cam_couple, level, INTENSITY_ID);
-  // J_m += image_jacobian_intensity*Jm_;
-  // error += intensity_coeff*getError( pixel,  active_point, cam_couple, level, INTENSITY_ID);
-
-
-  // // update J_m and error for gradient
-  // Eigen::Matrix<float,1,2> image_jacobian_gradient = gradient_coeff*gradient_coeff*getImageJacobian(pixel, active_point, cam_couple, level, GRADIENT_ID);
-  // J_m += image_jacobian_gradient*Jm_;
-  // error += intensity_coeff*getError( pixel,  active_point, cam_couple, level, GRADIENT_ID);
-
-  assert(abs(error)<1);
-  J_m_transpose= J_m.transpose();
+  //
+  // Eigen::Vector2f uv; pxl pixel;
+  // cam_couple->getUv( active_point->uv_.x(),active_point->uv_.y(),1./active_point->invdepth_,uv.x(),uv.y() );
+  // cam_couple->cam_m_->uv2pixelCoords( uv, pixel, active_point->level_ );
+  // bool uv_in_range = active_point->cam_->uvInRange(uv);
+  //
+  // if(!uv_in_range){
+  //   valid_=false;
+  //   return false;
+  // }
+  //
+  //
+  // J_m.setZero();  // initialize J_m
+  // error=0;  // initialize error
+  //
+  // // get Jm_
+  // Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_(active_point);
+  // // Eigen::Matrix<float,2,6> Jm_ = cam_couple->getJm_old_(active_point);
+  //
+  //
+  // // // update J_m and error for intensity
+  // // Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian(pixel, active_point, cam_couple, level, INTENSITY_ID);
+  // // J_m += image_jacobian_intensity*Jm_;
+  // // error += getError( pixel,  active_point, cam_couple, level, INTENSITY_ID);
+  // //
+  // //
+  // // // // update J_m and error for gradient
+  // // // Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian(pixel, active_point, cam_couple, level, GRADIENT_ID);
+  // // // J_m += image_jacobian_gradient*Jm_;
+  // // // error += getError( pixel,  active_point, cam_couple, level, GRADIENT_ID);
+  //
+  // assert(abs(error)<1);
+  // J_m_transpose= J_m.transpose();
 
   return true;
 

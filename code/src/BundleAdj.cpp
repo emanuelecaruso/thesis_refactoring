@@ -20,7 +20,7 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
     assert(cam_couple->cam_r_==active_point->cam_);
     assert(cam_couple->cam_m_==dso_->cameras_container_->keyframes_active_[j]);
 
-    MeasBA* measurement = new MeasBA(active_point, cam_couple, chi_occlusion_threshold);
+    MeasBA* measurement = new MeasBA(active_point, cam_couple);
     if(measurement->occlusion_){
       // if points is an occlusion in the first keyframe, remove it
       if(j==dso_->cameras_container_->keyframes_active_.size()-1)
@@ -40,13 +40,23 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
   // evaluate non valid proj ratio
   float valid_ratio = (float)n_valid/((float)dso_->cameras_container_->keyframes_active_.size()-1);
 
-  // if(occlusion_valid_ratio>0.25){
-  if(occlusion_valid_ratio>occlusion_valid_ratio_thresh ||
-     valid_ratio<valid_ratio_thresh){
+  bool non_valid = false;
+  bool occlusion = false;
+  if(occlusion_valid_ratio>occlusion_valid_ratio_thresh){
+    n_points_occlusions_++;
+    occlusion=true;
+  }
+  if(valid_ratio<valid_ratio_thresh){
+    n_points_non_valid_++;
+    non_valid=true;
+  }
+
+  if(occlusion || non_valid){
     // clear vector
     for( MeasBA* measurement : *measurement_vector ){
       delete measurement;
     }
+    n_points_removed_++;
     return false;
   }
 
@@ -55,7 +65,6 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
   // iterate through all active keyframes
   for( MeasBA* measurement : *measurement_vector){
     measurement->loadJacobians( active_point );
-
   }
   return true;
 }
@@ -214,6 +223,10 @@ void BundleAdj::optimize(){
   // create linear system
   LinSysBA lin_sys_tracking(dso_);
 
+  n_points_non_valid_=0;
+  n_points_occlusions_=0;
+  n_points_removed_=0;
+
   // iterations of bundle adjustment
   for(int iteration=0; iteration<max_iterations_ba; iteration++){
 
@@ -262,6 +275,10 @@ void BundleAdj::optimize(){
   double t_end=getTime();
   int deltaTime = (t_end-t_start);
   sharedCoutDebug("   - Bundle adjustment: " + std::to_string(deltaTime) + " ms");
+  sharedCoutDebug("       - N points removed: " + std::to_string(n_points_removed_));
+  sharedCoutDebug("           - Occlusions: " + std::to_string(n_points_occlusions_));
+  sharedCoutDebug("           - Non valid: " + std::to_string(n_points_non_valid_));
+
 
 
 }

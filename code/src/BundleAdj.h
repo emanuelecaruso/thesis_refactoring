@@ -11,6 +11,9 @@ class BundleAdj{
 
     // ********** members **********
     Dso* dso_;
+    int n_points_non_valid_;
+    int n_points_occlusions_;
+    int n_points_removed_;
     CamCoupleContainer* cam_couple_container_;
     std::vector<MarginalizedPoint*> priors_;
 
@@ -18,6 +21,9 @@ class BundleAdj{
     // BundleAdj(Dso* dso ){}
     BundleAdj(Dso* dso ):
     dso_(dso),
+    n_points_non_valid_(0),
+    n_points_occlusions_(0),
+    n_points_removed_(0),
     cam_couple_container_( new CamCoupleContainer(dso_,ALL_KFS_ON_ALL_KFS ) )
     {};
 

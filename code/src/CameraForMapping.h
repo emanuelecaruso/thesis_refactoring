@@ -7,7 +7,7 @@
 class PointsContainer;
 class CamDataForBA;
 
-class CameraForMapping : public Camera, public std::enable_shared_from_this<CameraForMapping>{
+class CameraForMapping : public Camera{
   // class CameraForMapping : public Camera{
   public:
     // ********** members **********

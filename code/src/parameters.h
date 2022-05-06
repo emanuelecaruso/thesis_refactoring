@@ -22,13 +22,8 @@ extern bool use_spectator;
 extern bool take_gt_poses;
 extern bool take_gt_points;
 extern int guess_type;
-// extern int guess_type;
-// extern int guess_type;
 extern int opt_norm;
-// extern int opt_norm;
-extern int test_single;
 extern int image_id;
-// extern int image_id;
 extern bool test_marginalization;
 extern bool active_all_candidates;
 extern bool show_spectator;
@@ -37,10 +32,8 @@ extern bool get_current_frame;
 // candidate selection
 extern int candidate_level;
 extern int coarsest_level;
-// extern int reg_level;
 extern int reg_level;
 extern float grad_threshold;
-// extern float grad_threshold;
 extern int num_candidates;
 extern float der_threshold;
 
@@ -62,7 +55,6 @@ extern float phase_coeff;
 extern float damp_point_invdepth;
 extern float huber_threshold;
 extern float sat_threshold;
-// extern float sat_threshold;
 extern float chi_occlusion_threshold;
 extern float occlusion_valid_ratio_thresh;
 extern float valid_ratio_thresh;
@@ -72,7 +64,6 @@ extern int max_iterations_ls;
 extern float variance;
 extern int robustifier_dofs;
 extern float ratio_for_convergence;
-extern float stop_threshold;
 extern float conv_threshold;
 
 

@@ -1,47 +1,36 @@
 #pragma once
 #include "camera.h"
+#include "LinSystem.h"
 #include "PointsContainer.h"
 
 class Dso;
 
-class MeasTracking{
+class MeasTracking : public Meas{
   public:
     // ********** members **********
-    ActivePoint* active_point_;
-    int level_;
-    bool valid_;
+
     Eigen::Matrix<float,1,6> J_m;
     Eigen::Matrix<float,6,1> J_m_transpose;
-    pixelIntensity error;
 
     // ********** constructor **********
     MeasTracking(ActivePoint* active_point, CamCouple* cam_couple , int level):
-    valid_(true),
-    level_(level),
-    active_point_(active_point){
-      init(active_point, cam_couple, level);
-    }
+    Meas(active_point, cam_couple, level)
+    { }
 
     // ********** methods **********
-    bool init(ActivePoint* active_point, CamCouple* cam_couple, int level);
-    Eigen::Matrix<float,1,2> getImageJacobian(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int level, int image_type);
-    float getError(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int level, int image_type);
-    bool getPixelOfProjectedActivePoint(ActivePoint* active_point, CamCouple* cam_couple, pxl& pixel, int level);
-
+    void loadJacobians(ActivePoint* active_point);
 };
 
-class LinSysTracking{
+class LinSysTracking : public LinSys{
   public:
     // ********** members **********
-    Dso* dso_;
     Eigen::Matrix<float,6,6> H;
     Eigen::Matrix<float,6,1> b;
     Eigen::Matrix<float,6,1> dx;
-    pixelIntensity chi;
 
     // ********** constructor **********
     LinSysTracking(Dso* dso):
-    dso_(dso)
+    LinSys(dso)
     {
       clear();
     };
@@ -51,7 +40,5 @@ class LinSysTracking{
     void updateCameraPose();
     void clear();
 
-  protected:
-    float getWeight(MeasTracking& measurement);
 
 };

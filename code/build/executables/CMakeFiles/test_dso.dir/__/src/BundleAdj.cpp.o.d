@@ -514,6 +514,7 @@ executables/CMakeFiles/test_dso.dir/__/src/BundleAdj.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/CameraForMapping.h \
  /home/manu/Desktop/thesis_refactoring/code/src/Pyramid.h \
  /home/manu/Desktop/thesis_refactoring/code/src/LinSystemBA.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/LinSystem.h \
  /home/manu/Desktop/thesis_refactoring/code/src/utils.h \
  /usr/include/c++/7/future /usr/include/c++/7/thread \
  /usr/include/c++/7/condition_variable /usr/include/c++/7/atomic \

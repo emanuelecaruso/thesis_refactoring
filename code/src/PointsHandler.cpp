@@ -11,11 +11,12 @@ bool PointsHandler::sampleCandidates(){
 
   int count = 0;
   int n_pixels_tot = dso_->frame_current_->cam_parameters_->resolution_x*dso_->frame_current_->cam_parameters_->resolution_y/(pow(4,candidate_level));
+  int reg_level = trunc(std::log( (float)(n_pixels_tot)/(num_candidates))/std::log(4))+1;
   // int reg_level = trunc(std::log( (float)(n_pixels_tot)/(num_candidates))/std::log(4));
-  int reg_level = trunc(std::log( (float)(n_pixels_tot)/(max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size()))/std::log(4));
+  // int reg_level = trunc(std::log( (float)(n_pixels_tot)/(max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size()))/std::log(4));
 
 
-  std::cout << reg_level << std::endl;
+  // std::cout << reg_level << std::endl;
   reg_level=std::min(reg_level,5);
   reg_level=std::max(reg_level,1);
 
@@ -84,7 +85,7 @@ bool PointsHandler::sampleCandidates(){
     reg_level+=diff;
     reg_level=std::min(reg_level,5);
     reg_level=std::max(reg_level,1);
-    std::cout << reg_level << std::endl;
+    // std::cout << reg_level << std::endl;
 
   }
 
@@ -166,9 +167,15 @@ void PointsHandler::projectActivePoints(CameraForMapping* cam_r, CameraForMappin
 
 void PointsHandler::trackCandidates(bool groundtruth){
 
-  CameraForMapping* last_keyframe = dso_->cameras_container_->getLastActiveKeyframe();
-
   double t_start=getTime();
+
+  CameraForMapping* last_keyframe = dso_->cameras_container_->getLastActiveKeyframe();
+  n_cands_removed_=0;
+  n_cands_to_track_=0;
+  n_cands_var_too_high_=0;
+  n_cands_repeptitive_=0;
+  n_cands_no_min_=0;
+  n_cands_tracked_=0;
 
   // iterate through keyframes (except last)
   for (int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1; i++){
@@ -183,7 +190,15 @@ void PointsHandler::trackCandidates(bool groundtruth){
   }
 
   double t_end=getTime();
-  sharedCoutDebug("   - Candidates tracked: " + std::to_string((t_end-t_start)) + " ms");
+  sharedCoutDebug("   - Candidates tracked: " + std::to_string((int)(t_end-t_start)) + " ms");
+  sharedCoutDebug("       - total: " + std::to_string(n_cands_to_track_));
+  sharedCoutDebug("       - tracked: " + std::to_string(n_cands_tracked_));
+  sharedCoutDebug("       - removed: " + std::to_string(n_cands_removed_));
+  sharedCoutDebug("           - repetitive: " + std::to_string(n_cands_repeptitive_));
+  sharedCoutDebug("           - var too high: " + std::to_string(n_cands_var_too_high_));
+  sharedCoutDebug("           - no min: " + std::to_string(n_cands_no_min_));
+
+
 
 
 }
@@ -202,12 +217,14 @@ void PointsHandler::trackCandidates(CameraForMapping* keyframe, CameraForMapping
 
   CamCouple* cam_couple = (new CamCouple(keyframe,last_keyframe));
 
+  n_cands_to_track_+= keyframe->points_container_->candidates_.size();
   // iterate through candidates
   for (int i=keyframe->points_container_->candidates_.size()-1; i>=0; i--){
     Candidate* cand = keyframe->points_container_->candidates_.at(i);
 
     if( !trackCandidate(cand, cam_couple) ){
       cand->remove();
+      n_cands_removed_++;
     }
 
   }
@@ -220,24 +237,44 @@ bool PointsHandler::trackCandidate(Candidate* cand, CamCouple* cam_couple){
   cam_couple->getUv(cand->uv_.x(),cand->uv_.y(),cand->depth_min_,uv_min.x(),uv_min.y());
   cam_couple->getUv(cand->uv_.x(),cand->uv_.y(),cand->depth_max_,uv_max.x(),uv_max.y());
 
-  // // check if dp/dinvdpth is too small
-  // float der = (uv_min-uv_max).norm()/((1.0/cand->depth_min_)-(1.0/cand->depth_max_));
-  // if(der<der_threshold)
-  //   return false;
+  // check if dp/dinvdpth is too small
+  float der = (uv_min-uv_max).norm()/((1.0/cand->depth_min_)-(1.0/cand->depth_max_));
+  if(der<der_threshold){
+    n_cands_var_too_high_++;
+    return false;
+  }
 
   // create epipolar line
   EpipolarLine ep_segment( cam_couple->cam_m_, uv_min, uv_max, cand->level_) ;
 
   // search pixel in epipolar line
   CandTracker CandTracker(ep_segment, cand, cam_couple );
-  bool min_found = CandTracker.searchMin();
-
+  int min_not_found = CandTracker.searchMin();
+  switch (min_not_found){
+    case 0:{
+      n_cands_tracked_++;
+      break;
+    }
+    case 1:{
+      n_cands_repeptitive_++;
+      break;
+    }
+    case 2:{
+      n_cands_no_min_++;
+      break;
+    }
+  }
   // if min has been found
-  if(min_found){
-    return CandTracker.updateCand();
+  if(min_not_found>0){
+    return false;
   }
   else{
-    return false;
+    if( CandTracker.updateCand() ){
+      return true;
+    }else{
+      n_cands_var_too_high_++;
+      return false;
+    }
   }
 }
 
@@ -316,12 +353,10 @@ bool CandTracker::updateCand(){
 
 }
 
-bool CandTracker::searchMin( ){
+int CandTracker::searchMin( ){
   bool min_segment_reached = false;
   bool min_segment_leaved = false;
   float cost_min = FLT_MAX;
-
-  int repetitive=0;
 
   // iterate through uvs
   for(int i=0; i<ep_segment_.uvs.size(); i++){
@@ -350,8 +385,7 @@ bool CandTracker::searchMin( ){
     else{
 
       if(min_segment_leaved){
-        repetitive++;
-        return false;
+        return 1;
       }
       min_segment_reached=true;
 
@@ -366,12 +400,12 @@ bool CandTracker::searchMin( ){
   }
 
   if(!min_segment_reached)
-    return false;
+    return 2;
 
   // cand_->showCandidate();
   // ep_segment_.showEpipolarWithMin(pixel_, red, cand_->level_, 2);
 
-  return true;
+  return 0;
 }
 
 float CandTracker::getCostMagn(pxl& pixel){

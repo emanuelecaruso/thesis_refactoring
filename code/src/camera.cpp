@@ -220,9 +220,10 @@ bool Camera::projectCam(Camera* cam_to_be_projected, Eigen::Vector2f& uv, float&
 }
 
 bool Camera::uvInRange(const Eigen::Vector2f& uv){
-  if( uv.x()<cam_parameters_->pixel_width/2 || uv.y()<cam_parameters_->pixel_width/2 )
+
+  if( uv.x()<0 || uv.y()<0 )
     return false;
-  if( uv.x()>cam_parameters_->width-cam_parameters_->pixel_width/2 || uv.y()> cam_parameters_->height-cam_parameters_->pixel_width/2)
+  if( uv.x()>cam_parameters_->width || uv.y()> cam_parameters_->height)
     return false;
 
   return true;

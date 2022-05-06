@@ -91,8 +91,8 @@ bool KeyframeHandler::marginalizeKeyframe(){
 
     if(percentage_marg<percentage_marg_pts_threshold){
       marginalize(keyframe);
-      break;
       percentage_marginalization=true;
+      break;
     }
 
   }

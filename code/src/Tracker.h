@@ -21,7 +21,6 @@ class Tracker{
   protected:
     void trackCam();
     void setInitialGuess();
-    bool chiUpdateAndCheck(float chi);
     bool checkConvergence(float chi);
     void showProjectedActivePoints(int level, CamCoupleContainer& cam_couple_container);
 

@@ -513,4 +513,5 @@ executables/CMakeFiles/test_dso.dir/__/src/CameraForMapping.cpp.o: \
  /home/manu/Desktop/thesis_refactoring/code/src/BundleAdj.h \
  /home/manu/Desktop/thesis_refactoring/code/src/CamCouple.h \
  /home/manu/Desktop/thesis_refactoring/code/src/PointsContainer.h \
- /home/manu/Desktop/thesis_refactoring/code/src/LinSystemBA.h
+ /home/manu/Desktop/thesis_refactoring/code/src/LinSystemBA.h \
+ /home/manu/Desktop/thesis_refactoring/code/src/LinSystem.h

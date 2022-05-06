@@ -88,7 +88,8 @@ class Image{
     }
 
     inline bool pixelInRange(const pxl& pixel_coords) const{
-      if (pixel_coords.y()>0.5001 && pixel_coords.y()<(float)(image_.rows)-0.5001 && pixel_coords.x()>0.5001 && pixel_coords.x()<(float)(image_.cols)-0.5001){
+      float guard = 0.50001;
+      if (pixel_coords.y()>guard && pixel_coords.y()<(float)(image_.rows)-guard && pixel_coords.x()>guard && (float)pixel_coords.x()<((float)(image_.cols)-guard) ){
       // if (pixel_coords.y()>=0.5 && pixel_coords.y()<=(float)(image_.rows)-0.5 && pixel_coords.x()>=0.5 && pixel_coords.x()<=(float)(image_.cols)-0.5){
         return true;
       }
@@ -111,67 +112,48 @@ class Image{
 
     }
 
-    inline T evalPixelBilinear(const pxl& pixel_coords) const{
+
+    inline bool evalPixelBilinear(const pxl& pixel_coords, T& color) const{
+
       assert(pixel_coords.allFinite());
       assert(pixelInRange(pixel_coords));
 
-      float x1 = trunc(pixel_coords.x()-0.5)+0.5;
-      float x2 = x1+1;
-      float y1 = trunc(pixel_coords.y()-0.5)+0.5;
-      float y2 = y1+1;
-      float x_x1 = pixel_coords.x()-x1;
-      float x2_x = 1-x_x1;
-      float y_y1 = pixel_coords.y()-y1;
-      float y2_y = 1-y_y1;
-      T q11 = image_.template at<T>(trunc(y1),trunc(x1));
-      T q21 = image_.template at<T>(trunc(y1),trunc(x2));
-      T q12 = image_.template at<T>(trunc(y2),trunc(x1));
-      T q22 = image_.template at<T>(trunc(y2),trunc(x2));
-      T r1  = q11 * x2_x + q21 * x_x1;
-      T r2  = q12 * x2_x + q22 * x_x1;
-      T color = r1 * y2_y + r2 * y_y1 ;
-
-      if( x2>=image_.cols || y2>=image_.rows || x1<0 || y1<0)
-        std::cout << "row " << pixel_coords.y() << ", rows lim " << image_.rows-0.5 << "col " << pixel_coords.x() << ", cols lim " << image_.cols-0.5 << std::endl;
-
-      assert(x2<image_.cols);
-      assert(y2<image_.rows);
-      assert(x1>=0);
-      assert(y1>=0);
-
-      return color;
-      // }
-      // return -1;
-    }
-
-
-    inline bool evalPixelBilinear(const pxl& pixel_coords, T& color) const{
-      assert(pixel_coords.allFinite());
-
       if(pixelInRange(pixel_coords))
       {
-        float x1 = trunc(pixel_coords.x());
+        float x1 = trunc(pixel_coords.x()-0.5)+0.5;
         float x2 = x1+1;
-        float y1 = trunc(pixel_coords.y());
+        float y1 = trunc(pixel_coords.y()-0.5)+0.5;
         float y2 = y1+1;
         float x_x1 = pixel_coords.x()-x1;
         float x2_x = 1-x_x1;
         float y_y1 = pixel_coords.y()-y1;
         float y2_y = 1-y_y1;
-        T q11 = image_.template at<T>(y1,x1);
-        T q21 = image_.template at<T>(y1,x2);
-        T q12 = image_.template at<T>(y2,x1);
-        T q22 = image_.template at<T>(y2,x2);
+        T q11 = image_.template at<T>(trunc(y1),trunc(x1));
+        T q21 = image_.template at<T>(trunc(y1),trunc(x2));
+        T q12 = image_.template at<T>(trunc(y2),trunc(x1));
+        T q22 = image_.template at<T>(trunc(y2),trunc(x2));
         T r1  = q11 * x2_x + q21 * x_x1;
         T r2  = q12 * x2_x + q22 * x_x1;
         color = r1 * y2_y + r2 * y_y1 ;
 
-        // R1(x, y) = Q11 · (x2 – x) / (x2 – x1) + Q21 · (x – x1) / (x2 – x1)
-        // R2(x, y) = Q12 · (x2 – x) / (x2 – x1) + Q22 · (x – x1) / (x2 – x1)
-        // P(x, y) = R1 · (y2 – y) / (y2 – y1) + R2 · (y – y1) / (y2 – y1)
+        if( x2>=image_.cols || y2>=image_.rows || x1<0 || y1<0)
+          std::cout << "row " << pixel_coords.y() << ", rows lim " << image_.rows-0.5 << "col " << pixel_coords.x() << ", cols lim " << image_.cols-0.5 << std::endl;
+
+        assert(x2<image_.cols);
+        assert(y2<image_.rows);
+        assert(x1>=0);
+        assert(y1>=0);
+
         return true;
       }
       return false;
+    }
+
+    inline T evalPixelBilinear(const pxl& pixel_coords) const{
+      T color;
+      bool valid = evalPixelBilinear(pixel_coords, color);
+      assert(valid);
+      return color;
     }
 
     inline T evalPixel(const int row, const int col) const{

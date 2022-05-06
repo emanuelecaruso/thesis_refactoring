@@ -332,6 +332,7 @@ void CandidatesActivator::activateCandidates(){
 
   reset();
   int num_candidates_to_activate = max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size();
+
   int num_candidates_activated = 0;
   for(int level=reg_level-1; level>0; level--){
     for(int i=0; i<4; i++){
@@ -411,7 +412,7 @@ void CandidatesActivator::activateCandidates(){
 
   double t_end=getTime();
   int deltaTime=(t_end-t_start);
-  sharedCoutDebug("   - Candidates activated: "+ std::to_string(num_candidates_activated) + ", " + std::to_string(deltaTime)+" ms");
+  sharedCoutDebug("   - Candidates activated: "+ std::to_string(num_candidates_activated) + ", curr n active points: " + std::to_string(dso_->frame_current_->points_container_->active_points_projected_.size()) + ", " + std::to_string(deltaTime)+" ms");
 
 
 }

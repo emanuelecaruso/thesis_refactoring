@@ -10,9 +10,21 @@ class PointsHandler{
 
     // ********** members **********
     Dso* dso_;
+    int n_cands_to_track_;
+    int n_cands_removed_;
+    int n_cands_repeptitive_;
+    int n_cands_no_min_;
+    int n_cands_tracked_;
+    int n_cands_var_too_high_;
 
     // ********** constructor **********
     PointsHandler(Dso* dso ):
+    n_cands_to_track_(0),
+    n_cands_removed_(0),
+    n_cands_repeptitive_(0),
+    n_cands_no_min_(0),
+    n_cands_var_too_high_(0),
+    n_cands_tracked_(0),
     dso_(dso)
     {};
 
@@ -62,7 +74,7 @@ class CandTracker{
 
 
     // ********** methods **********
-    bool searchMin( );
+    int searchMin( );
     float getCostMagn(pxl& pixel_m);
     bool getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, float& cost_phase);
     float getStandardDeviation( );
