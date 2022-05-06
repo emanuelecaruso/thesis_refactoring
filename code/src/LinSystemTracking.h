@@ -15,15 +15,15 @@ class MeasTracking{
     pixelIntensity error;
 
     // ********** constructor **********
-    MeasTracking(ActivePoint* active_point, CamCouple* cam_couple , int level, Dso* dso):
+    MeasTracking(ActivePoint* active_point, CamCouple* cam_couple , int level):
     valid_(true),
     level_(level),
     active_point_(active_point){
-      init(active_point, cam_couple, level, dso);
+      init(active_point, cam_couple, level);
     }
 
     // ********** methods **********
-    bool init(ActivePoint* active_point, CamCouple* cam_couple, int level, Dso* dso);
+    bool init(ActivePoint* active_point, CamCouple* cam_couple, int level);
     Eigen::Matrix<float,1,2> getImageJacobian(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int level, int image_type);
     float getError(pxl& pixel_m, ActivePoint* active_point, CamCouple* cam_couple, int level, int image_type);
     bool getPixelOfProjectedActivePoint(ActivePoint* active_point, CamCouple* cam_couple, pxl& pixel, int level);

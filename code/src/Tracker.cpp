@@ -151,7 +151,7 @@ void Tracker::trackCam(){
           ActivePoint* active_point = active_points[j];
 
           // get measurement
-          MeasTracking measurement(MeasTracking(active_point, cam_couple_container.get(i,0), level, dso_ ));
+          MeasTracking measurement(MeasTracking(active_point, cam_couple_container.get(i,0), level ));
 
           if(measurement.valid_){
             // update linear system with that measurement

@@ -66,7 +66,7 @@ Eigen::Matrix<float,1,2> MeasTracking::getImageJacobian(pxl& pixel_m, ActivePoin
   return image_jacobian;
 }
 
-bool MeasTracking::init(ActivePoint* active_point, CamCouple* cam_couple, int level, Dso* dso){
+bool MeasTracking::init(ActivePoint* active_point, CamCouple* cam_couple, int level){
   assert(active_point->cam_==cam_couple->cam_r_);
 
   // project active point and get pixel coordinates
