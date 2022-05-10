@@ -82,7 +82,7 @@ class CamCoupleContainer{
     // ********** members **********
     Dso* dso_;
     int type_;
-    std::vector<std::vector<CamCouple*>> cam_couple_mat_; // cam_couple_mat_[cam_m][cam_r]
+    std::vector<std::vector<std::shared_ptr<CamCouple>>> cam_couple_mat_; // cam_couple_mat_[cam_m][cam_r]
 
 
     // ********** constructor **********
@@ -100,22 +100,11 @@ class CamCoupleContainer{
       init(cam_r);
     }
 
-    ~CamCoupleContainer(){
-      for(int i=0; i<cam_couple_mat_.size(); i++){
-        for(int j=0; j<cam_couple_mat_[i].size(); j++){
-          delete cam_couple_mat_[i][j];
-        }
-      }
-    }
-
     // ********** methods **********
     void update();
-    CamCouple* get(int cam_r_idx, int cam_m_idx);
+    std::shared_ptr<CamCouple> get(int cam_r_idx, int cam_m_idx);
     void init();
     void init(CameraForMapping* cam_r);
-
-  protected:
-    void clear();
 
 
 };

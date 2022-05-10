@@ -18,7 +18,7 @@ class MeasBA : public Meas {
     float J_d;
 
     // ********** constructor **********
-    MeasBA(ActivePoint* active_point, CamCouple* cam_couple ):
+    MeasBA(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple ):
     Meas(active_point, cam_couple, active_point->level_)
     { }
 
@@ -28,90 +28,63 @@ class MeasBA : public Meas {
 
 };
 
-class LinSysBA : public LinSys{
+class LinSysBA : public LinSysBlocks{
   public:
     // ********** members **********
-
-    int c_size;
-    int p_size;
-    Eigen::MatrixXf H_cc;
-    Eigen::MatrixXf H_cp;
-    Eigen::VectorXf H_pp;
-    Eigen::VectorXf b_c;
-    Eigen::VectorXf b_p;
     Eigen::VectorXf dx_c;
     Eigen::VectorXf dx_p;
 
     // ********** constructor **********
     LinSysBA(Dso* dso):
-    LinSys(dso)
+    LinSysBlocks(dso)
     {
       init();
     };
 
     // ********** methods **********
-    // void addMeasurement( MeasBA& measurement );
-    // void updateCameraPose();
+
     void init();
     void reinitWithNewPoints(int n_points);
     void buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement_vec_vec );
-    void updateState();
     void updateCameras();
     void updatePoints();
-    bool visualizeH();
-    // void clear();
   protected:
     float addMeasurement(MeasBA* measurement, int p_idx);
 
 };
 
-class PriorMeas{
+class PriorMeas : public Meas{
   public:
     // ********** members **********
-    ActivePoint* active_point_;
-    CamCouple* cam_couple_;
-    bool valid_;
-    bool occlusion_;
-    pxl pixel_;
-    float J_d;
     Eigen::Matrix<float,1,6> J_m;
     Eigen::Matrix<float,6,1> J_m_transpose;
-    pixelIntensity error;
+    float J_d;
+    int p_idx_;
 
     // ********** constructor **********
-    PriorMeas(ActivePoint* active_point, CamCouple* cam_couple):
-    valid_(true),
-    occlusion_(false),
-    active_point_(active_point),
-    cam_couple_(cam_couple)
+    PriorMeas(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple):
+    Meas( active_point, cam_couple , active_point->level_),
+    p_idx_(0)
     {
-      init(active_point, cam_couple);
+      if(valid_)
+        loadJacobians(active_point, cam_couple);
     }
 
     // ********** methods **********
-    bool init(ActivePoint* active_point, CamCouple* cam_couple);
+    void loadJacobians(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple);
 };
 
-class LinSysBAMarg{
+class LinSysBAMarg : public LinSysBlocks{
   public:
     // ********** members **********
-    LinSysBA* lin_sys_ba_;
-
-    int c_size;
-    int p_size;
-    Eigen::Matrix<float,1,6> H_cc;
-    Eigen::MatrixXf H_cp;
-    Eigen::VectorXf H_pp;
-    Eigen::VectorXf b_c;
-    Eigen::VectorXf b_p;
 
     // ********** constructor **********
-    LinSysBAMarg(LinSysBA* lin_sys_ba):
-    lin_sys_ba_(lin_sys_ba){
-      init();
+    LinSysBAMarg(Dso* dso):
+    LinSysBlocks(dso){
+      // init();
     }
 
     // ********** methods **********
-    void init();
+
 
 };

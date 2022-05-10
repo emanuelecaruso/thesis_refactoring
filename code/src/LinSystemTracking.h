@@ -13,7 +13,7 @@ class MeasTracking : public Meas{
     Eigen::Matrix<float,6,1> J_m_transpose;
 
     // ********** constructor **********
-    MeasTracking(ActivePoint* active_point, CamCouple* cam_couple , int level):
+    MeasTracking(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple , int level):
     Meas(active_point, cam_couple, level)
     { }
 

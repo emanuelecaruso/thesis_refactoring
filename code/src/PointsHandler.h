@@ -48,7 +48,7 @@ class PointsHandler{
   protected:
     void trackCandidates(CameraForMapping* keyframe, CameraForMapping* last_keyframe);
     void trackCandidatesGroundtruth(CameraForMapping* keyframe);
-    bool trackCandidate(Candidate* cand, CamCouple* cam_couple);
+    bool trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> cam_couple);
 };
 
 class CandTracker{
@@ -56,7 +56,7 @@ class CandTracker{
     // ********** members **********
     EpipolarLine& ep_segment_;
     Candidate* cand_;
-    CamCouple* cam_couple_;
+    std::shared_ptr<CamCouple> cam_couple_;
     float phase_m;
     pixelIntensity magn_m;
     Eigen::Vector2f uv_;
@@ -65,7 +65,7 @@ class CandTracker{
     // ********** constructor **********
     CandTracker( EpipolarLine& ep_segment,
               Candidate* cand,
-              CamCouple* cam_couple
+              std::shared_ptr<CamCouple> cam_couple
             ):
               ep_segment_(ep_segment),
               cand_(cand),

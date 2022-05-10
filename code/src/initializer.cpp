@@ -100,10 +100,10 @@ void Initializer::trackCornersLK(){
     // if(errors_vec_->at(n)->at(i)<10 || !(status_vec_->at(n)->at(i)) ){
     if(errors_vec_->at(n)->at(i)>err_threshold ){
       for (int j=0; j<=n; j++){
-        corners_vec_->at(j)->erase (corners_vec_->at(j)->begin()+i);
+        removeFromVecByIdx(*(corners_vec_->at(j)), i );
         if(j>0){
-          status_vec_->at(j)->erase (status_vec_->at(j)->begin()+i);
-          errors_vec_->at(j)->erase (errors_vec_->at(j)->begin()+i);
+          removeFromVecByIdx(*(status_vec_->at(j)), i );
+          removeFromVecByIdx(*(errors_vec_->at(j)), i );
         }
       }
     }

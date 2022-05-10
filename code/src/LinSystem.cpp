@@ -151,3 +151,114 @@ float Meas::getWeight(){
   return weight;
 
 }
+
+void LinSysBlocks::resize(int c_size, int p_size){
+  c_size_=c_size;
+  p_size_=p_size;
+
+  H_cc_.resize(c_size,c_size);
+  H_cp_.resize(c_size,p_size);
+  H_pp_.resize(p_size);
+  b_c_.resize(c_size);
+  b_p_.resize(p_size);
+
+  H_cc_.setZero();
+  H_cp_.setZero();
+  H_pp_.setZero();
+  b_c_.setZero();
+  b_p_.setZero();
+
+}
+
+
+void LinSysBlocks::reset(){
+  c_size_=0;
+  p_size_=0;
+  H_cc_.resize(0,0);
+  H_cp_.resize(0,0);
+  H_pp_.resize(0,0);
+  b_c_.resize(0);
+  b_p_.resize(0);
+}
+
+void LinSysBlocks::clear(){
+  H_cc_.setZero();
+  b_c_.setZero();
+  H_cp_.setZero();
+  H_pp_.setZero();
+  b_p_.setZero();
+
+}
+
+
+bool LinSysBlocks::visualizeH(){
+  Image<colorRGB>* img_H = new Image<colorRGB>("H");
+  int size = c_size_+p_size_;
+  if (size == 0)
+    return false;
+  // img_H->initImage(c_size_,c_size_);
+  img_H->initImage(size,size);
+  img_H->setAllPixels( white);
+
+  // pose pose block
+  for(int i=0; i<c_size_; i++){
+    for(int j=0; j<c_size_; j++){
+      float val;
+      if(i<j){
+        val=H_cc_(i,j);
+      }
+      else{
+        val=H_cc_(j,i);
+      }
+      if (val!=0){
+        img_H->setPixel(i,j, red);
+      }
+      else{
+        img_H->setPixel(i,j, white);
+      }
+    }
+  }
+
+  // pose point block
+  for(int i=0; i<c_size_; i++){
+    for(int j=0; j<p_size_; j++){
+      if ((H_cp_)(i,j)!=0){
+        img_H->setPixel(i,c_size_+j, green);
+      }
+      else{
+        img_H->setPixel(i,c_size_+j, white);
+
+      }
+    }
+  }
+
+  // point pose block
+  for(int i=0; i<p_size_; i++){
+    for(int j=0; j<c_size_; j++){
+      if ((H_cp_)(j,i)!=0){
+        img_H->setPixel(i+c_size_,j, green);
+      }
+      else{
+        img_H->setPixel(i+c_size_,j, white);
+
+      }
+    }
+  }
+
+  // point point block
+  for(int i=0; i<p_size_; i++){
+    if (H_pp_(i)!=0){
+      img_H->setPixel(i+c_size_,i+c_size_, blue);
+    }
+    else{
+      img_H->setPixel(i+c_size_,i+c_size_, white);
+
+    }
+
+  }
+
+  img_H->show(1);
+  waitkey(0);
+  delete img_H;
+
+}

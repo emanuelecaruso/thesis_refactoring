@@ -114,9 +114,11 @@ bool KeyframeHandler::marginalizeKeyframe(){
     marginalize(keyframe_to_marg);
   }
 
-  // fix first 2 keyframes
-  dso_->cameras_container_->keyframes_active_[0]->fixed_=true;
-  dso_->cameras_container_->keyframes_active_[1]->fixed_=true;
+  if(first_2_active_kfs_fixed){
+    // fix first 2 keyframes
+    dso_->cameras_container_->keyframes_active_[0]->fixed_=true;
+    dso_->cameras_container_->keyframes_active_[1]->fixed_=true;
+  }
 
   return true;
 

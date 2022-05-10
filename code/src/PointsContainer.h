@@ -85,7 +85,7 @@ class CandidateProjected : public Point{
   Candidate* cand_;
 
   // ********** constructor **********
-  CandidateProjected(Candidate* cand, CamCouple* cam_couple_ ):
+  CandidateProjected(Candidate* cand, std::shared_ptr<CamCouple> cam_couple_ ):
   Point()
   ,cand_( cand )
   {
@@ -93,7 +93,7 @@ class CandidateProjected : public Point{
   }
 
   // ********** methods **********
-  void init(Candidate* cand, CamCouple* cam_couple_);
+  void init(Candidate* cand, std::shared_ptr<CamCouple> cam_couple_);
 
 
 };
@@ -164,7 +164,7 @@ public:
 
   // ********** constructor **********
   // project active point
-  MarginalizedPointProjected(MarginalizedPoint* marg_pt, CamCouple* cam_couple_ ):
+  MarginalizedPointProjected(MarginalizedPoint* marg_pt, std::shared_ptr<CamCouple> cam_couple_ ):
   Point()
   ,marg_pt_( marg_pt )
   {
@@ -172,7 +172,7 @@ public:
   }
 
   // ********** methods **********
-  void init(MarginalizedPoint* marg_pt, CamCouple* cam_couple_);
+  void init(MarginalizedPoint* marg_pt, std::shared_ptr<CamCouple> cam_couple_);
 
 
 };
@@ -186,7 +186,7 @@ public:
 
   // ********** constructor **********
   // project active point
-  ActivePointProjected(ActivePoint* active_pt, CamCouple* cam_couple_ ):
+  ActivePointProjected(ActivePoint* active_pt, std::shared_ptr<CamCouple> cam_couple_ ):
   Point()
   ,active_pt_( active_pt )
   {
@@ -201,7 +201,7 @@ public:
 
 
   // ********** methods **********
-  void init(ActivePoint* active_pt, CamCouple* cam_couple_);
+  void init(ActivePoint* active_pt, std::shared_ptr<CamCouple> cam_couple_);
 
 
 

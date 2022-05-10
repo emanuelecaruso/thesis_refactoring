@@ -9,6 +9,8 @@ bool debug_optimization= false;
 bool use_spectator= true;
 
 // code parameters
+bool do_marginalization = true;
+bool first_2_active_kfs_fixed = false;
 bool take_gt_poses=false;
 bool take_gt_points=false;
 int guess_type=POSE_CONSTANT;
@@ -49,7 +51,7 @@ float intensity_coeff= 1;
 float gradient_coeff= 0.25;
 float phase_coeff= 1./(4.*PI);
 float damp_point_invdepth= 1;
-float huber_threshold=0.02;
+float huber_threshold=0.03;
 // float sat_threshold=0.04;
 float sat_threshold=2;
 float chi_occlusion_threshold=0.06;

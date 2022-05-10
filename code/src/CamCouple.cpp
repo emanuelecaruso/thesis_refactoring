@@ -51,69 +51,6 @@ void CamCouple::getBoundsParameters(){
 
 }
 
-// void CamCouple::getJmParameters(){
-//   //Parameters for Jmu
-//   P1=t(2);
-//   P2=r(2,2);
-//   P3=r(1,2);
-//   P4=r(2,0);
-//
-//   A1=f*t(0);
-//   A2=f*r(0,2);
-//   A3=f*r(0,1);
-//   A4=f*r(0,0);
-//
-//   B1= -f*t(1);
-//   B2=-f*r(1,2);
-//   B3=-f*r(1,1);
-//   B4=-f*r(1,0);
-//
-//   K1=pow(t(2),2);
-//   K2=2*r(2,2)*t(2);
-//   K3=pow(r(2,2),2);
-//   K4=2*r(1,2)*t(2);
-//   K5=2*r(1,2)*r(2,2);
-//   K6=pow(r(1,2),2);
-//   K7=2*r(2,0)*t(2);
-//   K8=2*r(2,0)*r(2,2);
-//   K9=2*r(1,2)*r(2,0);
-//   K10=pow(r(2,0),2);
-//
-//   L1=f*t(0)*t(1);
-//   L2=f*r(0,2)*t(1) + f*r(1,2)*t(0);
-//   L3=f*r(0,2)*r(1,2);
-//   L4=f*r(0,1)*t(1) + f*r(1,1)*t(0);
-//   L5=f*r(0,1)*r(1,2) + f*r(0,2)*r(1,1);
-//   L6=f*r(0,1)*r(1,1);
-//   L7=f*r(0,0)*t(1) + f*r(1,0)*t(0);
-//   L8=f*r(0,0)*r(1,2) + f*r(0,2)*r(1,0);
-//   L9=f*r(0,0)*r(1,1) + f*r(0,1)*r(1,0);
-//   L10=f*r(0,0)*r(1,0);
-//
-//   Z1=f*pow(t(0),2) + f*pow(t(2),2);
-//   Z2=2*f*r(0,2)*t(0) + 2*f*r(2,2)*t(2);
-//   Z3=f*pow(r(0,2),2) + f*pow(r(2,2),2);
-//   Z4=2*f*r(0,1)*t(0) + 2*f*r(1,2)*t(2);
-//   Z5=2*f*r(0,1)*r(0,2) + 2*f*r(1,2)*r(2,2);
-//   Z6=f*pow(r(0,1),2) + f*pow(r(1,2),2);
-//   Z7=2*f*r(0,0)*t(0) + 2*f*r(2,0)*t(2);
-//   Z8=2*f*r(0,0)*r(0,2) + 2*f*r(2,0)*r(2,2);
-//   Z9=2*f*r(0,0)*r(0,1) + 2*f*r(1,2)*r(2,0);
-//   Z10=f*pow(r(0,0),2) + f*pow(r(2,0),2);
-//
-//   X1=- f*pow(t(1),2) - f*pow(t(2),2);
-//   X2=- 2*f*r(1,2)*t(1) - 2*f*r(2,2)*t(2);
-//   X3=- f*pow(r(1,2),2) - f*pow(r(2,2),2);
-//   X4=- 2*f*r(1,1)*t(1) - 2*f*r(1,2)*t(2);
-//   X5=- 2*f*r(1,1)*r(1,2) - 2*f*r(1,2)*r(2,2);
-//   X6=- f*pow(r(1,1),2) - f*pow(r(1,2),2);
-//   X7=- 2*f*r(1,0)*t(1) - 2*f*r(2,0)*t(2);
-//   X8=- 2*f*r(1,0)*r(1,2) - 2*f*r(2,0)*r(2,2);
-//   X9=- 2*f*r(1,0)*r(1,1) - 2*f*r(1,2)*r(2,0);
-//   X10=- f*pow(r(1,0),2) - f*pow(r(2,0),2);
-//
-// }
-
 void CamCouple::getJrParameters(){
   C1 = f*r(0,0)*r(1,2);
   C2 = f*r(2,0)*t(0);
@@ -456,17 +393,9 @@ bool CamCouple::getD2(float u1, float v1, float d1, float& d2){
 // //
 // // }
 
-void CamCoupleContainer::clear(){
-  for( int i=0; i<cam_couple_mat_.size() ; i++){
-    for( int j=0; j<cam_couple_mat_[i].size() ; j++){
-      delete cam_couple_mat_[i][j];
-    }
-  }
 
-}
 
 void CamCoupleContainer::init(){
-  clear();
 
   // cam_couple_mat_[cam_m][cam_r]
   int n_active_kfs = dso_->cameras_container_->keyframes_active_.size();
@@ -479,8 +408,7 @@ void CamCoupleContainer::init(){
       CameraForMapping* cam_r = dso_->cameras_container_->keyframes_active_[i];
 
       // cam couple keyframe with last keyframe
-      CamCouple* cam_couple = new CamCouple( cam_r, cam_m ) ;
-      cam_couple_mat_[0][i]= cam_couple;
+      cam_couple_mat_[0][i]= std::make_shared<CamCouple>( cam_r, cam_m ) ;
     }
   }
 
@@ -494,13 +422,12 @@ void CamCoupleContainer::init(){
       for( int j=0; j<n_active_kfs-1 ; j++){
 
         if (i==j){
-          cam_couple_mat_[i][j]=nullptr;
           continue;
         }
 
         CameraForMapping* cam_r = dso_->cameras_container_->keyframes_active_[j];
 
-        CamCouple* cam_couple = new CamCouple( cam_r, cam_m );
+        std::shared_ptr<CamCouple> cam_couple = std::make_shared<CamCouple>( cam_r, cam_m );
         cam_couple->getJrParameters();
         cam_couple_mat_[i][j]= cam_couple;
       }
@@ -509,7 +436,6 @@ void CamCoupleContainer::init(){
 }
 
 void CamCoupleContainer::init(CameraForMapping* cam_r){
-  clear();
 
   // cam_couple_mat_[cam_r][cam_m]
   int n_active_kfs = dso_->cameras_container_->keyframes_active_.size();
@@ -520,8 +446,7 @@ void CamCoupleContainer::init(CameraForMapping* cam_r){
     CameraForMapping* cam_m = dso_->cameras_container_->keyframes_active_[i];
 
     // cam couple keyframe with last keyframe
-    CamCouple* cam_couple = new CamCouple( cam_r, cam_m ) ;
-    cam_couple_mat_[0][i]= cam_couple;
+    cam_couple_mat_[0][i]= std::make_shared<CamCouple>( cam_r, cam_m );
   }
 
 
@@ -535,7 +460,7 @@ void CamCoupleContainer::update(){
   }
 }
 
-CamCouple* CamCoupleContainer::get(int cam_r_idx, int cam_m_idx){
+std::shared_ptr<CamCouple> CamCoupleContainer::get(int cam_r_idx, int cam_m_idx){
   if(type_!=KF_ON_ALL_KFS){
     assert(cam_m_idx>=0 && cam_m_idx<cam_couple_mat_.size());
     assert(cam_r_idx>=0 && cam_r_idx<cam_couple_mat_[cam_m_idx].size());

@@ -48,26 +48,22 @@ void CamerasContainer::removeActiveKeyframe(CameraForMapping* keyframe){
   assert(!checkKeyframeToBeMarginalized(keyframe) );
   assert(!checkMarginalizedKeyframe(keyframe));
 
-  int v_size = keyframes_active_.size();
-  keyframes_active_.erase(std::remove(keyframes_active_.begin(), keyframes_active_.end(), keyframe), keyframes_active_.end());
-  assert(v_size==keyframes_active_.size()+1);
+  removeFromVecByElement(keyframes_active_, keyframe);
 
 }
 void CamerasContainer::removeKeyframeToMarginalize(CameraForMapping* keyframe){
   // assert(checkFrame(keyframe) && checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
   assert(checkFrame(keyframe) && !checkActiveKeyframe(keyframe) && checkKeyframeToBeMarginalized(keyframe) && !checkMarginalizedKeyframe(keyframe));
 
-  int v_size = keyframes_to_marginalize_.size();
-  keyframes_to_marginalize_.erase(std::remove(keyframes_to_marginalize_.begin(), keyframes_to_marginalize_.end(), keyframe), keyframes_to_marginalize_.end());
-  assert(v_size==keyframes_to_marginalize_.size()+1);
+  removeFromVecByElement(keyframes_to_marginalize_, keyframe);
 
 }
 void CamerasContainer::removeKeyframeMarginalized(CameraForMapping* keyframe){
   assert(checkFrame(keyframe) && !checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && checkMarginalizedKeyframe(keyframe));
 
-  int v_size = keyframes_marginalized_.size();
-  keyframes_marginalized_.erase(std::remove(keyframes_marginalized_.begin(), keyframes_marginalized_.end(), keyframe), keyframes_marginalized_.end());
-  assert(v_size==keyframes_marginalized_.size()+1);
+  removeFromVecByElement(keyframes_marginalized_, keyframe);
+
+
 }
 
 // check functions

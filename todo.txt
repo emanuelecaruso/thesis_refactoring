@@ -1,7 +1,8 @@
 - check sequential version with parallel for
 - work on parallel version using more threads
 
-- linsys with hereditary
 - implement marg priors
+- active points global
+- symmetry
 - spectator with depth colors
 - delete pointers

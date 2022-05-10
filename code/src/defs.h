@@ -670,3 +670,78 @@ inline pxl cvpoint2pxl(cv::Point2f& point ){
   pixel.y()=point.y; // point.x is row
   return pixel;
 }
+
+template <class T>
+inline void removeFromVecByIdx(std::vector<T>& v, int idx){
+  assert(idx>=0 && idx<v.size());
+  v.erase( v.begin()+idx );
+
+}
+
+template <class T>
+inline void removeFromVecByElement(std::vector<T>& v, T element){
+  int v_size = v.size();
+  v.erase(std::remove(v.begin(), v.end(), element), v.end());
+  assert(v_size==v.size()+1);
+}
+
+template <class T>
+inline int getIndex(std::vector<T> v, T element)
+{
+    auto it = std::find(v.begin(), v.end(), element);
+
+    assert(it!=v.end());
+
+    // calculating the index
+    int index = it - v.begin();
+
+    return index;
+
+}
+
+inline void removeRowCol(Eigen::MatrixXf& matrix, unsigned int rowcolToRemove)
+{
+  unsigned int numRows = matrix.rows()-1;
+  unsigned int numCols = matrix.cols()-1;
+
+  if( rowcolToRemove < numRows ){
+    matrix.block(rowcolToRemove,0,numRows-rowcolToRemove,numCols) = matrix.block(rowcolToRemove+1,0,numRows-rowcolToRemove,numCols);
+    matrix.block(0,rowcolToRemove,numRows,numCols-rowcolToRemove) = matrix.block(0,rowcolToRemove+1,numRows,numCols-rowcolToRemove);
+  }
+
+  matrix.conservativeResize(numRows,numCols);
+}
+
+inline void removeElement(Eigen::VectorXf& vec, unsigned int idx)
+{
+  unsigned int size = vec.size()-1;
+
+  if( idx < size ){
+    vec.segment(idx,size-idx) = vec.segment(idx+1,size-idx);
+  }
+
+  vec.conservativeResize(size);
+}
+
+
+
+inline void appendRowCol(Eigen::MatrixXf& matrix)
+{
+  unsigned int numRows = matrix.rows()+1;
+  unsigned int numCols = matrix.cols()+1;
+
+  matrix.conservativeResize(numRows,numCols);
+
+  matrix.col(matrix.cols()-1).setZero();
+  matrix.row(matrix.rows()-1).setZero();
+}
+
+inline void appendElement(Eigen::VectorXf& vec)
+{
+  unsigned int size = vec.size()+1;
+
+  vec.conservativeResize(size);
+
+  vec(vec.size()-1)=0;
+
+}

@@ -7,7 +7,7 @@ class Dso;
 class Meas{
   public:
     // ********** members **********
-    CamCouple* cam_couple_;
+    std::shared_ptr<CamCouple> cam_couple_;
     bool valid_;
     bool occlusion_;
     pxl pixel_;
@@ -16,7 +16,7 @@ class Meas{
     int level_;
 
     // ********** constructor **********
-    Meas(ActivePoint* active_point, CamCouple* cam_couple , int level):
+    Meas(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple , int level):
     cam_couple_(cam_couple),
     valid_(true),
     occlusion_(false),
@@ -46,6 +46,33 @@ class LinSys{
     { };
 
     // ********** methods **********
+
+};
+
+class LinSysBlocks : public LinSys{
+  public:
+    // ********** members **********
+
+    int c_size_;
+    int p_size_;
+    Eigen::MatrixXf H_cc_;
+    Eigen::MatrixXf H_cp_;
+    Eigen::VectorXf H_pp_;
+    Eigen::VectorXf b_c_;
+    Eigen::VectorXf b_p_;
+
+
+    // ********** constructor **********
+    LinSysBlocks(Dso* dso):
+    LinSys(dso)
+    { };
+
+    // ********** methods **********
+    bool visualizeH();
+    void clear();
+    void reset();
+    void resize(int c_size, int p_size);
+    // void resize( int c_size, int p_siz)
 
 
 };

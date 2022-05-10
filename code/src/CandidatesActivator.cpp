@@ -257,27 +257,14 @@ void CandidatesActivator::reset(){
   regvec_mat_.reset();
 }
 
-// void CandidatesActivator::activateCandidateFromRegion(){
-//
-// }
 
 void CandidatesActivator::removeCand(CandidateProjected* cand_proj){
 
   // remove projected candidate from vector
-  std::vector<CandidateProjected*>& cp = cand_proj->cam_->points_container_->candidates_projected_;
-  int cp_size = cp.size();
-  cp.erase(std::remove(cp.begin(), cp.end(), cand_proj), cp.end());
-  assert(cp_size==cp.size()+1);
-  // if(cand_proj->level_==0)
-  //   assert(cp_size!=cp.size());
+  removeFromVecByElement(cand_proj->cam_->points_container_->candidates_projected_, cand_proj);
 
   // remove candidate from vector
-  std::vector<Candidate*>& c = cand_proj->cand_->cam_->points_container_->candidates_;
-  int c_size = c.size();
-  c.erase(std::remove(c.begin(), c.end(), cand_proj->cand_), c.end());
-  assert(c_size==c.size()+1);
-
-  // assert(c_size!=c.size());
+  removeFromVecByElement(cand_proj->cand_->cam_->points_container_->candidates_, cand_proj->cand_);
 
 
 }
@@ -307,12 +294,9 @@ void CandidatesActivator::removeEmptyRegion(Region* reg){
 
     Region* reg_curr = reg;
     for( int subreg_lev=2; subreg_lev<=reg_level-1; subreg_lev++){
-      std::vector<Region*>& v =reg_curr->parent_->subregions_;
 
-      if(v.size()<=1){
-        int v_size = v.size();
-        v.erase(std::remove(v.begin(), v.end(), reg_curr), v.end());
-        // assert(v_size==v.size()+1);
+      if(reg_curr->parent_->subregions_.size()<=1){
+        removeFromVecByElement(reg_curr->parent_->subregions_, reg_curr);
       }
       else
         break;
@@ -363,7 +347,7 @@ void CandidatesActivator::activateCandidates(){
           }
           // pass through subregs
           for( int subreg_lev=subreg->level_; subreg_lev>1; subreg_lev--){
-            regvec_mat_.regs_[subreg->level_][subreg->num_forbid_subregs_].erase(regvec_mat_.regs_[subreg->level_][subreg->num_forbid_subregs_].begin()+subreg->idx_regvecmat_);
+            removeFromVecByIdx(regvec_mat_.regs_[subreg->level_][subreg->num_forbid_subregs_],subreg->idx_regvecmat_);
             subreg=subreg->subregions_.back();
           }
 

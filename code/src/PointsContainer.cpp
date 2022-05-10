@@ -19,10 +19,7 @@ void Candidate::setInvdepthGroundtruth(){
 
 void Candidate::remove(){
   // remove candidate from vector
-  std::vector<Candidate*>& v = cam_->points_container_->candidates_;
-  int v_size = v.size();
-  v.erase(std::remove(v.begin(), v.end(), this), v.end());
-  assert(v_size==v.size()+1);
+  removeFromVecByElement(cam_->points_container_->candidates_, this);
 
   delete this;
 }
@@ -117,7 +114,7 @@ void PointsContainer::showProjectedActivePoints(const std::string& name){
 
 
 
-void CandidateProjected::init(Candidate* cand, CamCouple* cam_couple_){
+void CandidateProjected::init(Candidate* cand, std::shared_ptr<CamCouple> cam_couple_){
   cam_couple_->getUv( cand->uv_.x(),cand->uv_.y(),1./cand->invdepth_,uv_.x(),uv_.y() );
   cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, cand->level_);
   cam_=cam_couple_->cam_m_;
@@ -128,7 +125,7 @@ void CandidateProjected::init(Candidate* cand, CamCouple* cam_couple_){
 }
 
 
-void ActivePointProjected::init(ActivePoint* active_pt, CamCouple* cam_couple_){
+void ActivePointProjected::init(ActivePoint* active_pt, std::shared_ptr<CamCouple> cam_couple_){
   cam_couple_->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_.x(),uv_.y() );
   cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, active_pt->level_);
   float depth;
@@ -144,10 +141,7 @@ void ActivePoint::updateInvdepthVarAndP(float invdepth, float invdepth_var){
 
 void ActivePoint::remove(){
   // remove candidate from vector
-  std::vector<ActivePoint*>& v = cam_->points_container_->active_points_;
-  int v_size = v.size();
-  v.erase(std::remove(v.begin(), v.end(), this), v.end());
-  assert(v_size==v.size()+1);
+  removeFromVecByElement(cam_->points_container_->active_points_, this);
 
   cam_->points_container_->n_active_points_removed_++;
 
@@ -162,10 +156,8 @@ PtDataForBA* MarginalizedPoint::initializeDataForBA(){
 
 void MarginalizedPoint::remove(){
   // remove candidate from vector
-  std::vector<MarginalizedPoint*>& v = cam_->points_container_->marginalized_points_;
-  int v_size = v.size();
-  v.erase(std::remove(v.begin(), v.end(), this), v.end());
-  assert(v_size==v.size()+1);
+  removeFromVecByElement(cam_->points_container_->marginalized_points_, this);
+
 
   delete this;
 }

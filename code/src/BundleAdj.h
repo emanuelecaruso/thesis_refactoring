@@ -5,6 +5,38 @@
 
 class Dso;
 
+class MarginalizationHandler{
+  public:
+    // ********** members **********
+    std::vector<PriorMeas*> prior_measurements_;
+    Eigen::MatrixXf H_tilde_;
+    Eigen::VectorXf b_tilde_;
+
+    std::vector<CameraForMapping*> keyframes_with_priors_;
+    LinSysBlocks* lin_sys_increment_;
+
+    // ********** constructor **********
+    MarginalizationHandler(Dso* dso):
+    lin_sys_increment_( new LinSysBlocks(dso) ){
+      H_tilde_.resize(0,0);
+      b_tilde_.resize(0);
+    };
+
+    // ********** methods **********
+    void removeKeyframeWithPriors(CameraForMapping* keyframe);
+    void addKeyframeWithPriors(CameraForMapping* keyframe);
+    void setCamIdxs();
+    void loadPriorsInLinSys();
+    void uploadHBTilde();
+  protected:
+    void loadPriorInLinSys(PriorMeas* prior_meas);
+    void removeCamFromHtilde(int idx);
+    void removeCamFromBtilde(int idx);
+    void addCamToHtilde();
+    void addCamToBtilde();
+
+
+};
 
 class BundleAdj{
   public:
@@ -14,8 +46,9 @@ class BundleAdj{
     int n_points_non_valid_;
     int n_points_occlusions_;
     int n_points_removed_;
+    int n_points_marginalized_;
     CamCoupleContainer* cam_couple_container_;
-    std::vector<MarginalizedPoint*> priors_;
+    MarginalizationHandler* marginalization_handler_;
 
     // ********** constructor **********
     // BundleAdj(Dso* dso ){}
@@ -24,19 +57,25 @@ class BundleAdj{
     n_points_non_valid_(0),
     n_points_occlusions_(0),
     n_points_removed_(0),
-    cam_couple_container_( new CamCoupleContainer(dso_,ALL_KFS_ON_ALL_KFS ) )
+    n_points_marginalized_(0),
+    cam_couple_container_( new CamCoupleContainer(dso_,ALL_KFS_ON_ALL_KFS ) ),
+    marginalization_handler_( new MarginalizationHandler(dso_) )
     {};
 
     // ********** methods **********
     void optimize();
-    void marginalizePointsAndKeyframes();
+    void marginalize();
     void setCamData();
     bool getMeasurements(ActivePoint* active_point, int i, std::vector<MeasBA*>* measurement_vector);
-    void marginalizePoint(ActivePoint* active_point, CamCoupleContainer* cam_couple_container);
+    bool marginalizePoint(ActivePoint* active_point, CamCoupleContainer* cam_couple_container );
     void marginalizeKeyframe(CameraForMapping* keyframe);
-    void createPrior(ActivePoint* active_point, CamCouple* cam_couple);
+    bool createPrior(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple);
 
-
+  protected:
+    void marginalizePointsAndKeyframes();
+    void updateState(LinSysBA& lin_sys_ba);
+    void integrateMargTerms(LinSysBA& lin_sys_ba);
+    void updateBMarg(LinSysBA& lin_sys_ba);
 };
 
 class CamHkuCouple{
@@ -76,6 +115,7 @@ class CamDataForBA{
     // ********** members **********
     int c_idx_;
     int c_marg_idx_;
+    bool has_prior_;
     // marginalization terms
     Vector6f b_k_;
     Eigen::Matrix<float,6,6> H_kk_;
@@ -83,7 +123,8 @@ class CamDataForBA{
     // ********** constructor **********
     CamDataForBA():
     c_idx_(-1),
-    c_marg_idx_(-1)
+    c_marg_idx_(-1),
+    has_prior_(false)
     {
       b_k_.setZero();
       H_kk_.setZero();

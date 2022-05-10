@@ -125,11 +125,11 @@ bool Dso::doDso(){
     }
   }
 
+  // marginalize points not in last camera
+  bundle_adj_->marginalize();
   // bundle adjustment optimization
   bundle_adj_->optimize();
 
-  // marginalize points not in last camera
-  bundle_adj_->marginalizePointsAndKeyframes();
 
   if(use_spectator){
     spectator_->renderState();

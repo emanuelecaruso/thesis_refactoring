@@ -137,7 +137,7 @@ void PointsHandler::projectActivePointsOnLastFrame(){
 
 
 void PointsHandler::projectCandidates(CameraForMapping* cam_r, CameraForMapping* cam_m ){
-  CamCouple* cam_couple = new CamCouple(cam_r, cam_m);
+  std::shared_ptr<CamCouple> cam_couple = std::make_shared<CamCouple>(cam_r, cam_m);
 
   // iterate through candidates
   for(Candidate* cand : (cam_r->points_container_->candidates_)){
@@ -152,7 +152,7 @@ void PointsHandler::projectCandidates(CameraForMapping* cam_r, CameraForMapping*
 }
 
 void PointsHandler::projectActivePoints(CameraForMapping* cam_r, CameraForMapping* cam_m ){
-  CamCouple* cam_couple(new CamCouple(cam_r, cam_m) );
+  std::shared_ptr<CamCouple> cam_couple(new CamCouple(cam_r, cam_m) );
 
   // iterate through candidates
   for(ActivePoint* active_pt : (cam_r->points_container_->active_points_)){
@@ -215,7 +215,7 @@ void PointsHandler::trackCandidatesGroundtruth(CameraForMapping* keyframe){
 
 void PointsHandler::trackCandidates(CameraForMapping* keyframe, CameraForMapping* last_keyframe){
 
-  CamCouple* cam_couple = (new CamCouple(keyframe,last_keyframe));
+  std::shared_ptr<CamCouple> cam_couple =  std::make_shared<CamCouple>(keyframe,last_keyframe);
 
   n_cands_to_track_+= keyframe->points_container_->candidates_.size();
   // iterate through candidates
@@ -231,7 +231,7 @@ void PointsHandler::trackCandidates(CameraForMapping* keyframe, CameraForMapping
 
 }
 
-bool PointsHandler::trackCandidate(Candidate* cand, CamCouple* cam_couple){
+bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> cam_couple){
   // get uv of min and max depth
   Eigen::Vector2f uv_min, uv_max;
   cam_couple->getUv(cand->uv_.x(),cand->uv_.y(),cand->depth_min_,uv_min.x(),uv_min.y());
