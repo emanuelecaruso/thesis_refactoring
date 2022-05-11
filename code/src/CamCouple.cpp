@@ -1,6 +1,13 @@
 #include "CamCouple.h"
 #include "dso.h"
 
+
+Eigen::Isometry3f CamCouple::getRelativeTransformation(){
+  Eigen::Isometry3f relative_transf = (*(cam_m_->frame_world_wrt_camera_))*(*(cam_r_->frame_camera_wrt_world_));
+  reorthonormalization(relative_transf);
+  return relative_transf;
+}
+
 void CamCouple::update(){
   T=getRelativeTransformation();
   f=cam_r_->cam_parameters_->lens;

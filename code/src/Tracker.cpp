@@ -25,21 +25,21 @@ void Tracker::setInitialGuess(){
       break;}
     case VELOCITY_CONSTANT:{
       Eigen::Isometry3f transf = (*dso_->cameras_container_->getThirdLastFrame()->frame_world_wrt_camera_)*(*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_);
-      assert(transf.linear().allFinite());
-      assert(transf.translation().allFinite());
-      Eigen::Isometry3f pose = (*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_)*transf;
-      dso_->frame_current_->assignPose( pose );
-      break;}
-    case PERS_GUESS:{
-      Eigen::Isometry3f transf = (*dso_->cameras_container_->getThirdLastFrame()->frame_world_wrt_camera_)*(*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_);
 
-      // transf.translation()*=0.5;
-      transf.linear().setIdentity();
+      reorthonormalization(transf);
+
+      // transf.linear()=dso_->cameras_container_->getThirdLastFrame()->frame_world_wrt_camera_->linear()*dso_->cameras_container_->getSecondLastFrame()->frame_world_wrt_camera_->linear().transpose();
       assert(transf.linear().allFinite());
       assert(transf.translation().allFinite());
+      // transf.linear().setIdentity();
+      // transf.translation().setZero();
       Eigen::Isometry3f pose = (*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_)*transf;
+
+      reorthonormalization(pose);
+
       dso_->frame_current_->assignPose( pose );
       break;}
+
 
     }
 
@@ -61,7 +61,7 @@ bool Tracker::checkConvergence(float chi, int level){
 
   bool out = false;
   if(chi_history_.size()>0){
-    if ( abs(chi_history_.back()-chi) < conv_threshold+(conv_threshold*level) ){
+    if ( abs(chi_history_.back()-chi) < conv_threshold+(conv_threshold*level*2) ){
       out = true;
     }
   }

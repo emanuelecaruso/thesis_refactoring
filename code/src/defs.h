@@ -486,7 +486,6 @@ inline Eigen::Isometry3f v2t_inv(Vector6f& t){
 
 #define POSE_CONSTANT 0
 #define VELOCITY_CONSTANT 1
-#define PERS_GUESS 2
 
 #define HUBER 0
 #define QUADRATIC 1
@@ -637,6 +636,11 @@ inline T* pinv(T& A){
   // std::cout << V << "\n\n" << EPS_pinv << "\n\n" << U_transp << std::endl;
 
   return A_pinv;
+}
+
+inline void reorthonormalization(Eigen::Isometry3f& iso){
+  Eigen::AngleAxisf aa(iso.linear());    // RotationMatrix to AxisAngle
+  iso.linear() = aa.toRotationMatrix();  // AxisAngle      to RotationMatrix
 }
 
 inline float rotation2angle(const Eigen::Matrix3f& rot_mat){

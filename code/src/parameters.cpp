@@ -15,8 +15,7 @@ bool marg_pts_in_marg_kf = false;
 bool take_gt_poses=false;
 bool take_gt_points=false;
 // int guess_type=POSE_CONSTANT;
-// int guess_type=VELOCITY_CONSTANT;
-int guess_type=PERS_GUESS;
+int guess_type=VELOCITY_CONSTANT;
 int opt_norm=HUBER;
 // int opt_norm=QUADRATIC;
 int image_id=INTENSITY_ID;
@@ -43,7 +42,7 @@ float der_threshold=0.001;
 // keyframe selection
 int num_active_keyframes=7;
 // float flow_dist_threshold=0.0005;
-float flow_dist_threshold=0.0001;
+float flow_dist_threshold=0.0002;
 float percentage_marg_pts_threshold= 0.05;
 
 // optimization
@@ -53,16 +52,16 @@ float intensity_coeff= 1;
 float gradient_coeff= 0.25;
 float phase_coeff= 1./(4.*PI);
 float damp_point_invdepth= 10000;
-float huber_threshold=0.02;
+float huber_threshold=0.04;
 // float sat_threshold=0.04;
 float sat_threshold=12;
-float chi_occlusion_threshold=0.15;
+float chi_occlusion_threshold=0.07;
 // float occlusion_valid_ratio_thresh= 0.5;
 float occlusion_valid_ratio_thresh= 0.9;
 float valid_ratio_thresh= 0.2;
 
 // tracking
-int coarsest_level= candidate_level+4; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
+int coarsest_level= candidate_level+3; // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 // int reg_level=candidate_level_+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 int max_iterations_ls=100;
 float variance= 0.1;

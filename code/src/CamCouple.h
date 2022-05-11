@@ -72,9 +72,7 @@ class CamCouple{
     void getBoundsParameters();
     void getDepthParameters();
 
-    inline Eigen::Isometry3f getRelativeTransformation(){
-      return (*(cam_m_->frame_world_wrt_camera_))*(*(cam_r_->frame_camera_wrt_world_));
-    }
+    Eigen::Isometry3f getRelativeTransformation();
 };
 
 class CamCoupleContainer{
