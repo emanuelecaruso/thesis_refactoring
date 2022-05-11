@@ -10,7 +10,7 @@ bool use_spectator= true;
 
 // code parameters
 bool do_marginalization = true;
-bool first_2_active_kfs_fixed = true;
+bool first_2_active_kfs_fixed = false;
 bool marg_pts_in_marg_kf = false;
 bool take_gt_poses=false;
 bool take_gt_points=false;
@@ -46,16 +46,16 @@ float flow_dist_threshold=0.0002;
 float percentage_marg_pts_threshold= 0.05;
 
 // optimization
-int max_iterations_ba=10;
+int max_iterations_ba=5;
 int max_num_active_points=2000;
 float intensity_coeff= 1;
 float gradient_coeff= 0.25;
 float phase_coeff= 1./(4.*PI);
-float damp_point_invdepth= 10000;
-float huber_threshold=0.04;
+float damp_point_invdepth= 10e6;
+float huber_threshold=0.02;
 // float sat_threshold=0.04;
-float sat_threshold=12;
-float chi_occlusion_threshold=0.07;
+float sat_threshold=0.1;
+float chi_occlusion_threshold=0.2;
 // float occlusion_valid_ratio_thresh= 0.5;
 float occlusion_valid_ratio_thresh= 0.9;
 float valid_ratio_thresh= 0.2;

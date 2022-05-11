@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/usr/local/include/eigen3 -I/usr/include/python3.6m -I/usr/local/lib/python3.6/dist-packages/numpy/core/include -I/home/manu/Desktop/thesis_refactoring/code/src -I/home/manu/Desktop/thesis_refactoring/code/libs -isystem /usr/local/include/opencv4
 
-CXX_FLAGS = -std=c++11 -O3 -pthread -g
+CXX_FLAGS = -std=c++11 -O3 -DNDEBUG -pthread -O3 -DNDEBUG
 

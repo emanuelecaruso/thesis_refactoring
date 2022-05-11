@@ -2,11 +2,12 @@
 - work on parallel version using more threads
 
 
-- vars
+- vars - maybe not
 - spectator with depth colors
+
 - try to use dataset
 
 performance
+- threads
 - symmetry
 - delete pointers
-- threads
