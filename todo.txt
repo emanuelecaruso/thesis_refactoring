@@ -1,8 +1,8 @@
 - check sequential version with parallel for
 - work on parallel version using more threads
 
-- implement marg priors
-- active points global
 - symmetry
-- spectator with depth colors
+- check problem velocity constant
+- vars
 - delete pointers
+- spectator with depth colors

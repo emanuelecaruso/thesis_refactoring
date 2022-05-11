@@ -25,13 +25,18 @@ void Tracker::setInitialGuess(){
       break;}
     case VELOCITY_CONSTANT:{
       Eigen::Isometry3f transf = (*dso_->cameras_container_->getThirdLastFrame()->frame_world_wrt_camera_)*(*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_);
+      assert(transf.linear().allFinite());
+      assert(transf.translation().allFinite());
       Eigen::Isometry3f pose = (*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_)*transf;
       dso_->frame_current_->assignPose( pose );
       break;}
     case PERS_GUESS:{
       Eigen::Isometry3f transf = (*dso_->cameras_container_->getThirdLastFrame()->frame_world_wrt_camera_)*(*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_);
+
       // transf.translation()*=0.5;
       transf.linear().setIdentity();
+      assert(transf.linear().allFinite());
+      assert(transf.translation().allFinite());
       Eigen::Isometry3f pose = (*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_)*transf;
       dso_->frame_current_->assignPose( pose );
       break;}
@@ -52,11 +57,11 @@ void Tracker::setInitialGuess(){
 }
 
 
-bool Tracker::checkConvergence(float chi){
+bool Tracker::checkConvergence(float chi, int level){
 
   bool out = false;
   if(chi_history_.size()>0){
-    if ( abs(chi_history_.back()-chi) < conv_threshold ){
+    if ( abs(chi_history_.back()-chi) < conv_threshold+(conv_threshold*level) ){
       out = true;
     }
   }
@@ -67,14 +72,18 @@ bool Tracker::checkConvergence(float chi){
 
 
 
-void Tracker::showProjectedActivePoints(int level, CamCoupleContainer& cam_couple_container){
+void Tracker::showProjectedActivePoints(int level){
 
   // Image<colorRGB>* show_img( dso_->frame_current_->pyramid_->getC(level)->returnColoredImgFromIntensityImg( "Tracking debug, level: "+std::to_string(level) ) );
   Image<colorRGB>* show_img( dso_->frame_current_->pyramid_->getC(level)->returnColoredImgFromIntensityImg( "Tracking debug" ) );
 
+  CameraForMapping* cam_m = dso_->frame_current_;
+
   // iterate through keyframes with active points
   for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
     CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
+
+    std::shared_ptr<CamCouple> cam_couple = std::make_shared<CamCouple>(cam_r,cam_m);
 
     // get coarse active points to project
     std::vector<ActivePoint*>& act_pts_coarse = cam_r->points_container_->active_points_;
@@ -82,12 +91,12 @@ void Tracker::showProjectedActivePoints(int level, CamCoupleContainer& cam_coupl
     // for each act pt coarse
     for( ActivePoint* active_pt_coarse : act_pts_coarse){
 
-      ActivePointProjected* act_pt_proj = new ActivePointProjected(active_pt_coarse,cam_couple_container.get(i,0));
+      ActivePointProjected* act_pt_proj = new ActivePointProjected(active_pt_coarse,cam_couple);
       if(level){
         Eigen::Vector2f uv; pxl pixel;
-        cam_couple_container.get(i,0)->getUv( active_pt_coarse->uv_.x(),active_pt_coarse->uv_.y(),1./active_pt_coarse->invdepth_,uv.x(),uv.y() );
-        cam_couple_container.get(i,0)->cam_m_->uv2pixelCoords( uv, pixel, level );
-        colorRGB color = cam_couple_container.get(i,0)->cam_m_->cam_parameters_->invdepthToRgb(act_pt_proj->invdepth_);
+        cam_couple->getUv( active_pt_coarse->uv_.x(),active_pt_coarse->uv_.y(),1./active_pt_coarse->invdepth_,uv.x(),uv.y() );
+        cam_couple->cam_m_->uv2pixelCoords( uv, pixel, level );
+        colorRGB color = cam_couple->cam_m_->cam_parameters_->invdepthToRgb(act_pt_proj->invdepth_);
         show_img->setPixel( pixel,color);
       }
       else{
@@ -147,8 +156,8 @@ void Tracker::trackCam(){
           // get measurement
           MeasTracking measurement(MeasTracking(active_point, cam_couple, level ));
 
-          // if(measurement.valid_){
-          if(measurement.valid_ && !measurement.occlusion_){
+          if(measurement.valid_){
+          // if(measurement.valid_ && !measurement.occlusion_){
             // update linear system with that measurement
             measurement.loadJacobians(active_point);
             lin_sys_tracking.addMeasurement(measurement);
@@ -175,7 +184,7 @@ void Tracker::trackCam(){
 
         dso_->points_handler_->projectActivePointsOnLastFrame();
         // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
-        // showProjectedActivePoints(level, cam_couple_container);
+        showProjectedActivePoints(level);
         dso_->spectator_->renderState();
         dso_->spectator_->showSpectator();
 
@@ -185,7 +194,7 @@ void Tracker::trackCam(){
       bool stop = false;
 
 
-      if (checkConvergence(lin_sys_tracking.chi)){
+      if (checkConvergence(lin_sys_tracking.chi, level)){
         stop=iteration;
         iterations_increment=iteration+1;
         break;

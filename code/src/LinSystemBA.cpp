@@ -198,11 +198,21 @@ void LinSysBA::updatePoints(){
 
     for( ActivePoint* active_pt : cam_r->points_container_->active_points_ ){
       if(active_pt->p_idx_!=-1){
+        if(active_pt->p_idx_>=dx_p.size()){
+          std::cout << active_pt->p_idx_ << " " << dx_p.size() << " " << active_pt->cam_->name_ << " " << active_pt->cam_->marginalized_  << std::endl;
 
+        }
+        assert(active_pt->p_idx_>=0 && active_pt->p_idx_<dx_p.size());
         float new_invdepth = active_pt->invdepth_ + dx_p(active_pt->p_idx_);
         new_invdepth = std::min(new_invdepth,(float)1.0/cam_r->cam_parameters_->min_depth);
         new_invdepth = std::max(new_invdepth,(float)1.0/cam_r->cam_parameters_->max_depth);
-        active_pt->updateInvdepthVarAndP( new_invdepth , (1.0/(H_pp_[active_pt->p_idx_]+0.001))+0.001 );
+
+        Eigen::VectorXf col = H_cp_.col(active_pt->p_idx_);
+        int n = col.rows()-(std::count(col.data(), col.data() + col.size(), 0));
+        float var = ( 1.0/ ( (H_pp_[active_pt->p_idx_]/n)+1000 ) )+0.1;
+        // std::cout << var << " " << n <<  std::endl;
+
+        active_pt->updateInvdepthVarAndP( new_invdepth , var );
       }
     }
   }

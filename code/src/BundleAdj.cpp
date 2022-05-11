@@ -4,7 +4,7 @@
 #include "dso.h"
 
 bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<MeasBA*>* measurement_vector){
-  bool valid = true;
+  bool valid = false;
   int n_valid = 0;
   int n_occlusions = 0;
 
@@ -27,12 +27,15 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
       if(j==dso_->cameras_container_->keyframes_active_.size()-1){
         active_point->remove();
         // marginalizePoint(active_point,cam_couple_container_);
+        n_points_removed_++;
         return false;
       }
 
       n_occlusions++;
     }
     else if(measurement->valid_){
+    // if(measurement->valid_){
+      valid=true;
       measurement_vector->push_back(measurement);
       n_valid++;
     }
@@ -55,12 +58,14 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
     non_valid=true;
   }
 
-  // if(occlusion || non_valid){
+  // if(occlusion){
+  // // if(occlusion || non_valid){
   //   // clear vector
   //   for( MeasBA* measurement : *measurement_vector ){
   //     delete measurement;
   //   }
   //   n_points_removed_++;
+  //   active_point->remove();
   //   return false;
   // }
 
@@ -72,7 +77,7 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
   }
 
 
-  return true;
+  return valid;
 }
 
 void BundleAdj::setCamData(){
@@ -366,6 +371,8 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba){
   lin_sys_ba.updateCameras();
   lin_sys_ba.updatePoints();
 
+  // lin_sys_ba.visualizeH();
+
   updateBMarg(lin_sys_ba);
 
 
@@ -479,10 +486,10 @@ void BundleAdj::optimize(){
     for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
       CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
 
-      if(cam_r->points_container_->active_points_.empty()){
-        dso_->cameras_container_->removeFrameWithActPts(cam_r);
-        continue;
-      }
+      // if(cam_r->points_container_->active_points_.empty()){
+      //   dso_->cameras_container_->removeFrameWithActPts(cam_r);
+      //   continue;
+      // }
 
       cam_couple_container_ = new CamCoupleContainer(dso_,cam_r, true);
 
@@ -490,6 +497,7 @@ void BundleAdj::optimize(){
       // for( ActivePoint* active_pt : cam_r->points_container_->active_points_ ){
       for( int j=cam_r->points_container_->active_points_.size()-1; j>=0; j-- ){
         ActivePoint* active_pt = cam_r->points_container_->active_points_[j];
+        active_pt->p_idx_=-1;
 
         std::vector<MeasBA*>* measurement_vector = new std::vector<MeasBA*>;
         bool measurements_are_valid = getMeasurements(active_pt, i, measurement_vector);
@@ -497,6 +505,9 @@ void BundleAdj::optimize(){
           active_pt->p_idx_=num_points;
           num_points++;
           measurement_vec_vec.push_back(measurement_vector);
+        }
+        else{
+
         }
 
       }

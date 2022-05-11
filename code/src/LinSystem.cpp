@@ -137,14 +137,8 @@ float Meas::getWeight(){
   // std::cout << huber_threshold << std::endl;
   assert(std::isfinite(weight_mest));
 
-  // float weight=1.0/measurement.active_point_->invdepth_var_;
+  // float  weight = weight_mest*var_;
 
-  // // weight
-  // float variance = variance;
-  // int ni = robustifier_dofs;
-  // float weight = (ni+1.0)/(ni+(pow(error,2)/variance));
-  //
-  // float  weight = weight*gamma;
   float weight = weight_mest;
 
   // return weight;
