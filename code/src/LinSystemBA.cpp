@@ -60,10 +60,10 @@ void LinSysBA::reinitWithNewPoints(int n_points){
 }
 
 float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
-  assert(measurement->cam_couple_->cam_r_!=measurement->cam_couple_->cam_m_);
+  assert(measurement->cam_couple_!=nullptr);
 
-  bool no_r = measurement->cam_couple_->cam_r_->fixed_;
-  bool no_m = measurement->cam_couple_->cam_m_->fixed_;
+  bool no_r = measurement->cam_couple_->cam_r_->fixed_ || measurement->cam_couple_->cam_r_->marginalized_;
+  bool no_m = measurement->cam_couple_->cam_m_->fixed_ || measurement->cam_couple_->cam_m_->marginalized_;
 
   int r_idx = measurement->cam_couple_->cam_r_->cam_data_for_ba_->c_idx_;
   int m_idx = measurement->cam_couple_->cam_m_->cam_data_for_ba_->c_idx_;
@@ -193,8 +193,8 @@ void LinSysBA::updateCameras(){
 
 void LinSysBA::updatePoints(){
   // iterate through active keyframes (except last)
-  for( int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1 ; i++){
-    CameraForMapping* cam_r = dso_->cameras_container_->keyframes_active_[i];
+  for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
+    CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
 
     for( ActivePoint* active_pt : cam_r->points_container_->active_points_ ){
       if(active_pt->p_idx_!=-1){

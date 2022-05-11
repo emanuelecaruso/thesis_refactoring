@@ -21,6 +21,7 @@ extern bool use_spectator;
 // code parameters
 extern bool do_marginalization;
 extern bool first_2_active_kfs_fixed;
+extern bool marg_pts_in_marg_kf;
 
 extern bool take_gt_poses;
 extern bool take_gt_points;

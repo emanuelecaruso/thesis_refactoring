@@ -62,13 +62,30 @@ void CamerasContainer::removeKeyframeMarginalized(CameraForMapping* keyframe){
   assert(checkFrame(keyframe) && !checkActiveKeyframe(keyframe) && !checkKeyframeToBeMarginalized(keyframe) && checkMarginalizedKeyframe(keyframe));
 
   removeFromVecByElement(keyframes_marginalized_, keyframe);
+}
 
+void CamerasContainer::addFrameWithActPts(CameraForMapping* keyframe){
+  assert( checkFrame(keyframe) && !(keyframe->has_active_pts_) );
+  keyframe->has_active_pts_=true;
+  // push frame
+  frames_with_active_pts_.push_back(keyframe);
+}
+
+void CamerasContainer::removeFrameWithActPts(CameraForMapping* keyframe){
+  assert( checkFrame(keyframe) && checkFrameWithActPts(keyframe) && keyframe->has_active_pts_ );
+  keyframe->has_active_pts_=false;
+  // remove frame
+  removeFromVecByElement(frames_with_active_pts_, keyframe);
 
 }
+
 
 // check functions
 bool CamerasContainer::checkFrame( CameraForMapping* frame ){
   return std::count(frames_.begin(), frames_.end(), frame);
+}
+bool CamerasContainer::checkFrameWithActPts(CameraForMapping* frame){
+  return std::count(frames_with_active_pts_.begin(), frames_with_active_pts_.end(), frame);
 }
 bool CamerasContainer::checkActiveKeyframe( CameraForMapping* frame ){
   return std::count(keyframes_active_.begin(), keyframes_active_.end(), frame);

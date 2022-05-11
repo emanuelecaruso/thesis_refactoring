@@ -47,9 +47,9 @@ void LinSysTracking::addMeasurement( MeasTracking& measurement ){
 void LinSysTracking::updateCameraPose(){
 
   // get dx
-  // dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
-  H = H.selfadjointView<Eigen::Upper>();
-  dx = H.completeOrthogonalDecomposition().pseudoInverse()*(-b);
+  dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
+  // H = H.selfadjointView<Eigen::Upper>();
+  // dx = H.completeOrthogonalDecomposition().pseudoInverse()*(-b);
 
   // update pose
   Eigen::Isometry3f new_guess = (*(dso_->frame_current_->frame_camera_wrt_world_))*v2t_inv(dx);

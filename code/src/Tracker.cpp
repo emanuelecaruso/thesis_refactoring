@@ -30,7 +30,7 @@ void Tracker::setInitialGuess(){
       break;}
     case PERS_GUESS:{
       Eigen::Isometry3f transf = (*dso_->cameras_container_->getThirdLastFrame()->frame_world_wrt_camera_)*(*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_);
-      transf.translation()*=0.5;
+      // transf.translation()*=0.5;
       transf.linear().setIdentity();
       Eigen::Isometry3f pose = (*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_)*transf;
       dso_->frame_current_->assignPose( pose );
@@ -72,9 +72,9 @@ void Tracker::showProjectedActivePoints(int level, CamCoupleContainer& cam_coupl
   // Image<colorRGB>* show_img( dso_->frame_current_->pyramid_->getC(level)->returnColoredImgFromIntensityImg( "Tracking debug, level: "+std::to_string(level) ) );
   Image<colorRGB>* show_img( dso_->frame_current_->pyramid_->getC(level)->returnColoredImgFromIntensityImg( "Tracking debug" ) );
 
-  // iterate through keyframes (except last)
-  for( int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1 ; i++){
-    CameraForMapping* cam_r = dso_->cameras_container_->keyframes_active_[i];
+  // iterate through keyframes with active points
+  for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
+    CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
 
     // get coarse active points to project
     std::vector<ActivePoint*>& act_pts_coarse = cam_r->points_container_->active_points_;
@@ -106,11 +106,12 @@ void Tracker::showProjectedActivePoints(int level, CamCoupleContainer& cam_coupl
 void Tracker::trackCam(){
 
   double deltaTime_tot = 0;
+  CameraForMapping* cam_m = dso_->frame_current_;
 
   setInitialGuess();
 
   // create cam couple container
-  CamCoupleContainer cam_couple_container(dso_,ALL_KFS_ON_LAST);
+  // CamCoupleContainer cam_couple_container(dso_,ALL_KFS_ON_LAST);
 
   // create linear system
   LinSysTracking lin_sys_tracking(dso_);
@@ -128,10 +129,12 @@ void Tracker::trackCam(){
 
       int n_meas =0;
 
-
       // iterate through keyframes (except last)
-      for( int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1 ; i++){
-        CameraForMapping* cam_r = dso_->cameras_container_->keyframes_active_[i];
+      for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
+        CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
+
+        std::shared_ptr<CamCouple> cam_couple = std::make_shared<CamCouple>( cam_r, cam_m ) ;
+
 
         // select active points vector
         // std::vector<ActivePoint*>& active_points = cam_r->points_container_->getActivePoints(level);
@@ -142,7 +145,7 @@ void Tracker::trackCam(){
           ActivePoint* active_point = active_points[j];
 
           // get measurement
-          MeasTracking measurement(MeasTracking(active_point, cam_couple_container.get(i,0), level ));
+          MeasTracking measurement(MeasTracking(active_point, cam_couple, level ));
 
           // if(measurement.valid_){
           if(measurement.valid_ && !measurement.occlusion_){
@@ -172,12 +175,12 @@ void Tracker::trackCam(){
 
         dso_->points_handler_->projectActivePointsOnLastFrame();
         // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
-        showProjectedActivePoints(level, cam_couple_container);
+        // showProjectedActivePoints(level, cam_couple_container);
         dso_->spectator_->renderState();
         dso_->spectator_->showSpectator();
 
       }
-      cam_couple_container.update();
+      // cam_couple_container.update();
 
       bool stop = false;
 

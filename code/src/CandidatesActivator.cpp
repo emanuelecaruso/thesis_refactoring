@@ -393,6 +393,12 @@ void CandidatesActivator::activateCandidates(){
     }
   }
 
+  // iterate through keyframes (except last)
+  for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
+    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
+    if(!keyframe->has_active_pts_ && !(keyframe->points_container_->active_points_.empty()) )
+      dso_->cameras_container_->addFrameWithActPts(keyframe);
+  }
 
   double t_end=getTime();
   int deltaTime=(t_end-t_start);

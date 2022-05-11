@@ -4,7 +4,7 @@
 #include "dso.h"
 
 bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<MeasBA*>* measurement_vector){
-
+  bool valid = true;
   int n_valid = 0;
   int n_occlusions = 0;
 
@@ -12,19 +12,23 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
   // iterate through all active keyframes
   for( int j=dso_->cameras_container_->keyframes_active_.size()-1; j>=0 ; j--){
 
+    std::shared_ptr<CamCouple> cam_couple = cam_couple_container_->get(0,j);
+
     // avoid self projections
-    if (i==j)
+    if (cam_couple.get()==nullptr)
       continue;
 
-    std::shared_ptr<CamCouple> cam_couple = cam_couple_container_->get(i,j);
     assert(cam_couple->cam_r_==active_point->cam_);
     assert(cam_couple->cam_m_==dso_->cameras_container_->keyframes_active_[j]);
 
     MeasBA* measurement = new MeasBA(active_point, cam_couple);
     if(measurement->occlusion_){
       // if points is an occlusion in the first keyframe, remove it
-      if(j==dso_->cameras_container_->keyframes_active_.size()-1)
+      if(j==dso_->cameras_container_->keyframes_active_.size()-1){
+        active_point->remove();
+        // marginalizePoint(active_point,cam_couple_container_);
         return false;
+      }
 
       n_occlusions++;
     }
@@ -51,14 +55,14 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
     non_valid=true;
   }
 
-  if(occlusion || non_valid){
-    // clear vector
-    for( MeasBA* measurement : *measurement_vector ){
-      delete measurement;
-    }
-    n_points_removed_++;
-    return false;
-  }
+  // if(occlusion || non_valid){
+  //   // clear vector
+  //   for( MeasBA* measurement : *measurement_vector ){
+  //     delete measurement;
+  //   }
+  //   n_points_removed_++;
+  //   return false;
+  // }
 
 
   // load jacobians
@@ -66,6 +70,8 @@ bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<Me
   for( MeasBA* measurement : *measurement_vector){
     measurement->loadJacobians( active_point );
   }
+
+
   return true;
 }
 
@@ -379,28 +385,35 @@ void BundleAdj::marginalizePointsAndKeyframes(){
 
   CameraForMapping* curr_frame = dso_->frame_current_;
 
+
+
   // iterate through keyframes to be marginalized
   for (CameraForMapping* keyframe_to_marg : dso_->cameras_container_->keyframes_to_marginalize_){
 
-    // create cam couple vector
-    CamCoupleContainer* cam_couple_container = new CamCoupleContainer(dso_,keyframe_to_marg);
+    if(marg_pts_in_marg_kf){
 
-    // marginalize all active points
-    for(int i=keyframe_to_marg->points_container_->active_points_.size()-1; i>=0; i--){
-      ActivePoint* active_pt = keyframe_to_marg->points_container_->active_points_[i];
-      marginalizePoint(active_pt, cam_couple_container);
+      // create cam couple vector
+      CamCoupleContainer* cam_couple_container = new CamCoupleContainer(dso_,keyframe_to_marg);
+      // marginalize all active points
+      for(int i=keyframe_to_marg->points_container_->active_points_.size()-1; i>=0; i--){
+        ActivePoint* active_pt = keyframe_to_marg->points_container_->active_points_[i];
+        marginalizePoint(active_pt, cam_couple_container);
+      }
+      delete cam_couple_container;
+
     }
 
     // marginalize keyframe
     marginalizeKeyframe(keyframe_to_marg);
 
-    delete cam_couple_container;
   }
 
+
+
   // marginalize points not in last cam
-  // iterate through all keyframe (except the last)
-  for (int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1; i++){
-    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
+  // iterate through all keyframe with active points
+  for (int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size(); i++){
+    CameraForMapping* keyframe = dso_->cameras_container_->frames_with_active_pts_[i];
     // std::shared_ptr<CamCouple> cam_couple_curr_frame = new CamCouple(keyframe,curr_frame);
 
     CamCoupleContainer* cam_couple_container = new CamCoupleContainer(dso_,keyframe);
@@ -413,9 +426,12 @@ void BundleAdj::marginalizePointsAndKeyframes(){
       cam_couple_container->get(0,dso_->cameras_container_->keyframes_active_.size()-1)->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_curr.x(),uv_curr.y() );
       bool uv_in_range = keyframe->uvInRange(uv_curr);
 
-      if(!uv_in_range){
-        marginalizePoint(active_pt, cam_couple_container);
+      MeasBA measurement(active_pt, cam_couple_container->get(0,cam_couple_container->cam_couple_mat_.size()-1));
+      if(measurement.occlusion_ || !uv_in_range){
+        // if points is an occlusion in the first keyframe, remove it
+        marginalizePoint(active_pt,cam_couple_container);
       }
+
     }
 
     delete cam_couple_container;
@@ -427,7 +443,14 @@ void BundleAdj::marginalizePointsAndKeyframes(){
   marginalization_handler_->lin_sys_increment_->resize(n_cams_marg, n_points_marginalized_);
   assert(marginalization_handler_->H_tilde_.rows()==marginalization_handler_->lin_sys_increment_->H_cc_.rows());
 
-
+  // remove frames without active points
+  for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
+    CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
+    if(cam_r->points_container_->active_points_.empty()){
+      dso_->cameras_container_->removeFrameWithActPts(cam_r);
+      continue;
+    }
+  }
 }
 
 void BundleAdj::optimize(){
@@ -447,14 +470,22 @@ void BundleAdj::optimize(){
   // iterations of bundle adjustment
   for(int iteration=0; iteration<max_iterations_ba; iteration++){
 
-    cam_couple_container_->init();
+    // cam_couple_container_->init();
     int num_points = 0;
 
     std::vector<std::vector<MeasBA*>*> measurement_vec_vec;
 
-    // iterate through active keyframes (except last)
-    for( int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1 ; i++){
-      CameraForMapping* cam_r = dso_->cameras_container_->keyframes_active_[i];
+    // iterate through frames with active points
+    for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
+      CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
+
+      if(cam_r->points_container_->active_points_.empty()){
+        dso_->cameras_container_->removeFrameWithActPts(cam_r);
+        continue;
+      }
+
+      cam_couple_container_ = new CamCoupleContainer(dso_,cam_r, true);
+
 
       // for( ActivePoint* active_pt : cam_r->points_container_->active_points_ ){
       for( int j=cam_r->points_container_->active_points_.size()-1; j>=0; j-- ){
@@ -466,9 +497,6 @@ void BundleAdj::optimize(){
           active_pt->p_idx_=num_points;
           num_points++;
           measurement_vec_vec.push_back(measurement_vector);
-        }
-        else {
-          active_pt->remove();
         }
 
       }

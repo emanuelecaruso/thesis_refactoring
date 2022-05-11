@@ -435,7 +435,7 @@ void CamCoupleContainer::init(){
   }
 }
 
-void CamCoupleContainer::init(CameraForMapping* cam_r){
+void CamCoupleContainer::init(CameraForMapping* cam_r, bool get_jr ){
 
   // cam_couple_mat_[cam_r][cam_m]
   int n_active_kfs = dso_->cameras_container_->keyframes_active_.size();
@@ -445,8 +445,13 @@ void CamCoupleContainer::init(CameraForMapping* cam_r){
   for( int i=0; i<n_active_kfs ; i++){
     CameraForMapping* cam_m = dso_->cameras_container_->keyframes_active_[i];
 
+    if(cam_m==cam_r)
+      cam_couple_mat_[0][i]= nullptr;
+
     // cam couple keyframe with last keyframe
     cam_couple_mat_[0][i]= std::make_shared<CamCouple>( cam_r, cam_m );
+    if(get_jr)
+      cam_couple_mat_[0][i]->getJrParameters();
   }
 
 

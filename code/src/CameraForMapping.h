@@ -21,6 +21,7 @@ class CameraForMapping : public Camera{
     bool fixed_;
     bool keyframe_;
     bool marginalized_;
+    bool has_active_pts_;
 
     // ********** constructor **********
 
@@ -34,6 +35,7 @@ class CameraForMapping : public Camera{
       ,fixed_(false)
       ,keyframe_(false)
       ,marginalized_(false)
+      ,has_active_pts_(false)
       { };
 
     ~CameraForMapping(){

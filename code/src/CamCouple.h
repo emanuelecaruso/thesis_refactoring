@@ -93,18 +93,18 @@ class CamCoupleContainer{
       init();
     }
 
-    CamCoupleContainer(Dso* dso, CameraForMapping* cam_r):
+    CamCoupleContainer(Dso* dso, CameraForMapping* cam_r, bool get_jr = false):
     dso_( dso ),
     type_(KF_ON_ALL_KFS)
     {
-      init(cam_r);
+      init(cam_r, get_jr);
     }
 
     // ********** methods **********
     void update();
     std::shared_ptr<CamCouple> get(int cam_r_idx, int cam_m_idx);
     void init();
-    void init(CameraForMapping* cam_r);
+    void init(CameraForMapping* cam_r, bool get_jr);
 
 
 };

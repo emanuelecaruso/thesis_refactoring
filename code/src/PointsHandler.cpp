@@ -128,9 +128,9 @@ void PointsHandler::projectActivePointsOnLastFrame(){
 
   dso_->frame_current_->points_container_->active_points_projected_.clear();
 
-  // iterate through keyframes (except last)
-  for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
-    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
+  // iterate through keyframes with active points
+  for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
+    CameraForMapping* keyframe = dso_->cameras_container_->frames_with_active_pts_[i];
     projectActivePoints(keyframe, dso_->frame_current_ );
   }
 }
