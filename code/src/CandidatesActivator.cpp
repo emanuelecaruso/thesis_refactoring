@@ -3,42 +3,6 @@
 #include "utils.h"
 #include "dso.h"
 
-void Region::pushCandidateProj(CandidateProjected* cand_proj){
-  auto it_ = std::find (candidates_projected_.begin(), candidates_projected_.end(), cand_proj);
-  assert(it_ == candidates_projected_.end());
-
-  auto lb_cmp = [](CandidateProjected* const & x, float d) -> bool
-    { return x->cand_->invdepth_var_ < d; };
-
-  auto it = std::lower_bound(candidates_projected_.begin(), candidates_projected_.end(), cand_proj->cand_->invdepth_var_, lb_cmp);
-  candidates_projected_.insert ( it , cand_proj );
-
-  // candidates_projected_.push_back(cand_proj);
-}
-
-void Region::pushSubreg(Region* subreg){
-  subregions_.push_back(subreg);
-  subreg->parent_=this;
-}
-
-void CandprojpresenceMat::init(Dso* dso){
-  nrows_=dso->cam_parameters_->resolution_y;
-  ncols_=dso->cam_parameters_->resolution_x;
-  mat_=new bool*[nrows_];
-  for( int i = 0; i < nrows_; i++ ) {
-    mat_[i] = new bool[ncols_];
-  }
-  clear();
-}
-
-void CandprojpresenceMat::clear(){
-
-  for( int i = 0; i < nrows_; i++ ) {
-    for( int j = 0; j < ncols_; j++ ) {
-        mat_[i][j] = false;
-    }
-  }
-}
 
 void ActptpresenceMat::clear(){
   for(int i=0; i<nrows_; i++){
@@ -52,8 +16,8 @@ void ActptpresenceMat::clear(){
 void ActptpresenceMat::buildLevel0(std::vector<ActivePointProjected*>& v){
   for(ActivePointProjected* active_pt_proj : v){
     pxl pixel = active_pt_proj->pixel_;
-    int row = (int)(pixel.y()-0.5);
-    int col = (int)(pixel.x()-0.5);
+    int row = (int)trunc(pixel.y());
+    int col = (int)trunc(pixel.x());
     assert(row>=0 && col>=0 && row<nrows_ && col<ncols_);
     mat_[row][col]=true;
   }
@@ -71,8 +35,12 @@ void ActptpresenceMat::updateFromLowerLevel(ActptpresenceMat* lower){
   }
 }
 
+
+
+
 void RegionsMat::clear(){
 
+  // delete
   for( int i = 0; i < nrows_; i++ ) {
     for( int j = 0; j < ncols_; j++ ) {
       delete mat_[i][j];
@@ -91,35 +59,20 @@ void RegionsMat::clear(){
   }
 }
 
-bool RegionsMat::checkRegion(int row, int col){
 
-  assert(row>=0 && row<nrows_ && col>=0 && col<ncols_);
-  bool isnotnull = mat_[row][col] != nullptr;
-  return isnotnull;
-}
-
-
-RegionsMat* RegionsMat::getHigherLevel(){
-  int nrows_new = nrows_/2;
-  int ncols_new = ncols_/2;
-  RegionsMat* mat_new (new RegionsMat(nrows_new, ncols_new) );
-
-  return mat_new;
-}
 
 void ActptpresenceMatVec::init(Dso* dso){
   int res_x = dso->cam_parameters_->resolution_x;
   int res_y = dso->cam_parameters_->resolution_y;
   actptpresencemat_vec_.resize(reg_level);
   for(int i=0; i<reg_level; i++){
-    ActptpresenceMat* ptr(new ActptpresenceMat(res_y/pow(2,i),res_x/pow(2,i)) );
-    // actptpresencemat_vec_[i] = std::make_shared<ActptpresenceMat>(res_y/pow(2,i),res_x/pow(2,i));
+    ActptpresenceMat* ptr(new ActptpresenceMat( trunc(res_y/pow(2,i)) , trunc(res_x/pow(2,i)) ) );
     actptpresencemat_vec_[i] = ptr;
   }
 }
 
 void ActptpresenceMatVec::clear(){
-  updated_=false;
+
   for(ActptpresenceMat* actptpresencemat : actptpresencemat_vec_){
     actptpresencemat->clear();
   }
@@ -132,18 +85,11 @@ void RegMatVec::init(Dso* dso){
   int res_y = dso->cam_parameters_->resolution_y;
   regionsmat_vec_.resize(reg_level);
   for(int i=0; i<reg_level; i++){
-    if(i==0){
-      RegionsMat* ptr(nullptr);
-      regionsmat_vec_[i] = ptr;
-    }
-    else{
-      regionsmat_vec_[i] = new RegionsMat(res_y/pow(2,i),res_x/pow(2,i));
-    }
+    regionsmat_vec_[i] = new RegionsMat( trunc(res_y/pow(2,i)) , trunc(res_x/pow(2,i)) );
   }
 }
 
 void RegMatVec::clear(){
-  std::vector<RegionsMat*> regionsmat_vec_;
   for(int i=0; i<regionsmat_vec_.size(); i++){
     regionsmat_vec_[i]->clear();
   }
@@ -153,14 +99,16 @@ void RegMatVec::clear(){
 void RegVecMat::init(){
   regs_.resize(reg_level);
   for (int i = 0 ; i < reg_level ; i++) {
-    if(i>0)
+    if(i==0)
+      regs_[i].resize(1);
+    else
       regs_[i].resize(4);
   }
 }
 
 
 void RegVecMat::clear(){
-  updated_=false;
+
   for (int i = 0 ; i < regs_.size() ; i++) {
     for (int j = 0 ; j < regs_[i].size() ; j++) {
       regs_[i][j].clear();
@@ -169,84 +117,8 @@ void RegVecMat::clear(){
 
 }
 
-void RegVecMat::reset(){
-  // if(updated_)
-    clear();
-
-  for(int i=cand_activator_->dso_->frame_current_->points_container_->candidates_projected_.size()-1; i>=0; i--  ){
-  // for(CandidateProjected* cand_proj : cand_activator_->dso_->frame_current_->points_container_->candidates_projected_ ){
-    CandidateProjected* cand_proj = cand_activator_->dso_->frame_current_->points_container_->candidates_projected_[i];
-    Region* subreg;
-    bool prev_reg_already_exists = false;
-
-    pxl pixel_prev = cand_proj->pixel_;
-    int row_prev = (int)(pixel_prev.y()-0.5);
-    int col_prev = (int)(pixel_prev.x()-0.5);
-
-    for(int level=1; level<reg_level; level++){
-
-      ActptpresenceMat* actptpresencemat =cand_activator_->actptpresencemat_vec_.actptpresencemat_vec_[level-1];
-      if(actptpresencemat->mat_[row_prev][col_prev]){
-        break;
-      }
-
-      if(level==1){
-        if(cand_activator_->candprojpresencemat_.mat_[row_prev][col_prev]){
-          break;
-        }
-        else{
-          cand_activator_->candprojpresencemat_.mat_[row_prev][col_prev]=true;
-        }
-      }
-
-      // pxl pixel = cand_proj->pixel_/pow(2,level);
-      int row = row_prev/2;
-      int col = col_prev/2;
-      // int row = (int)(pixel.y()-0.5);
-      // int col = (int)(pixel.x()-0.5);
-      RegionsMat* regmat =cand_activator_->regmat_vec_.regionsmat_vec_[level];
-
-      bool regexists = regmat->checkRegion(row,col);
-      if(!regexists){
-        // get number of forbidden subregions
-        int num_forbid_subregs = (int)actptpresencemat->mat_[row*2][col*2] + (int)actptpresencemat->mat_[row*2+1][col*2] + (int)actptpresencemat->mat_[row*2][col*2+1] + (int)actptpresencemat->mat_[row*2+1][col*2+1];
-        assert(num_forbid_subregs<4);
-
-        // create new region
-        regmat->mat_[row][col] = new Region(level, num_forbid_subregs);
-        // push region in regvecmat
-        cand_activator_->regvec_mat_.regs_[level][num_forbid_subregs].push_back(regmat->mat_[row][col]);
-        regmat->mat_[row][col]->idx_regvecmat_=cand_activator_->regvec_mat_.regs_[level][num_forbid_subregs].size()-1;
-      }
-      if(level==1){
-        regmat->mat_[row][col]->pushCandidateProj(cand_proj);
-      }
-      else{
-        if(!prev_reg_already_exists){
-          regmat->mat_[row][col]->pushSubreg(subreg);
-        }
-        else{
-          assert(regexists);
-        }
-      }
-      if (regmat->mat_[row][col]->num_forbid_subregs_>0){
-        break;
-      }
-
-      row_prev = row;
-      col_prev = col;
-      subreg=regmat->mat_[row][col];
-      prev_reg_already_exists = regexists;
-
-    }
-  }
-  updated_=true;
-}
 
 void ActptpresenceMatVec::reset(){
-
-  if(updated_==true)
-    clear();
 
   for(int i=0; i<actptpresencemat_vec_.size(); i++){
     ActptpresenceMat* actptpresencemat = actptpresencemat_vec_[i];
@@ -257,16 +129,9 @@ void ActptpresenceMatVec::reset(){
       actptpresencemat->updateFromLowerLevel(actptpresencemat_vec_[i-1]);
     }
   }
-  updated_=true;
+
 }
 
-
-void CandidatesActivator::reset(){
-  regmat_vec_.clear();
-  candprojpresencemat_.clear();
-  actptpresencemat_vec_.reset();
-  regvec_mat_.reset();
-}
 
 
 void CandidatesActivator::removeCand(CandidateProjected* cand_proj){
@@ -279,6 +144,126 @@ void CandidatesActivator::removeCand(CandidateProjected* cand_proj){
 
 
 }
+
+
+Region* CandidatesActivator::updateRegion(Region* reg_old){
+
+  assert(reg_old!=nullptr);
+
+  // if there is an active point on region old, return false
+  if(actptpresencemat_vec_.actptpresencemat_vec_[reg_old->level_]->mat_[reg_old->row_][reg_old->col_])
+    return nullptr;
+
+
+  int row_new = (int)trunc(reg_old->row_/2);
+  int col_new = (int)trunc(reg_old->col_/2);
+  int level_new = reg_old->level_+1;
+
+
+  assert(row_new < regmat_vec_.regionsmat_vec_[level_new]->nrows_);
+  assert(col_new < regmat_vec_.regionsmat_vec_[level_new]->ncols_);
+  assert(row_new >= 0);
+  assert(col_new >= 0);
+  Region*& reg = regmat_vec_.regionsmat_vec_[level_new]->mat_[row_new][col_new];
+
+  // if region doesn't exists yet
+  if(reg==nullptr){
+    // create region
+    reg = new Region(reg_old);
+    // count num of subregs with active pts
+    int n_act_pts = 0;
+    n_act_pts += actptpresencemat_vec_.actptpresencemat_vec_[reg_old->level_]->mat_[row_new*2][col_new*2];
+    n_act_pts += actptpresencemat_vec_.actptpresencemat_vec_[reg_old->level_]->mat_[row_new*2+1][col_new*2];
+    n_act_pts += actptpresencemat_vec_.actptpresencemat_vec_[reg_old->level_]->mat_[row_new*2][col_new*2+1];
+    n_act_pts += actptpresencemat_vec_.actptpresencemat_vec_[reg_old->level_]->mat_[row_new*2+1][col_new*2+1];
+    assert(n_act_pts<4);
+    // insert in regvec_mat_
+    if(reg->row_==196 && reg->col_==241)
+      std::cout << "AOOOOOO " << level_new << " " << n_act_pts << " " << reg << std::endl;
+    insertRegInVec(reg, regvec_mat_.regs_[level_new][n_act_pts] );
+    reg->num_forbid_subregs_=n_act_pts;
+
+    // update region at higher level
+    if(level_new<reg_level-1){
+      Region* reg_new = updateRegion(reg);
+      reg->parent_=reg_new;
+      if(reg_new!=nullptr){
+        assert(checkElementInVec(reg_new->subregions_, reg));
+        assert(checkElementInVec(reg->parent_->subregions_, reg));
+      }
+    }
+  }
+  // otherwise
+  else{
+    // check if subregion is already present
+    bool subreg_exists = checkElementInVec( reg->subregions_, reg_old);
+    // otherwise
+    if(!subreg_exists){
+      // insert subregion
+      insertRegInVec(reg_old, reg->subregions_ );
+    }
+
+    if( reg_old->var_ < reg->var_ ){
+      reg->var_ = reg_old->var_;
+    }
+  }
+
+
+  return reg;
+}
+
+bool CandidatesActivator::updateLeafRegion(CandidateProjected* cand_proj){
+
+  int row_new = (int)(trunc(cand_proj->pixel_.y()));
+  int col_new = (int)(trunc(cand_proj->pixel_.x()));
+
+  // if there is an active point on same region, return false
+  if(actptpresencemat_vec_.actptpresencemat_vec_[0]->mat_[row_new][col_new])
+    return false;
+
+  Region*& reg = regmat_vec_.regionsmat_vec_[0]->mat_[row_new][col_new];
+
+  // if region doesn't exists yet
+  if(reg==nullptr){
+    // create region
+    reg = new Region(cand_proj);
+    // push reg in regvec_mat_
+    regvec_mat_.regs_[0][0].push_back(reg);
+
+    // update region at higher level
+    Region* reg_new = updateRegion(reg);
+    reg->parent_=reg_new;
+    assert(checkElementInVec(reg_new->subregions_, reg));
+    assert(checkElementInVec(reg->parent_->subregions_, reg));
+  }
+  // otherwise
+  else{
+    if( cand_proj->cand_->invdepth_var_ < reg->var_ ){
+      reg->cand_proj_ = cand_proj;
+      reg->var_ = cand_proj->cand_->invdepth_var_;
+    }
+  }
+
+
+}
+
+void CandidatesActivator::rebuild(){
+
+  // iterate through all candidates proj
+  for(int i=dso_->frame_current_->points_container_->candidates_projected_.size()-1; i>=0; i--  ){
+    CandidateProjected* cand_proj = dso_->frame_current_->points_container_->candidates_projected_[i];
+    updateLeafRegion(cand_proj);
+
+  }
+
+}
+
+void CandidatesActivator::clearAll(){
+  actptpresencemat_vec_.clear();
+  regmat_vec_.clear();
+  regvec_mat_.clear();
+}
+
 
 void CandidatesActivator::activateCandidate(CandidateProjected* cand_proj){
   // remove projected candidate and candidate from vectors
@@ -299,23 +284,118 @@ void CandidatesActivator::activateCandidate(CandidateProjected* cand_proj){
 
 }
 
-void CandidatesActivator::removeEmptyRegion(Region* reg){
-  if(reg->candidates_projected_.empty()){
-    // pass through subregs
+void CandidatesActivator::clearParentIfEmpty( Region* reg){
 
-    Region* reg_curr = reg;
-    for( int subreg_lev=2; subreg_lev<=reg_level-1; subreg_lev++){
+  if(reg->cand_proj_!=nullptr)
+  std::cout << reg->cand_proj_->cam_->name_ << std::endl;
 
-      if(reg_curr->parent_->subregions_.size()<=1){
-        removeFromVecByElement(reg_curr->parent_->subregions_, reg_curr);
+  assert(!reg->removed_);
+
+  std::cout << "clear " << reg->level_  << " " << reg->num_forbid_subregs_  <<  " " << reg << " " << reg->row_ <<" "<< reg->col_ << " " << reg->subregions_.empty() << std::endl;
+  if(reg->subregions_.empty()){
+    // remove from regvecmat
+    assert(checkElementInVec(regvec_mat_.regs_[reg->level_][reg->num_forbid_subregs_], reg));
+    removeFromVecByElement(regvec_mat_.regs_[reg->level_][reg->num_forbid_subregs_], reg);
+    assert(!checkElementInVec(regvec_mat_.regs_[reg->level_][reg->num_forbid_subregs_], reg));
+
+    if( reg->parent_!=nullptr ){
+
+      // std::cout << "clear proj to reg " << reg << " " << reg->subregions_.size() << " " << reg->level_ << std::endl;
+      reg->removed_=true;
+
+      // TODO
+      // if current region has no active points yet
+      if(!reg->has_active_pts_){
+        // it will have an active point
+        reg->has_active_pts_=true;
+        // the parent have to be shifted
+        if( j_<regvec_mat_.regs_[i_].size()-1 && !reg->subregions_.empty()){
+          insertRegInVec( reg->parent_, regvec_mat_.regs_[reg->parent_->level_][reg->parent_->num_forbid_subregs_+1] );
+          reg->parent_->num_forbid_subregs_+=1;
+        }
       }
-      else
-        break;
-      reg_curr = reg_curr->parent_;
+
+      // std::cout << "porco " << std::endl;
+      // remove from parent
+      assert(checkElementInVec(reg->parent_->subregions_, reg));
+      removeFromVecByElement(reg->parent_->subregions_, reg);
+      assert(!checkElementInVec(reg->parent_->subregions_, reg));
+
+      // std::cout << "dio " << std::endl;
+
+
+
+      // std::cout << "cane " << std::endl;
+
+      clearParentIfEmpty( reg->parent_ );
 
     }
   }
 }
+
+
+CandidateProjected* CandidatesActivator::getCandProjFromReg( Region* reg ){
+
+  std::cout << "reg to proj " << reg << " " << reg->subregions_.size() << " " << reg->level_ << std::endl;
+
+  if(reg->cand_proj_==nullptr){
+    assert(!reg->subregions_.empty());
+
+    return getCandProjFromReg( reg->subregions_.front() );
+  }
+  else{
+
+    // clear from parent if there are no more subregions
+    clearParentIfEmpty( reg );
+    return reg->cand_proj_;
+  }
+}
+
+CandidateProjected* CandidatesActivator::getNextCandProj(){
+
+
+  for(; i_>=0; i_--){
+    for(; j_<regvec_mat_.regs_[i_].size(); j_++){
+
+      std::vector<Region*>& v = regvec_mat_.regs_[i_][j_];
+      std::cout << i_ << " " << j_ << " " << regvec_mat_.regs_[i_][j_].size() << std::endl;
+      if(v.empty()){
+        break;
+      }
+      Region* reg = v.front();
+      // v.erase(v.begin());
+
+      // from reg to cand proj
+      CandidateProjected* cand_proj = getCandProjFromReg( reg );
+
+      // if(i_>0 && j_<regvec_mat_.regs_[i_].size()-1 && !reg->subregions_.empty()){
+      //   insertRegInVec( reg, regvec_mat_.regs_[i_][j_+1] );
+      //   reg->num_forbid_subregs_+=1;
+      // }
+      assert(cand_proj != nullptr);
+
+      return cand_proj;
+
+    }
+    j_=0;
+  }
+  return nullptr;
+}
+
+
+
+void CandidatesActivator::insertRegInVec(Region* reg, std::vector<Region*>& v ){
+
+  auto lb_cmp = [](Region* const & x, float var) -> bool
+    { return x->var_ < var; };
+
+  auto it = std::lower_bound(v.begin(), v.end(), reg->var_, lb_cmp);
+  v.insert ( it , reg );
+  assert(checkElementInVec(v,reg));
+
+
+}
+
 
 
 void CandidatesActivator::activateCandidates(){
@@ -325,89 +405,36 @@ void CandidatesActivator::activateCandidates(){
 
   double t_start=getTime();
 
-  reset();
+  clearAll();
+  actptpresencemat_vec_.reset(); // update actpt regions
+  // for( ActptpresenceMat* a : actptpresencemat_vec_.actptpresencemat_vec_)
+  //   printActPresenceMat(a);
 
-  // printActPresenceMat(actptpresencemat_vec_.actptpresencemat_vec_[0]);
-  // printCandPresenceMat();
+  rebuild();  // update all regions
 
+  // for( RegionsMat* r : regmat_vec_.regionsmat_vec_)
+  //   printRegionsMat(r);
+
+  int num_candidates_available=dso_->frame_current_->points_container_->candidates_projected_.size();
+  int num_candidates_activated=0;
   int num_candidates_to_activate = max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size();
-  int num_candidates_to_activate_old = num_candidates_to_activate;
 
-  int num_candidates_activated = 0;
-  for(int level=reg_level-1; level>0; level--){
-    for(int i=0; i<4; i++){
+  i_=regvec_mat_.regs_.size()-1;
+  j_=0;
 
-      while(regvec_mat_.regs_[level][i].size()>0){
+  for(int i=0; i<num_candidates_to_activate; i++){
+    // std::cout << i << "/" << num_candidates_to_activate << std::endl;
+    CandidateProjected* cand_proj = getNextCandProj();
+    if( cand_proj == nullptr )
+      break;
 
-        if(num_candidates_to_activate<=0){
-          level=0;
-          i=4;
-          break;
-        }
+    activateCandidate(cand_proj);
+    num_candidates_activated++;
 
-        Region* reg = regvec_mat_.regs_[level][i].back();
-        regvec_mat_.regs_[level][i].pop_back();
-        assert(reg->candidates_projected_.size()<=4);
-
-        if(level>1){
-
-          // remove subregion
-          Region* subreg = reg->subregions_.back();
-          reg->subregions_.pop_back();
-          // if there are still subregions, push in regvec matrix
-          if(reg->subregions_.size()>0){
-            reg->num_forbid_subregs_++;
-            if(reg->num_forbid_subregs_<4){
-              regvec_mat_.regs_[level][reg->num_forbid_subregs_].push_back(reg);
-              reg->idx_regvecmat_=regvec_mat_.regs_[level][reg->num_forbid_subregs_].size()-1;
-            }
-          }
-          // pass through subregs
-          for( int subreg_lev=subreg->level_; subreg_lev>1; subreg_lev--){
-            removeFromVecByIdx(regvec_mat_.regs_[subreg->level_][subreg->num_forbid_subregs_],subreg->idx_regvecmat_);
-            subreg=subreg->subregions_.back();
-          }
-
-          if(subreg->candidates_projected_.empty())
-            continue;
-          // activate candidate
-          CandidateProjected* cand_proj = subreg->candidates_projected_[0];
-          activateCandidate(cand_proj);
-          num_candidates_activated++;
-
-          // remove proj cand from subreg
-          subreg->candidates_projected_.erase(subreg->candidates_projected_.begin());
-          // removeEmptyRegion(subreg);
-        }
-        else{
-          if(reg->candidates_projected_.size()>0){
-            assert(i<=4);
-
-            reg->num_forbid_subregs_++;
-            if(reg->num_forbid_subregs_<4){
-              regvec_mat_.regs_[level][reg->num_forbid_subregs_].push_back(reg);
-              reg->idx_regvecmat_=regvec_mat_.regs_[level][reg->num_forbid_subregs_].size()-1;
-            }
-          }
-
-          if(reg->candidates_projected_.empty())
-            continue;
-          // activate candidate
-          CandidateProjected* cand_proj = reg->candidates_projected_.back();
-          activateCandidate(cand_proj);
-          num_candidates_activated++;
-
-          // remove proj cand from reg
-          reg->candidates_projected_.pop_back();
-          // removeEmptyRegion(reg);
-        }
-
-        // num_current_active_points_++;
-        num_candidates_to_activate--;
-      }
-
-    }
   }
+
+
+
 
   // iterate through keyframes (except last)
   for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
@@ -419,8 +446,9 @@ void CandidatesActivator::activateCandidates(){
   double t_end=getTime();
   int deltaTime=(t_end-t_start);
   sharedCoutDebug("   - Candidates activation: " + std::to_string(deltaTime)+" ms");
+  sharedCoutDebug("       - N candidates to activate: " + std::to_string(num_candidates_to_activate) );
+  sharedCoutDebug("       - N candidates avilable: " + std::to_string(num_candidates_available) );
   sharedCoutDebug("       - Candidates activated: "+ std::to_string(num_candidates_activated) );
-  sharedCoutDebug("       - N candidates to activate: " + std::to_string(num_candidates_to_activate_old) );
   sharedCoutDebug("       - Current active points: " + std::to_string(dso_->frame_current_->points_container_->active_points_projected_.size()) );
 
 }
@@ -439,15 +467,19 @@ void CandidatesActivator::printActPresenceMat(ActptpresenceMat* actptpresencemat
   cv::waitKey(0);
 }
 
-void CandidatesActivator::printCandPresenceMat(){
+void CandidatesActivator::printRegionsMat(RegionsMat* regionsmat){
 
-  Image<float>* new_img = new Image<float>("cands mat");
-  new_img->initImage(candprojpresencemat_.nrows_, candprojpresencemat_.ncols_);
+  Image<float>* new_img = new Image<float>("regions mat");
+  new_img->initImage(regionsmat->nrows_, regionsmat->ncols_);
   new_img->setAllPixels(1);
-  for( int i = 0; i < candprojpresencemat_.nrows_; i++ ) {
-    for( int j = 0; j < candprojpresencemat_.ncols_; j++ ) {
-        if (candprojpresencemat_.mat_[i][j])
-          new_img->setPixel(i,j,0);
+  for( int i = 0; i < regionsmat->nrows_; i++ ) {
+    for( int j = 0; j < regionsmat->ncols_; j++ ) {
+      if( regionsmat->mat_[i][j]==nullptr )
+        continue;
+
+      if (regionsmat->mat_[i][j]->subregions_.size()>0 || regionsmat->mat_[i][j]->cand_proj_!=nullptr ){
+        new_img->setPixel(i,j,0);
+      }
     }
   }
   new_img->show(2);

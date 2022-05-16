@@ -8,25 +8,51 @@ class Dso;
 class Region{
   public:
     // ********** members **********
-    int num_forbid_subregs_;
+    int row_;
+    int col_;
     int level_;
-    int idx_regvecmat_;
-
-    std::vector<CandidateProjected*> candidates_projected_;
-    std::vector<Region*> subregions_;
     Region* parent_;
+    bool removed_;
+    bool has_active_pts_;
+
+    std::vector<Region*> subregions_;
+    int num_forbid_subregs_;
+    float var_;
+
+    CandidateProjected* cand_proj_;
 
     // ********** constructor **********
-    Region(int level, int num_forbid_subregs):
-    num_forbid_subregs_(num_forbid_subregs)
-    ,level_(level)
-    {
+    // create region (leaf) from cand proj
+    Region(CandidateProjected* cand_proj):
+    row_(trunc(cand_proj->pixel_.y())),
+    col_(trunc(cand_proj->pixel_.x())),
+    level_(0),
+    num_forbid_subregs_(0),
+    cand_proj_(cand_proj),
+    var_(cand_proj->cand_->invdepth_var_),
+    parent_(nullptr),
+    has_active_pts_(false),
+    removed_(false)
+    {}
 
+    // create region from Region old
+    Region(Region* reg_old):
+    row_(trunc(reg_old->row_/2)),
+    col_(trunc(reg_old->col_/2)),
+    level_(reg_old->level_+1),
+    num_forbid_subregs_(0),
+    cand_proj_(nullptr),
+    var_(reg_old->var_),
+    parent_(nullptr),
+    has_active_pts_(false),
+    removed_(false)
+
+    {
+      subregions_.push_back(reg_old);
     }
 
     // ********** methods **********
-    void pushCandidateProj(CandidateProjected* cand_proj);
-    void pushSubreg(Region* subreg);
+
 
 };
 
@@ -38,7 +64,6 @@ class RegVecMat{
     CandidatesActivator* cand_activator_;
     // Dso* dso_;
     std::vector<std::vector<std::vector<Region*>>> regs_;
-    bool updated_;
 
     // ********** constructor **********
     RegVecMat(CandidatesActivator* cand_activator):
@@ -53,34 +78,6 @@ class RegVecMat{
     void clear();
 };
 
-class CandprojpresenceMat{
-  public:
-
-  // ********** members **********
-    unsigned int nrows_;
-    unsigned int ncols_;
-    bool** mat_;
-
-    // ********** constructor **********
-    CandprojpresenceMat(Dso* dso)
-    {
-      init(dso);
-    }
-
-    ~CandprojpresenceMat(){
-      for( int i = 0; i < nrows_; i++ ) {
-        delete[] mat_[i];
-      }
-      delete[] mat_;
-
-    }
-
-
-    // ********** methods **********
-    void init(Dso* dso);
-    void clear();
-
-};
 
 class ActptpresenceMat{
   public:
@@ -126,7 +123,6 @@ class ActptpresenceMatVec{
     // ********** members **********
     Dso* dso_;
     std::vector<ActptpresenceMat*> actptpresencemat_vec_;
-    bool updated_ = false;
 
     // ********** constructor **********
     ActptpresenceMatVec(Dso* dso):
@@ -182,9 +178,10 @@ class RegionsMat{
 
 
       // ********** methods **********
-      RegionsMat* getHigherLevel();
-      bool checkRegion(int row, int col);
+
+
       void clear();
+
       // bool pushRegion(int row, int col, Region*);
 
 };
@@ -213,9 +210,8 @@ class CandidatesActivator{
     ActptpresenceMatVec actptpresencemat_vec_;
     RegMatVec regmat_vec_;
     RegVecMat regvec_mat_;
-    CandprojpresenceMat candprojpresencemat_;
-
-
+    int i_;
+    int j_;
 
     // ********** constructor **********
     CandidatesActivator(Dso* dso):
@@ -223,19 +219,26 @@ class CandidatesActivator{
     ,actptpresencemat_vec_(dso_)
     ,regmat_vec_(dso_)
     ,regvec_mat_(this)
-    ,candprojpresencemat_(dso_)
     {};
 
     // ********** methods **********
-    void reset();
-    // void activateCandidateFromRegion();
+    void clearAll();
+    void rebuild();
+    bool updateLeafRegion(CandidateProjected* cand_proj);
+    Region* updateRegion(Region* reg_old);
+
+    CandidateProjected* getNextCandProj();
+    CandidateProjected* getCandProjFromReg( Region* reg);
+    void clearParentIfEmpty( Region* reg);
+
     void removeCand(CandidateProjected* cand_proj);
     void activateCandidate(CandidateProjected* cand_proj);
     void activateCandidates();
-    void removeEmptyRegion(Region* reg);
-    void printCandPresenceMat();
+    void insertRegInVec(Region* reg, std::vector<Region*>& v );
+
     void printActPresenceMat(ActptpresenceMat* actptpresencemat);
-    // void activateCandidates();
+    void printRegionsMat(RegionsMat* regionsmat);
+
     // void collectRegions();
     // void collectRegion(int level);
     // void addKeyframe(bool fixed);

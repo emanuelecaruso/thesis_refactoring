@@ -3,14 +3,14 @@
 
 // debug parameters
 bool debug_initialization=false;
-bool debug_mapping=true;
+bool debug_mapping=false;
 bool debug_tracking=false;
 bool debug_optimization= false;
 bool use_spectator= true;
 
 // code parameters
-bool do_marginalization = false;
-bool first_2_active_kfs_fixed = true;
+bool do_marginalization = true;
+bool first_2_active_kfs_fixed = false;
 bool marg_pts_in_marg_kf = true;
 bool take_gt_poses=false;
 bool take_gt_points=false;
@@ -29,12 +29,13 @@ bool get_current_frame=false;
 int candidate_level= 0;
 int reg_level=candidate_level+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 // float grad_threshold=0.1;
-float grad_threshold=0.02;
+float grad_threshold=0.05;
 int num_candidates=2000;
 
 // mapping
 float cost_threshold=0.7;
-float g_th=0.02;
+// float g_th=0.02;
+float g_th=0.04;
 float var_threshold= 0.1;
 // float var_threshold= 1;
 // float der_threshold=0.002;
