@@ -60,6 +60,7 @@ class LinSysBlocks : public LinSys{
     Eigen::VectorXf H_pp_;
     Eigen::VectorXf b_c_;
     Eigen::VectorXf b_p_;
+    Eigen::VectorXf omega_;
 
 
     // ********** constructor **********

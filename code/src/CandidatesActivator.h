@@ -78,6 +78,7 @@ class CandprojpresenceMat{
 
     // ********** methods **********
     void init(Dso* dso);
+    void clear();
 
 };
 
@@ -232,6 +233,8 @@ class CandidatesActivator{
     void activateCandidate(CandidateProjected* cand_proj);
     void activateCandidates();
     void removeEmptyRegion(Region* reg);
+    void printCandPresenceMat();
+    void printActPresenceMat(ActptpresenceMat* actptpresencemat);
     // void activateCandidates();
     // void collectRegions();
     // void collectRegion(int level);

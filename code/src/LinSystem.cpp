@@ -137,8 +137,7 @@ float Meas::getWeight(){
   // std::cout << huber_threshold << std::endl;
   assert(std::isfinite(weight_mest));
 
-  // float  weight = weight_mest*var_;
-
+  // float  weight = weight_mest*(1.0/var_);
   float weight = weight_mest;
 
   // return weight;
@@ -155,12 +154,14 @@ void LinSysBlocks::resize(int c_size, int p_size){
   H_pp_.resize(p_size);
   b_c_.resize(c_size);
   b_p_.resize(p_size);
+  omega_.resize(p_size);
 
   H_cc_.setZero();
   H_cp_.setZero();
   H_pp_.setZero();
   b_c_.setZero();
   b_p_.setZero();
+  omega_.setZero();
 
 }
 
@@ -170,7 +171,7 @@ void LinSysBlocks::reset(){
   p_size_=0;
   H_cc_.resize(0,0);
   H_cp_.resize(0,0);
-  H_pp_.resize(0,0);
+  H_pp_.resize(0);
   b_c_.resize(0);
   b_p_.resize(0);
 }
@@ -181,6 +182,7 @@ void LinSysBlocks::clear(){
   H_cp_.setZero();
   H_pp_.setZero();
   b_p_.setZero();
+  omega_.setZero();
 
 }
 

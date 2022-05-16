@@ -53,6 +53,8 @@ class Candidate : public Point{
   pixelIntensity c_;
   pixelIntensity magn_cd_;
   pixelIntensity phase_cd_;
+
+  float cost_threshold_;
   // CameraForMapping* cam_;
   // int level_;
   // pxl pixel_;
@@ -107,6 +109,9 @@ public:
   pixelIntensity c_;
   pixelIntensity magn_cd_;
   int p_idx_;
+  bool new_;
+  float cost_threshold_;
+
   // current guess
   // invdepth_(cand->invdepth_),
   // p_incamframe_( new Eigen::Vector3f ),
@@ -121,6 +126,8 @@ public:
   ,c_(cand->c_)
   ,magn_cd_(cand->magn_cd_)
   ,p_idx_(-1)
+  ,new_(true)
+  ,cost_threshold_(cand->cost_threshold_)
   {
     updateInvdepthVarAndP(cand->invdepth_, cand->invdepth_var_);
   }
@@ -233,6 +240,7 @@ class PointsContainer{
     std::vector<ActivePoint*>& getActivePoints(int level);
     void showCandidates();
     void showProjectedCandidates();
+    void showProjectedCandidates( const std::string& name );
     void showActivePoints();
     void showProjectedActivePoints();
     void showProjectedActivePoints( const std::string& name );

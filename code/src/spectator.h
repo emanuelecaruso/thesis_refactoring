@@ -30,7 +30,7 @@ class Spectator{
     // ********** methods **********
     void spectateDso();
     void renderState();
-    void showSpectator();
+    void showSpectator(int i=0);
 
   private:
 

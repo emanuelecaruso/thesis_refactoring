@@ -86,8 +86,10 @@ void Dso::initialize(){
       // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
       // points_handler_->sampleCandidates();
       // points_handler_->showCandidates();
-      // points_handler_->showProjectedCandidates();
-      // points_handler_->showProjectedActivePoints();
+      // points_handler_->projectActivePointsOnLastFrame();
+
+      points_handler_->showProjectedCandidates();
+      points_handler_->showProjectedActivePoints();
     }
 
     to_initialize_=false;
@@ -109,6 +111,9 @@ bool Dso::doDso(){
     // track existing candidates
     points_handler_->trackCandidates(take_gt_points);
 
+    points_handler_->projectCandidatesOnLastFrame();
+    points_handler_->showProjectedCandidates( "cands proj 0/1");
+
     // activate points
     candidates_activator_->activateCandidates();
 
@@ -120,8 +125,10 @@ bool Dso::doDso(){
       // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
       // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
       // points_handler_->showCandidates();
-      points_handler_->showProjectedCandidates();
-      points_handler_->showProjectedActivePoints();
+      points_handler_->projectCandidatesOnLastFrame();
+      points_handler_->projectActivePointsOnLastFrame();
+      points_handler_->showProjectedCandidates( "cands proj 1/1");
+      points_handler_->showProjectedActivePoints(" act pts proj");
     }
   }
 
@@ -132,8 +139,9 @@ bool Dso::doDso(){
 
 
   if(use_spectator){
+    // points_handler_->showProjectedActivePoints("last kf");
     spectator_->renderState();
-    spectator_->showSpectator();
+    spectator_->showSpectator(1);
   }
 
   return true;

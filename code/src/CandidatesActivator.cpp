@@ -4,9 +4,16 @@
 #include "dso.h"
 
 void Region::pushCandidateProj(CandidateProjected* cand_proj){
-  auto it = std::find (candidates_projected_.begin(), candidates_projected_.end(), cand_proj);
-  assert(it == candidates_projected_.end());
-  candidates_projected_.push_back(cand_proj);
+  auto it_ = std::find (candidates_projected_.begin(), candidates_projected_.end(), cand_proj);
+  assert(it_ == candidates_projected_.end());
+
+  auto lb_cmp = [](CandidateProjected* const & x, float d) -> bool
+    { return x->cand_->invdepth_var_ < d; };
+
+  auto it = std::lower_bound(candidates_projected_.begin(), candidates_projected_.end(), cand_proj->cand_->invdepth_var_, lb_cmp);
+  candidates_projected_.insert ( it , cand_proj );
+
+  // candidates_projected_.push_back(cand_proj);
 }
 
 void Region::pushSubreg(Region* subreg){
@@ -20,6 +27,13 @@ void CandprojpresenceMat::init(Dso* dso){
   mat_=new bool*[nrows_];
   for( int i = 0; i < nrows_; i++ ) {
     mat_[i] = new bool[ncols_];
+  }
+  clear();
+}
+
+void CandprojpresenceMat::clear(){
+
+  for( int i = 0; i < nrows_; i++ ) {
     for( int j = 0; j < ncols_; j++ ) {
         mat_[i][j] = false;
     }
@@ -156,10 +170,10 @@ void RegVecMat::clear(){
 }
 
 void RegVecMat::reset(){
-  if(updated_)
+  // if(updated_)
     clear();
 
-  for(int i=0; i<cand_activator_->dso_->frame_current_->points_container_->candidates_projected_.size(); i++  ){
+  for(int i=cand_activator_->dso_->frame_current_->points_container_->candidates_projected_.size()-1; i>=0; i--  ){
   // for(CandidateProjected* cand_proj : cand_activator_->dso_->frame_current_->points_container_->candidates_projected_ ){
     CandidateProjected* cand_proj = cand_activator_->dso_->frame_current_->points_container_->candidates_projected_[i];
     Region* subreg;
@@ -248,11 +262,8 @@ void ActptpresenceMatVec::reset(){
 
 
 void CandidatesActivator::reset(){
-  // actptpresencemat_vec_.clear();
-  // regmat_vec_->clear();
-  // regvec_mat_.clear();
   regmat_vec_.clear();
-
+  candprojpresencemat_.clear();
   actptpresencemat_vec_.reset();
   regvec_mat_.reset();
 }
@@ -315,11 +326,17 @@ void CandidatesActivator::activateCandidates(){
   double t_start=getTime();
 
   reset();
+
+  // printActPresenceMat(actptpresencemat_vec_.actptpresencemat_vec_[0]);
+  // printCandPresenceMat();
+
   int num_candidates_to_activate = max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size();
+  int num_candidates_to_activate_old = num_candidates_to_activate;
 
   int num_candidates_activated = 0;
   for(int level=reg_level-1; level>0; level--){
     for(int i=0; i<4; i++){
+
       while(regvec_mat_.regs_[level][i].size()>0){
 
         if(num_candidates_to_activate<=0){
@@ -354,12 +371,12 @@ void CandidatesActivator::activateCandidates(){
           if(subreg->candidates_projected_.empty())
             continue;
           // activate candidate
-          CandidateProjected* cand_proj = subreg->candidates_projected_.back();
+          CandidateProjected* cand_proj = subreg->candidates_projected_[0];
           activateCandidate(cand_proj);
           num_candidates_activated++;
 
           // remove proj cand from subreg
-          subreg->candidates_projected_.pop_back();
+          subreg->candidates_projected_.erase(subreg->candidates_projected_.begin());
           // removeEmptyRegion(subreg);
         }
         else{
@@ -387,7 +404,6 @@ void CandidatesActivator::activateCandidates(){
 
         // num_current_active_points_++;
         num_candidates_to_activate--;
-
       }
 
     }
@@ -402,7 +418,38 @@ void CandidatesActivator::activateCandidates(){
 
   double t_end=getTime();
   int deltaTime=(t_end-t_start);
-  sharedCoutDebug("   - Candidates activated: "+ std::to_string(num_candidates_activated) + ", curr n active points: " + std::to_string(dso_->frame_current_->points_container_->active_points_projected_.size()) + ", " + std::to_string(deltaTime)+" ms");
+  sharedCoutDebug("   - Candidates activation: " + std::to_string(deltaTime)+" ms");
+  sharedCoutDebug("       - Candidates activated: "+ std::to_string(num_candidates_activated) );
+  sharedCoutDebug("       - N candidates to activate: " + std::to_string(num_candidates_to_activate_old) );
+  sharedCoutDebug("       - Current active points: " + std::to_string(dso_->frame_current_->points_container_->active_points_projected_.size()) );
 
+}
+void CandidatesActivator::printActPresenceMat(ActptpresenceMat* actptpresencemat){
 
+  Image<float>* new_img = new Image<float>("act presence mat");
+  new_img->initImage(actptpresencemat->nrows_, actptpresencemat->ncols_);
+  new_img->setAllPixels(1);
+  for( int i = 0; i < actptpresencemat->nrows_; i++ ) {
+    for( int j = 0; j < actptpresencemat->ncols_; j++ ) {
+        if (actptpresencemat->mat_[i][j])
+          new_img->setPixel(i,j,0);
+    }
+  }
+  new_img->show(2);
+  cv::waitKey(0);
+}
+
+void CandidatesActivator::printCandPresenceMat(){
+
+  Image<float>* new_img = new Image<float>("cands mat");
+  new_img->initImage(candprojpresencemat_.nrows_, candprojpresencemat_.ncols_);
+  new_img->setAllPixels(1);
+  for( int i = 0; i < candprojpresencemat_.nrows_; i++ ) {
+    for( int j = 0; j < candprojpresencemat_.ncols_; j++ ) {
+        if (candprojpresencemat_.mat_[i][j])
+          new_img->setPixel(i,j,0);
+    }
+  }
+  new_img->show(2);
+  cv::waitKey(0);
 }

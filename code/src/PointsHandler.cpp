@@ -11,12 +11,15 @@ bool PointsHandler::sampleCandidates(){
 
   int count = 0;
   int n_pixels_tot = dso_->frame_current_->cam_parameters_->resolution_x*dso_->frame_current_->cam_parameters_->resolution_y/(pow(4,candidate_level));
-  int reg_level = trunc(std::log( (float)(n_pixels_tot)/(num_candidates))/std::log(4))+1;
+  // int reg_level = trunc(std::log( (float)(n_pixels_tot)/(num_candidates))/std::log(4))+1;
   // int reg_level = trunc(std::log( (float)(n_pixels_tot)/(num_candidates))/std::log(4));
-  // int reg_level = trunc(std::log( (float)(n_pixels_tot)/(max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size()))/std::log(4));
+  int num = num_candidates;
+  // int num =(max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size())+1;
+
+  int reg_level = trunc(std::log( (float)(n_pixels_tot)/num)/std::log(4));
 
 
-  // std::cout << reg_level << std::endl;
+  std::cout << reg_level << std::endl;
   reg_level=std::min(reg_level,5);
   reg_level=std::max(reg_level,1);
 
@@ -61,7 +64,9 @@ bool PointsHandler::sampleCandidates(){
 
         pxl pixel = cvpoint2pxl(*maxLoc);
 
+        float mean = cv::mean(cropped_image)[0];
         Candidate* cand = new Candidate(dso_->frame_current_, pixel, candidate_level);
+        cand->cost_threshold_=mean+g_th;
 
         dso_->frame_current_->points_container_->candidates_.push_back(cand);
         img->setPixel(pixel,0);
@@ -74,7 +79,7 @@ bool PointsHandler::sampleCandidates(){
     }
 
     count+=num_cand_taken;
-    int num_cand_less = num_candidates-count;
+    int num_cand_less = num-count;
 
     if(!points_taken || num_cand_less<0)
       break;
@@ -85,7 +90,7 @@ bool PointsHandler::sampleCandidates(){
     reg_level+=diff;
     reg_level=std::min(reg_level,5);
     reg_level=std::max(reg_level,1);
-    // std::cout << reg_level << std::endl;
+    std::cout << reg_level << std::endl;
 
   }
 
@@ -98,6 +103,9 @@ bool PointsHandler::sampleCandidates(){
 
 void PointsHandler::showCandidates(){
   dso_->frame_current_->points_container_->showCandidates();
+}
+void PointsHandler::showProjectedCandidates(const std::string& name){
+  dso_->frame_current_->points_container_->showProjectedCandidates(name);
 }
 void PointsHandler::showProjectedCandidates(){
   dso_->frame_current_->points_container_->showProjectedCandidates();
@@ -169,34 +177,41 @@ void PointsHandler::trackCandidates(bool groundtruth){
 
   double t_start=getTime();
 
+  sharedCoutDebug("   - Candidates tracking: ");
+
   CameraForMapping* last_keyframe = dso_->cameras_container_->getLastActiveKeyframe();
-  n_cands_removed_=0;
-  n_cands_to_track_=0;
-  n_cands_var_too_high_=0;
-  n_cands_repeptitive_=0;
-  n_cands_no_min_=0;
-  n_cands_tracked_=0;
 
   // iterate through keyframes (except last)
   for (int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1; i++){
     CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
 
+
     if(groundtruth){
       trackCandidatesGroundtruth(keyframe);
     }
     else{
+
+      n_cands_removed_=0;
+      n_cands_to_track_=0;
+      n_cands_var_too_high_=0;
+      n_cands_repeptitive_=0;
+      n_cands_no_min_=0;
+      n_cands_tracked_=0;
+
       trackCandidates(keyframe, last_keyframe);
+
+      sharedCoutDebug("       - Keyframe: "+ keyframe->name_ );
+      sharedCoutDebug("           - total: " + std::to_string(n_cands_to_track_));
+      sharedCoutDebug("           - tracked: " + std::to_string(n_cands_tracked_));
+      sharedCoutDebug("           - removed: " + std::to_string(n_cands_removed_));
+      sharedCoutDebug("               - repetitive: " + std::to_string(n_cands_repeptitive_));
+      sharedCoutDebug("               - var too high: " + std::to_string(n_cands_var_too_high_));
+      sharedCoutDebug("               - no min: " + std::to_string(n_cands_no_min_));
     }
   }
 
   double t_end=getTime();
   sharedCoutDebug("   - Candidates tracked: " + std::to_string((int)(t_end-t_start)) + " ms");
-  sharedCoutDebug("       - total: " + std::to_string(n_cands_to_track_));
-  sharedCoutDebug("       - tracked: " + std::to_string(n_cands_tracked_));
-  sharedCoutDebug("       - removed: " + std::to_string(n_cands_removed_));
-  sharedCoutDebug("           - repetitive: " + std::to_string(n_cands_repeptitive_));
-  sharedCoutDebug("           - var too high: " + std::to_string(n_cands_var_too_high_));
-  sharedCoutDebug("           - no min: " + std::to_string(n_cands_no_min_));
 
 
 
@@ -241,39 +256,33 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
   float der = (uv_min-uv_max).norm()/((1.0/cand->depth_min_)-(1.0/cand->depth_max_));
   if(der<der_threshold){
     n_cands_var_too_high_++;
-    return false;
+    return true;
   }
 
   // create epipolar line
   EpipolarLine ep_segment( cam_couple->cam_m_, uv_min, uv_max, cand->level_) ;
 
+
   // search pixel in epipolar line
   CandTracker CandTracker(ep_segment, cand, cam_couple );
-  int min_not_found = CandTracker.searchMin();
-  switch (min_not_found){
+  int min_found = CandTracker.searchMin();
+  switch (min_found){
     case 0:{
-      n_cands_tracked_++;
-      break;
+      if(CandTracker.updateCand())
+        n_cands_tracked_++;
+      else
+        n_cands_var_too_high_++;
+
+      return true;
     }
     case 1:{
       n_cands_repeptitive_++;
-      break;
+      return false;
     }
     case 2:{
+      cand->cost_threshold_*1.1;
       n_cands_no_min_++;
-      break;
-    }
-  }
-  // if min has been found
-  if(min_not_found>0){
-    return false;
-  }
-  else{
-    if( CandTracker.updateCand() ){
       return true;
-    }else{
-      n_cands_var_too_high_++;
-      return false;
     }
   }
 }
@@ -281,39 +290,37 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
 float CandTracker::getStandardDeviation( ){
 
 
-  // GEOMETRIC DISPARITY ERROR
-  float g_dot_l; // squared scalar product between direction of gradient and ep_line -> |g| |l| cos(a)
-                 // since |g|, |l| =1 -> cos(angle between g and l)
-  float angle_g = phase_m;
-  float angle_l =ep_segment_.slope2angle();
-  if (angle_l<0)
-    angle_l+=2*PI;
-  float a = radiansSub(angle_g,angle_l);
-  float c_a = cos(a);
-  g_dot_l=abs(c_a);
-  // standard deviation epipolar line (fixed)
-  float sd_epline_geo = cand_->cam_->cam_parameters_->pixel_width/4;
-  // standard deviation disparity
-  float sd_disparity_geo = sd_epline_geo/(g_dot_l+0.1);
+  // // GEOMETRIC DISPARITY ERROR
+  // float g_dot_l; // squared scalar product between direction of gradient and ep_line -> |g| |l| cos(a)
+  //                // since |g|, |l| =1 -> cos(angle between g and l)
+  // float angle_g = phase_m;
+  // float angle_l =ep_segment_.slope2angle();
+  // if (angle_l<0)
+  //   angle_l+=2*PI;
+  // float a = radiansSub(angle_g,angle_l);
+  // float c_a = cos(a);
+  // g_dot_l=abs(c_a);
+  // // standard deviation epipolar line (fixed)
+  // float sd_epline_geo = cand_->cam_->cam_parameters_->pixel_width/4;
+  // // standard deviation disparity
+  // float sd_disparity_geo = sd_epline_geo/(g_dot_l+0.1);
+  //
+  //
+  // // PHOTOMETRIC ERROR
+  // // gradient on epline direction
+  // float magn_g = magn_m;
+  // float g_p = g_dot_l*magn_g;
+  // // standard deviation img noise
+  // // float sd_img_noise = sd_img_noise;
+  // float sd_img_noise = cand_->cam_->cam_parameters_->pixel_width/400;
+  // // standard deviation photometric
+  // float sd_disparity_photometric = abs(sd_img_noise/(g_p+0.01));
+  //
+  //
+  // // standard_deviation = 2*(sd_disparity_geo+sd_disparity_photometric+sd_epline_sampling);
+  // float standard_deviation = 2*(sd_disparity_geo+sd_disparity_photometric);
 
-
-  // PHOTOMETRIC ERROR
-  // gradient on epline direction
-  float magn_g = magn_m;
-  float g_p = g_dot_l*magn_g;
-  // standard deviation img noise
-  // float sd_img_noise = sd_img_noise;
-  float sd_img_noise = cand_->cam_->cam_parameters_->pixel_width/400;
-  // standard deviation photometric
-  float sd_disparity_photometric = abs(sd_img_noise/(g_p+0.01));
-
-
-  // standard_deviation = 2*(sd_disparity_geo+sd_disparity_photometric+sd_epline_sampling);
-  float standard_deviation = 2*(sd_disparity_geo+sd_disparity_photometric);
-  // standard_deviation = 2*(sd_disparity_photometric);
-  // standard_deviation = 2*(sd_disparity_geo);
-  // float standard_deviation = cand_->cam_->cam_parameters_->pixel_width;
-  // float standard_deviation = 0.00000000001;
+  float standard_deviation = cand_->cam_->cam_parameters_->pixel_width;
 
   return standard_deviation;
 }
@@ -344,13 +351,12 @@ bool CandTracker::updateCand(){
   cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), cand_->depth_min_, coord_min, ep_segment_.u_or_v);
   cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), cand_->depth_max_, coord_max, ep_segment_.u_or_v);
 
-  cand_->invdepth_var_= (1./cand_->depth_min_)-(1./cand_->depth_max_);
+  cand_->invdepth_var_= pow(((1./cand_->depth_min_)-(1./cand_->depth_max_))*0.5,2);
 
   if(cand_->invdepth_var_>var_threshold){
     return false;
   }
   return true;
-
 }
 
 int CandTracker::searchMin( ){
@@ -376,7 +382,8 @@ int CandTracker::searchMin( ){
     float cost=cost_magn+cost_phase;
     // float cost=cost_magn;
 
-    if(cost>cost_threshold){
+    if(cost>cand_->cost_threshold_){
+    // if(cost>cost_threshold){
       if(min_segment_reached){
         min_segment_leaved=true;
       }
@@ -384,6 +391,7 @@ int CandTracker::searchMin( ){
     }
     else{
 
+      // repetitive
       if(min_segment_leaved){
         return 1;
       }
@@ -399,6 +407,7 @@ int CandTracker::searchMin( ){
     }
   }
 
+  // no mins
   if(!min_segment_reached)
     return 2;
 
@@ -419,6 +428,7 @@ float CandTracker::getCostMagn(pxl& pixel){
   float cost_c = abs(c_m-c_r);
   float cost_magn_cd = abs(magn_m-magn_cd_r);
 
+  // thresh_= 0.03 ;
   // std::cout << "c_m " << c_m << " c_r " << c_r << " magn_m " << magn_m << " magn_cd_r " << magn_cd_r << "\n";
   // return cost_magn_cd;
   return intensity_coeff*cost_c+gradient_coeff*cost_magn_cd;

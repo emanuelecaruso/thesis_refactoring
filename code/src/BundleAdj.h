@@ -67,6 +67,8 @@ class BundleAdj{
     void marginalize();
     void setCamData();
     bool getMeasurements(ActivePoint* active_point, int i, std::vector<MeasBA*>* measurement_vector);
+    bool getMeasurementsInit(ActivePoint* active_point, int i, std::vector<MeasBA*>* measurement_vector);
+
     bool marginalizePoint(ActivePoint* active_point, CamCoupleContainer* cam_couple_container );
     void marginalizeKeyframe(CameraForMapping* keyframe);
     bool createPrior(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple);

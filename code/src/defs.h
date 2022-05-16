@@ -61,46 +61,6 @@ if ( std::isnan( v ) )
 }
 
 
-// inline Eigen::Isometry3f v2t(const Vector6f& t){
-//   Eigen::Isometry3f T;
-//   T.setIdentity();
-//   T.translation()=t.head<3>();
-//   float w=t.block<3,1>(3,0).squaredNorm();
-//   if (w<1) {
-//     w=sqrt(1-w);
-//     T.linear()=Eigen::Quaternionf(w, t(3), t(4), t(5)).toRotationMatrix();
-//   } else {
-//     T.linear().setIdentity();
-//   }
-//   return T;
-// }
-//
-// inline Vector6f t2v(const Eigen::Isometry3f& t){
-//   Vector6f v;
-//   v.head<3>()=t.translation();
-//   Eigen::Quaternionf q(t.linear());
-//   v.block<3,1>(3,0)=q.matrix().block<3,1>(1,0);
-//   if (q.w()<0)
-//     v.block<3,1>(3,0) *= -1.0f;
-//   return v;
-// }
-//
-// inline Eigen::Isometry2f v2t(const Eigen::Vector3f& t){
-//   Eigen::Isometry2f T;
-//   T.setIdentity();
-//   T.translation()=t.head<2>();
-//   float c = cos(t(2));
-//   float s = sin(t(2));
-//   T.linear() << c, -s, s, c;
-//   return T;
-// }
-//
-// inline Eigen::Vector3f t2v(const Eigen::Isometry2f& t){
-//   Eigen::Vector3f v;
-//   v.head<2>()=t.translation();
-//   v(2) = atan2(t.linear()(1,0), t.linear()(0,0));
-//   return v;
-// }
 
 inline Eigen::Matrix3f Rx(float rot_x){
   float c=cos(rot_x);
@@ -133,12 +93,6 @@ inline Eigen::Matrix3f Rz(float rot_z){
 }
 
 
-// inline Eigen::Isometry3f v2tEuler(const Vector6f& v){
-//   Eigen::Isometry3f T;
-//   T.linear()=Rx(v[3])*Ry(v[4])*Rz(v[5]);
-//   T.translation()=v.head<3>();
-//   return T;
-// }
 
 
 inline Eigen::Matrix3f skew(const Eigen::Vector3f& v){
@@ -220,13 +174,6 @@ typedef std::pair<int,int> IntPair;
 typedef std::vector<IntPair > IntPairVector;
 
 
-
-// inline float extractRollAngle(Eigen::Isometry3f& T){
-//   Eigen::Matrix3f R=T.linear();
-//   float r10 = R(1,0);
-//   float r00 = R(0,0);
-//   return atan2(r10,r00);
-// }
 
 #define PI 3.14159265
 #define EPS 0.00000000001
@@ -310,7 +257,6 @@ struct CamParameters{
   }
 
 };
-
 
 static bool debug_mode = 1;
 static std::mutex mu_cout;
@@ -690,7 +636,7 @@ inline void removeFromVecByElement(std::vector<T>& v, T element){
 }
 
 template <class T>
-inline int getIndex(std::vector<T> v, T element)
+inline int getIndex(std::vector<T> v, T& element)
 {
     auto it = std::find(v.begin(), v.end(), element);
 
@@ -701,6 +647,12 @@ inline int getIndex(std::vector<T> v, T element)
 
     return index;
 
+}
+
+template <class T>
+inline bool checkElementInVec(std::vector<T> v, T& element){
+
+  return std::count(v.begin(), v.end(), element);
 }
 
 inline void removeRowCol(Eigen::MatrixXf& matrix, unsigned int rowcolToRemove)

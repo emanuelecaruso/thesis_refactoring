@@ -43,6 +43,8 @@ extern float der_threshold;
 
 // mapping
 extern float cost_threshold;
+extern float g_th;
+
 extern float var_threshold;
 
 // keyframe selection
@@ -60,6 +62,7 @@ extern float damp_point_invdepth;
 extern float huber_threshold;
 extern float sat_threshold;
 extern float chi_occlusion_threshold;
+extern float total_error_thresh;
 extern float occlusion_valid_ratio_thresh;
 extern float valid_ratio_thresh;
 

@@ -47,14 +47,9 @@ void LinSysBA::reinitWithNewPoints(int n_points){
   H_pp_.resize(p_size_);
   b_p_.resize(p_size_);
   dx_p.resize(p_size_);
+  omega_.resize(p_size_);
 
   clear();
-  //
-  // H_cp_.setZero();
-  // H_pp_.setZero();
-  // b_p_.setZero();
-  // dx_c.setZero();
-  // dx_p.setZero();
 
   chi=0;
 }
@@ -124,6 +119,7 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
   // p
   H_pp_(p_idx) += measurement->J_d*weight*measurement->J_d;
 
+
   // ********* b *********
 
   // cam segment
@@ -139,6 +135,11 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
 
   // p
   b_p_(p_idx) += measurement->J_d*weight*measurement->error;
+
+
+  // variance
+
+  omega_(p_idx) += measurement->J_d*(1.0/measurement->var_)*measurement->J_d;
 
   return measurement->error*weight*measurement->error;
 }
@@ -209,8 +210,11 @@ void LinSysBA::updatePoints(){
 
         Eigen::VectorXf col = H_cp_.col(active_pt->p_idx_);
         int n = col.rows()-(std::count(col.data(), col.data() + col.size(), 0));
-        float var = ( 1.0/ ( (H_pp_[active_pt->p_idx_]/n)+1000 ) )+0.1;
-        // std::cout << var << " " << n <<  std::endl;
+        // float var = ( 1.0/ ( (H_pp_[active_pt->p_idx_]) ) )+10e-32;
+        // float var = ( 1.0/ ( (H_pp_[active_pt->p_idx_]) ) )+0.00000000001;
+        float var = (1.0/( (omega_(active_pt->p_idx_)/(n/6)) +0.00001))+0.00001;
+        // std::cout << var << " " << omega_(active_pt->p_idx_) << " " << n << std::endl;
+        // std::cout << H_pp_[active_pt->p_idx_] << " " << var << " " << n <<  std::endl;
 
         active_pt->updateInvdepthVarAndP( new_invdepth , var );
       }

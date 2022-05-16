@@ -16,8 +16,7 @@ void printBanner(const char** banner, std::ostream& os){
   }
 }
 
-// Simple parallel for used since this program do not yet support
-// parallel algorithms. `Func` takes the integer index.
+// Simple parallel for. `Func` takes the integer index.
 template <typename Func>
 void parallel_for(int begin, int end, Func&& func) {
   auto             futures  = std::vector<std::future<void>>{};

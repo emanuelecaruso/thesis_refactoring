@@ -45,11 +45,11 @@ void Spectator::renderState(){
 
 }
 
-void Spectator::showSpectator(){
+void Spectator::showSpectator(int i){
   spectator_image_->show(1);
   // if(!(debug_optimization))
   //   waitkey(1);
-  cv::waitKey(0);
+  cv::waitKey(i);
 
 }
 

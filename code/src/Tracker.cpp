@@ -4,7 +4,8 @@
 #include "CamCouple.h"
 #include "LinSystemTracking.h"
 #include "utils.h"
-
+#include <sstream>
+#include <iostream>
 
 void Tracker::trackCam(bool groundtruth){
   if(groundtruth){
@@ -61,7 +62,7 @@ bool Tracker::checkConvergence(float chi, int level){
 
   bool out = false;
   if(chi_history_.size()>0){
-    if ( abs(chi_history_.back()-chi) < conv_threshold+(conv_threshold*level*2) ){
+    if ( abs(chi_history_.back()-chi) < conv_threshold+(conv_threshold*level*10) ){
       out = true;
     }
   }
@@ -111,105 +112,105 @@ void Tracker::showProjectedActivePoints(int level){
 
 
 }
-
 void Tracker::trackCam(){
 
-  double deltaTime_tot = 0;
-  CameraForMapping* cam_m = dso_->frame_current_;
+    double deltaTime_tot = 0;
+    CameraForMapping* cam_m = dso_->frame_current_;
 
-  setInitialGuess();
+    setInitialGuess();
 
-  // create cam couple container
-  // CamCoupleContainer cam_couple_container(dso_,ALL_KFS_ON_LAST);
+    // create cam couple container
+    // CamCoupleContainer cam_couple_container(dso_,ALL_KFS_ON_LAST);
 
-  // create linear system
-  LinSysTracking lin_sys_tracking(dso_);
+    // create linear system
+    LinSysTracking lin_sys_tracking(dso_);
 
-  int iterations = 0;
+    int iterations = 0;
 
-  // iterate through levels
-  for (int level=coarsest_level-1; level>=0 ; level--){
-  // for (int level=0; level<1 ; level++){
+    // iterate through levels
+    for (int level=coarsest_level-1; level>=0 ; level--){
+    // for (int level=0; level<1 ; level++){
 
-    int iterations_increment = max_iterations_ls;
-    for(int iteration=0; iteration<max_iterations_ls; iteration++){
-    // while(true){
-      double t_start=getTime();
+      int iterations_increment = max_iterations_ls;
+      for(int iteration=0; iteration<max_iterations_ls; iteration++){
+      // while(true){
+        double t_start=getTime();
 
-      int n_meas =0;
+        int n_meas =0;
 
-      // iterate through keyframes (except last)
-      for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
-        CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
+        // iterate through keyframes (except last)
+        for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
+          CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
 
-        std::shared_ptr<CamCouple> cam_couple = std::make_shared<CamCouple>( cam_r, cam_m ) ;
+          std::shared_ptr<CamCouple> cam_couple = std::make_shared<CamCouple>( cam_r, cam_m ) ;
 
 
-        // select active points vector
-        // std::vector<ActivePoint*>& active_points = cam_r->points_container_->getActivePoints(level);
-        std::vector<ActivePoint*>& active_points = cam_r->points_container_->active_points_;
+          // select active points vector
+          // std::vector<ActivePoint*>& active_points = cam_r->points_container_->getActivePoints(level);
+          std::vector<ActivePoint*>& active_points = cam_r->points_container_->active_points_;
 
-        // iterate through active points (at current coarse level)
-        for (int j=0; j<active_points.size(); j++){
-          ActivePoint* active_point = active_points[j];
+          // iterate through active points (at current coarse level)
+          for (int j=0; j<active_points.size(); j++){
 
-          // get measurement
-          MeasTracking measurement(MeasTracking(active_point, cam_couple, level ));
+            ActivePoint* active_point = active_points[j];
 
-          if(measurement.valid_){
-          // if(measurement.valid_ && !measurement.occlusion_){
-            // update linear system with that measurement
-            measurement.loadJacobians(active_point);
-            lin_sys_tracking.addMeasurement(measurement);
-            n_meas++;
+            // get measurement
+            MeasTracking measurement(MeasTracking(active_point, cam_couple, level ));
+
+            if(measurement.valid_){
+            // if(measurement.valid_ && !measurement.occlusion_){
+              // update linear system with that measurement
+              measurement.loadJacobians(active_point);
+              lin_sys_tracking.addMeasurement(measurement);
+              n_meas++;
+            }
+
           }
 
         }
 
+
+        // assert(n_meas>0);
+        lin_sys_tracking.updateCameraPose();
+
+
+        double t_end=getTime();
+        deltaTime_tot+=(t_end-t_start);
+
+        // if(debug_tracking && dso_->frame_current_idx_>37){
+        if(debug_tracking ){
+
+          // std::cout << "level " << level << std::endl;
+          // std::cout << "level " << level << ", chi " << lin_sys_tracking.chi << std::endl;
+
+          dso_->points_handler_->projectActivePointsOnLastFrame();
+          // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
+          showProjectedActivePoints(level);
+          dso_->spectator_->renderState();
+          dso_->spectator_->showSpectator();
+
+        }
+        // cam_couple_container.update();
+
+        bool stop = false;
+
+
+        if (checkConvergence(lin_sys_tracking.chi, level)){
+          stop=iteration;
+          iterations_increment=iteration+1;
+          break;
+        }
+
+
+        lin_sys_tracking.clear();
+
+
       }
+      iterations+=iterations_increment;
 
-
-      assert(n_meas>0);
-      lin_sys_tracking.updateCameraPose();
-
-
-      double t_end=getTime();
-      deltaTime_tot+=(t_end-t_start);
-
-      // if(debug_tracking || dso_->frame_current_idx_>100){
-      if(debug_tracking ){
-
-        // std::cout << "level " << level << std::endl;
-        // std::cout << "level " << level << ", chi " << lin_sys_tracking.chi << std::endl;
-
-        dso_->points_handler_->projectActivePointsOnLastFrame();
-        // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
-        showProjectedActivePoints(level);
-        dso_->spectator_->renderState();
-        dso_->spectator_->showSpectator();
-
-      }
-      // cam_couple_container.update();
-
-      bool stop = false;
-
-
-      if (checkConvergence(lin_sys_tracking.chi, level)){
-        stop=iteration;
-        iterations_increment=iteration+1;
-        break;
-      }
-
-
-      lin_sys_tracking.clear();
-
-
+      chi_history_.clear();
     }
-    iterations+=iterations_increment;
 
-    chi_history_.clear();
-  }
-
-  sharedCoutDebug("   - Frame tracked, " + std::to_string(iterations) + " iterations, "+std::to_string((int)deltaTime_tot)+" ms");
+    sharedCoutDebug("   - Frame tracked, " + std::to_string(iterations) + " iterations, "+std::to_string((int)deltaTime_tot)+" ms");
 
 }

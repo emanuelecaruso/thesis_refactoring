@@ -32,6 +32,7 @@ class PointsHandler{
     // ********** methods **********
     void showCandidates();
     void showProjectedCandidates();
+    void showProjectedCandidates(const std::string& name);
     void showActivePoints();
     void showCoarseActivePoints(int level);
     void showProjectedActivePoints(const std::string& name);
@@ -61,6 +62,7 @@ class CandTracker{
     pixelIntensity magn_m;
     Eigen::Vector2f uv_;
     pxl pixel_;
+    float thresh_;
 
     // ********** constructor **********
     CandTracker( EpipolarLine& ep_segment,

@@ -299,16 +299,6 @@ class Image{
       return squared;
     }
 
-    inline Image<float>* getComponentSum() const{
-      Image< float >* intensity =new Image< float >("^intensity_"+name_);
-
-      std::vector<cv::Mat> channels_i(3);
-      split(image_, channels_i);
-
-      intensity->image_=channels_i[0]+channels_i[1]+channels_i[2];
-
-      return intensity;
-    }
 
     inline void drawCircle(const colorRGB& color, const cv::Point2f& point, int radius=2, int thickness=2){
       cv::circle	(	image_,point,radius,color, thickness);
