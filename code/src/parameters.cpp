@@ -5,7 +5,7 @@
 bool debug_initialization=false;
 bool debug_mapping=false;
 bool debug_tracking=false;
-bool debug_optimization= false;
+bool debug_optimization= true;
 bool use_spectator= true;
 
 // code parameters
@@ -14,8 +14,8 @@ bool first_2_active_kfs_fixed = false;
 bool marg_pts_in_marg_kf = true;
 bool take_gt_poses=false;
 bool take_gt_points=false;
-int guess_type=POSE_CONSTANT;
-// int guess_type=VELOCITY_CONSTANT;
+// int guess_type=POSE_CONSTANT;
+int guess_type=VELOCITY_CONSTANT;
 int opt_norm=HUBER;
 // int opt_norm=QUADRATIC;
 // int image_id=INTENSITY_ID;
@@ -29,11 +29,11 @@ bool get_current_frame=false;
 int candidate_level= 0;
 int reg_level=candidate_level+3;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 // float grad_threshold=0.1;
-float grad_threshold=0.05;
+float grad_threshold=0.02;
 int num_candidates=2000;
 
 // mapping
-float cost_threshold=0.7;
+// float cost_threshold=0.7;
 // float g_th=0.02;
 float g_th=0.04;
 float var_threshold= 0.1;
@@ -45,7 +45,7 @@ float der_threshold=0;
 int num_active_keyframes=7;
 float flow_dist_threshold=0.0001;
 // float flow_dist_threshold=0.0005;
-float percentage_marg_pts_threshold= 0.01;
+float percentage_marg_pts_threshold= 0.1;
 // float percentage_marg_pts_threshold= 0.5;
 
 // optimization
@@ -53,17 +53,18 @@ int max_iterations_ba=7;
 int max_num_active_points=2000;
 
 float intensity_coeff= 1;
-float gradient_coeff= 0.25;
+float gradient_coeff= 1;
 float phase_coeff= 1./(4.*PI);
 
-// float damp_point_invdepth= 10e30;
-float damp_point_invdepth= 1;
+float damp_cam= 0;
+// float damp_point_invdepth= FLT_MAX;
+float damp_point_invdepth= 10e3;
 float huber_threshold=(intensity_coeff*gradient_coeff)*0.02;
 // float sat_threshold=0.04;
 float sat_threshold=(intensity_coeff*gradient_coeff)*111111;
-float chi_occlusion_threshold=(intensity_coeff*gradient_coeff)*0.15;
+float chi_occlusion_threshold=(intensity_coeff*gradient_coeff)*0.2;
 // float total_error_thresh = 0.015;
-float total_error_thresh = (intensity_coeff*gradient_coeff)*0.4;
+float total_error_thresh = (intensity_coeff*gradient_coeff)*0.2;
 // float occlusion_valid_ratio_thresh= 0.5;
 float occlusion_valid_ratio_thresh= 1;
 float valid_ratio_thresh= 0.2;
@@ -99,5 +100,5 @@ float spec_width= 0.024;
 float spec_lens= 0.035;
 float spec_min_depth= 0.01;
 float spec_max_depth= 20;
-float spec_distance= 5;
+float spec_distance= 3;
 float rendered_cams_size= 0.01;

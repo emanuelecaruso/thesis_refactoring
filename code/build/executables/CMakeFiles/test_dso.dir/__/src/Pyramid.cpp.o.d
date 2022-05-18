@@ -1,9 +1,9 @@
 executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o: \
- /home/manu/Desktop/thesis_refactoring/code/src/Pyramid.cpp \
+ /home/emanuele/Scrivania/thesis_refactoring/code/src/Pyramid.cpp \
  /usr/include/stdc-predef.h \
- /home/manu/Desktop/thesis_refactoring/code/src/Pyramid.h \
- /home/manu/Desktop/thesis_refactoring/code/src/image.h \
- /home/manu/Desktop/thesis_refactoring/code/src/defs.h \
+ /home/emanuele/Scrivania/thesis_refactoring/code/src/Pyramid.h \
+ /home/emanuele/Scrivania/thesis_refactoring/code/src/image.h \
+ /home/emanuele/Scrivania/thesis_refactoring/code/src/defs.h \
  /usr/local/include/eigen3/Eigen/Core \
  /usr/local/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
  /usr/include/c++/7/new \
@@ -356,9 +356,9 @@ executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o: \
  /usr/local/include/opencv4/opencv2/opencv_modules.hpp \
  /usr/local/include/opencv4/opencv2/core.hpp \
  /usr/local/include/opencv4/opencv2/core/cvdef.h \
- /usr/local/include/opencv4/opencv2/core/version.hpp \
  /usr/local/include/opencv4/opencv2/core/hal/interface.h \
  /usr/local/include/opencv4/opencv2/core/cv_cpu_dispatch.h \
+ /usr/local/include/opencv4/opencv2/core/version.hpp \
  /usr/local/include/opencv4/opencv2/core/base.hpp \
  /usr/local/include/opencv4/opencv2/core/cvstd.hpp \
  /usr/local/include/opencv4/opencv2/core/cvstd_wrapper.hpp \
@@ -462,12 +462,16 @@ executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o: \
  /usr/local/include/opencv4/opencv2/imgcodecs.hpp \
  /usr/local/include/opencv4/opencv2/videoio.hpp \
  /usr/local/include/opencv4/opencv2/imgproc.hpp \
- /usr/local/include/opencv4/opencv2/imgproc/segmentation.hpp \
  /usr/local/include/opencv4/opencv2/ml.hpp \
  /usr/local/include/opencv4/opencv2/ml/ml.inl.hpp \
  /usr/local/include/opencv4/opencv2/objdetect.hpp \
  /usr/local/include/opencv4/opencv2/objdetect/detection_based_tracker.hpp \
  /usr/local/include/opencv4/opencv2/photo.hpp \
+ /usr/local/include/opencv4/opencv2/shape.hpp \
+ /usr/local/include/opencv4/opencv2/shape/emdL1.hpp \
+ /usr/local/include/opencv4/opencv2/shape/shape_transformer.hpp \
+ /usr/local/include/opencv4/opencv2/shape/hist_cost.hpp \
+ /usr/local/include/opencv4/opencv2/shape/shape_distance.hpp \
  /usr/local/include/opencv4/opencv2/stitching.hpp \
  /usr/local/include/opencv4/opencv2/stitching/warpers.hpp \
  /usr/local/include/opencv4/opencv2/stitching/detail/warpers.hpp \
@@ -491,13 +495,43 @@ executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o: \
  /usr/local/include/opencv4/opencv2/stitching/detail/seam_finders.hpp \
  /usr/local/include/opencv4/opencv2/stitching/detail/blenders.hpp \
  /usr/local/include/opencv4/opencv2/stitching/detail/camera.hpp \
+ /usr/local/include/opencv4/opencv2/superres.hpp \
+ /usr/local/include/opencv4/opencv2/superres/optical_flow.hpp \
  /usr/local/include/opencv4/opencv2/video.hpp \
  /usr/local/include/opencv4/opencv2/video/tracking.hpp \
  /usr/local/include/opencv4/opencv2/video/background_segm.hpp \
- /usr/include/dirent.h /usr/include/x86_64-linux-gnu/bits/dirent.h \
- /home/manu/Desktop/thesis_refactoring/code/src/camera.h \
- /home/manu/Desktop/thesis_refactoring/code/src/parameters.h \
- /home/manu/Desktop/thesis_refactoring/code/libs/json.hpp \
+ /usr/local/include/opencv4/opencv2/videostab.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/stabilizer.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/global_motion.hpp \
+ /usr/include/c++/7/fstream \
+ /usr/include/x86_64-linux-gnu/c++/7/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/7/bits/c++io.h \
+ /usr/include/c++/7/bits/fstream.tcc \
+ /usr/local/include/opencv4/opencv2/videostab/optical_flow.hpp \
+ /usr/local/include/opencv4/opencv2/cudaoptflow.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/motion_core.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/outlier_rejection.hpp \
+ /usr/local/include/opencv4/opencv2/cudaimgproc.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/motion_stabilizing.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/frame_source.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/log.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/inpainting.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/fast_marching.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/fast_marching_inl.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/deblurring.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/wobble_suppression.hpp \
+ /usr/local/include/opencv4/opencv2/videostab/ring_buffer.hpp \
+ /usr/local/include/opencv4/opencv2/cudaarithm.hpp \
+ /usr/local/include/opencv4/opencv2/cudabgsegm.hpp \
+ /usr/local/include/opencv4/opencv2/cudafeatures2d.hpp \
+ /usr/local/include/opencv4/opencv2/cudafilters.hpp \
+ /usr/local/include/opencv4/opencv2/cudaobjdetect.hpp \
+ /usr/local/include/opencv4/opencv2/cudastereo.hpp \
+ /usr/local/include/opencv4/opencv2/cudawarping.hpp /usr/include/dirent.h \
+ /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /home/emanuele/Scrivania/thesis_refactoring/code/src/camera.h \
+ /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h \
+ /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp \
  /usr/include/c++/7/ciso646 /usr/include/c++/7/iterator \
  /usr/include/c++/7/bits/stream_iterator.h /usr/include/c++/7/numeric \
  /usr/include/c++/7/bits/stl_numeric.h /usr/include/c++/7/forward_list \
@@ -511,4 +545,4 @@ executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o: \
  /usr/include/c++/7/bits/gslice.h /usr/include/c++/7/bits/gslice_array.h \
  /usr/include/c++/7/bits/mask_array.h \
  /usr/include/c++/7/bits/indirect_array.h \
- /home/manu/Desktop/thesis_refactoring/code/src/CameraForMapping.h
+ /home/emanuele/Scrivania/thesis_refactoring/code/src/CameraForMapping.h

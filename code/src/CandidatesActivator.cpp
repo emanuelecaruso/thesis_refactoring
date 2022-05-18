@@ -178,8 +178,6 @@ Region* CandidatesActivator::updateRegion(Region* reg_old){
     n_act_pts += actptpresencemat_vec_.actptpresencemat_vec_[reg_old->level_]->mat_[row_new*2+1][col_new*2+1];
     assert(n_act_pts<4);
     // insert in regvec_mat_
-    if(reg->row_==196 && reg->col_==241)
-      std::cout << "AOOOOOO " << level_new << " " << n_act_pts << " " << reg << std::endl;
     insertRegInVec(reg, regvec_mat_.regs_[level_new][n_act_pts] );
     reg->num_forbid_subregs_=n_act_pts;
 
@@ -286,12 +284,12 @@ void CandidatesActivator::activateCandidate(CandidateProjected* cand_proj){
 
 void CandidatesActivator::clearParentIfEmpty( Region* reg){
 
-  if(reg->cand_proj_!=nullptr)
-  std::cout << reg->cand_proj_->cam_->name_ << std::endl;
+  // if(reg->cand_proj_!=nullptr)
+  // std::cout << reg->cand_proj_->cam_->name_ << std::endl;
 
   assert(!reg->removed_);
 
-  std::cout << "clear " << reg->level_  << " " << reg->num_forbid_subregs_  <<  " " << reg << " " << reg->row_ <<" "<< reg->col_ << " " << reg->subregions_.empty() << std::endl;
+  // std::cout << "clear " << reg->level_  << " " << reg->num_forbid_subregs_  <<  " " << reg << " " << reg->row_ <<" "<< reg->col_ << " " << reg->subregions_.empty() << std::endl;
   if(reg->subregions_.empty()){
     // remove from regvecmat
     assert(checkElementInVec(regvec_mat_.regs_[reg->level_][reg->num_forbid_subregs_], reg));
@@ -303,29 +301,31 @@ void CandidatesActivator::clearParentIfEmpty( Region* reg){
       // std::cout << "clear proj to reg " << reg << " " << reg->subregions_.size() << " " << reg->level_ << std::endl;
       reg->removed_=true;
 
-      // TODO
       // if current region has no active points yet
       if(!reg->has_active_pts_){
         // it will have an active point
         reg->has_active_pts_=true;
         // the parent have to be shifted
-        if( j_<regvec_mat_.regs_[i_].size()-1 && !reg->subregions_.empty()){
+        if( reg->parent_->num_forbid_subregs_ < regvec_mat_.regs_[reg->parent_->level_].size()-1 && !reg->subregions_.empty()){
           insertRegInVec( reg->parent_, regvec_mat_.regs_[reg->parent_->level_][reg->parent_->num_forbid_subregs_+1] );
           reg->parent_->num_forbid_subregs_+=1;
         }
       }
 
-      // std::cout << "porco " << std::endl;
+
+      // std::cout << "1111 " << std::endl;
       // remove from parent
       assert(checkElementInVec(reg->parent_->subregions_, reg));
       removeFromVecByElement(reg->parent_->subregions_, reg);
       assert(!checkElementInVec(reg->parent_->subregions_, reg));
 
-      // std::cout << "dio " << std::endl;
+      // std::cout << "2222 " << std::endl;
 
-
-
-      // std::cout << "cane " << std::endl;
+      // change parent var_
+      if(reg->var_ == reg->parent_->var_){
+        // find min var_ between subregions
+        reg->parent_->var_ = reg->parent_->subregions_.front()->var_;
+      }
 
       clearParentIfEmpty( reg->parent_ );
 
@@ -336,7 +336,7 @@ void CandidatesActivator::clearParentIfEmpty( Region* reg){
 
 CandidateProjected* CandidatesActivator::getCandProjFromReg( Region* reg ){
 
-  std::cout << "reg to proj " << reg << " " << reg->subregions_.size() << " " << reg->level_ << std::endl;
+  // std::cout << "reg to proj " << reg << " " << reg->subregions_.size() << " " << reg->level_ << std::endl;
 
   if(reg->cand_proj_==nullptr){
     assert(!reg->subregions_.empty());
@@ -358,7 +358,7 @@ CandidateProjected* CandidatesActivator::getNextCandProj(){
     for(; j_<regvec_mat_.regs_[i_].size(); j_++){
 
       std::vector<Region*>& v = regvec_mat_.regs_[i_][j_];
-      std::cout << i_ << " " << j_ << " " << regvec_mat_.regs_[i_][j_].size() << std::endl;
+      // std::cout << i_ << " " << j_ << " " << regvec_mat_.regs_[i_][j_].size() << std::endl;
       if(v.empty()){
         break;
       }

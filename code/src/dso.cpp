@@ -112,7 +112,7 @@ bool Dso::doDso(){
     points_handler_->trackCandidates(take_gt_points);
 
     points_handler_->projectCandidatesOnLastFrame();
-    points_handler_->showProjectedCandidates( "cands proj 0/1");
+    // points_handler_->showProjectedCandidates( "cands proj 0/1");
 
     // activate points
     candidates_activator_->activateCandidates();
@@ -139,7 +139,7 @@ bool Dso::doDso(){
 
 
   if(use_spectator){
-    // points_handler_->showProjectedActivePoints("last kf");
+    points_handler_->showProjectedActivePoints("last kf");
     spectator_->renderState();
     spectator_->showSpectator(1);
   }

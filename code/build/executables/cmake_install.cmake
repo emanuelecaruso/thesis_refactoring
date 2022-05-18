@@ -1,4 +1,4 @@
-# Install script for directory: /home/manu/Desktop/thesis_refactoring/code/executables
+# Install script for directory: /home/emanuele/Scrivania/thesis_refactoring/code/executables
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
