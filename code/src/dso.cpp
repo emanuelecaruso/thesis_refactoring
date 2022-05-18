@@ -136,6 +136,14 @@ bool Dso::doDso(){
   bundle_adj_->marginalize();
   // bundle adjustment optimization
   bundle_adj_->optimize();
+  // // marginalize points not in last camera
+  // bundle_adj_->marginalize();
+  // // bundle adjustment optimization
+  // bundle_adj_->optimize();
+  // // marginalize points not in last camera
+  // bundle_adj_->marginalize();
+  // // bundle adjustment optimization
+  // bundle_adj_->optimize();
 
 
   if(use_spectator){

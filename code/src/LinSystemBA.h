@@ -73,18 +73,3 @@ class PriorMeas : public Meas{
     // ********** methods **********
     void loadJacobians(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple);
 };
-
-class LinSysBAMarg : public LinSysBlocks{
-  public:
-    // ********** members **********
-
-    // ********** constructor **********
-    LinSysBAMarg(Dso* dso):
-    LinSysBlocks(dso){
-      // init();
-    }
-
-    // ********** methods **********
-
-
-};

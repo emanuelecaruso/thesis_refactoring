@@ -29,7 +29,7 @@ class MarginalizationHandler{
     void loadPriorsInLinSys();
     void uploadHBTilde();
   protected:
-    void loadPriorInLinSys(PriorMeas* prior_meas);
+    float loadPriorInLinSys(PriorMeas* prior_meas);
     void removeCamFromHtilde(int idx);
     void removeCamFromBtilde(int idx);
     void addCamToHtilde();
@@ -121,6 +121,9 @@ class CamDataForBA{
     // marginalization terms
     Vector6f b_k_;
     Eigen::Matrix<float,6,6> H_kk_;
+    // linearization point
+    Eigen::Isometry3f frame_camera_wrt_world_0_;
+    Eigen::Isometry3f frame_world_wrt_camera_0_;
 
     // ********** constructor **********
     CamDataForBA():

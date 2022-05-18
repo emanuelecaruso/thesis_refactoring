@@ -218,14 +218,8 @@ bool BundleAdj::createPrior(ActivePoint* active_point, std::shared_ptr<CamCouple
   assert(active_point->cam_==cam_couple->cam_r_);
 
   PriorMeas* prior_meas = new PriorMeas(active_point,cam_couple);
-  if(prior_meas->valid_){
-    // if cam m doesn't have priors yet
-    if( cam_couple->cam_m_->cam_data_for_ba_->has_prior_==false   ){
-      // cam m has prior
-      cam_couple->cam_m_->cam_data_for_ba_->has_prior_=true;
-      // add keyframe with priors
-      marginalization_handler_->addKeyframeWithPriors(cam_couple->cam_m_);
-    }
+  if(prior_meas->valid_ && !prior_meas->occlusion_){
+    // std::cout << cam_couple->cam_m_->name_ << " " << abs(prior_meas->error) << " " << chi_occlusion_threshold << std::endl;
 
     marginalization_handler_->prior_measurements_.push_back(prior_meas);
 
@@ -242,10 +236,11 @@ bool BundleAdj::createPrior(ActivePoint* active_point, std::shared_ptr<CamCouple
 bool BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* cam_couple_container){
 
 
-  // remove candidate from vector
+  // remove active point from vector
   removeFromVecByElement(active_point->cam_->points_container_->active_points_, active_point);
+
+  // create and push marginalized point
   MarginalizedPoint* marg_pt = new MarginalizedPoint(active_point);
-  // push marginalized point
   active_point->cam_->points_container_->marginalized_points_.push_back(marg_pt);
 
   if(!do_marginalization){
@@ -263,19 +258,34 @@ bool BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* 
 
     if(cam_couple->cam_m_==active_point->cam_)
       continue;
+    if(cam_couple->cam_m_->fixed_)
+      continue;
 
     bool valid_prior = createPrior(active_point, cam_couple);
     if(valid_prior){
       valid = true;
+
+      // if cam m doesn't have priors yet
+      if( cam_couple->cam_m_->cam_data_for_ba_->has_prior_==false   ){
+        // cam m has prior
+        cam_couple->cam_m_->cam_data_for_ba_->has_prior_=true;
+        // add keyframe with priors
+        marginalization_handler_->addKeyframeWithPriors(cam_couple->cam_m_);
+        // fix linearization point
+        cam_couple->cam_m_->cam_data_for_ba_->frame_camera_wrt_world_0_=*(cam_couple->cam_m_->frame_camera_wrt_world_);
+        cam_couple->cam_m_->cam_data_for_ba_->frame_world_wrt_camera_0_=*(cam_couple->cam_m_->frame_world_wrt_camera_);
+      }
+
     }
   }
 
-  if(valid)
+  if(valid){
     n_points_marginalized_++;
+    // save linearization point of camera
+  }
 
 
   // delete active point
-  delete active_point;
 
   return valid;
 
@@ -296,13 +306,17 @@ void BundleAdj::marginalize(){
   marginalization_handler_->loadPriorsInLinSys();
   marginalization_handler_->uploadHBTilde();
 
-  // marginalization_handler_->lin_sys_increment_->visualizeH();
 
 }
 
 void BundleAdj::integrateMargTerms(LinSysBA& lin_sys_ba){
 
-  std::cout << "porcoddioooo\n" << marginalization_handler_->H_tilde_ << "\n\n" << marginalization_handler_->b_tilde_ << std::endl;
+  // // std::cout << "porcoddioooo\n" << marginalization_handler_->H_tilde_ << "\n\n" << marginalization_handler_->b_tilde_ << std::endl;
+  lin_sys_ba.H_cc_.setZero();
+  lin_sys_ba.H_cp_.setZero();
+  lin_sys_ba.H_pp_.setZero();
+  lin_sys_ba.b_c_.setZero();
+  lin_sys_ba.b_p_.setZero();
 
   // iterate through keyframes with priors
   for( int i=0; i<marginalization_handler_->keyframes_with_priors_.size(); i++ ){
@@ -313,8 +327,8 @@ void BundleAdj::integrateMargTerms(LinSysBA& lin_sys_ba){
 
     int c_marg_idx_r = cam_r->cam_data_for_ba_->c_marg_idx_*6;
     int c_idx_r = cam_r->cam_data_for_ba_->c_idx_*6;
-    lin_sys_ba.H_cc_.block<6,6>(c_idx_r,c_idx_r).triangularView<Eigen::Upper>() = marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_r,c_marg_idx_r);
-    lin_sys_ba.b_c_.segment<6>(c_idx_r) = marginalization_handler_->b_tilde_.segment<6>(c_marg_idx_r);
+    lin_sys_ba.H_cc_.block<6,6>(c_idx_r,c_idx_r).triangularView<Eigen::Upper>() += marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_r,c_marg_idx_r);
+    lin_sys_ba.b_c_.segment<6>(c_idx_r) += marginalization_handler_->b_tilde_.segment<6>(c_marg_idx_r);
 
     // off diagonal terms
     for( int j=i+1; j<marginalization_handler_->keyframes_with_priors_.size(); j++ ){
@@ -334,10 +348,10 @@ void BundleAdj::integrateMargTerms(LinSysBA& lin_sys_ba){
       // m-r
       if(!no_r && !no_m){
         if(c_idx_m<c_idx_r){
-          lin_sys_ba.H_cc_.block<6,6>(c_idx_m,c_idx_r) = marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_m,c_marg_idx_r);
+          lin_sys_ba.H_cc_.block<6,6>(c_idx_m,c_idx_r) += marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_m,c_marg_idx_r);
         }
         else{
-          lin_sys_ba.H_cc_.block<6,6>(c_idx_r,c_idx_m) = marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_r,c_marg_idx_m);
+          lin_sys_ba.H_cc_.block<6,6>(c_idx_r,c_idx_m) += marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_r,c_marg_idx_m);
         }
       }
 
@@ -370,7 +384,7 @@ void BundleAdj::updateBMarg(LinSysBA& lin_sys_ba){
   }
 
   // update
-  marginalization_handler_->b_tilde_=marginalization_handler_->b_tilde_+marginalization_handler_->H_tilde_*dx_c_marg;
+  marginalization_handler_->b_tilde_ += marginalization_handler_->H_tilde_*dx_c_marg;
 
 
 }
@@ -380,6 +394,8 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba){
   if(do_marginalization){
     integrateMargTerms(lin_sys_ba);
   }
+
+  // lin_sys_ba.visualizeH();
 
   lin_sys_ba.H_cc_ = lin_sys_ba.H_cc_.selfadjointView<Eigen::Upper>();
   // get inverse of schur -> (H_cc_ - H_cp_ H_pp_inv H_pc_)_inv
@@ -392,13 +408,24 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba){
   Eigen::MatrixXf H_pc_ = lin_sys_ba.H_cp_.transpose();
 
   // use schur
-  Eigen::MatrixXf Schur_inv = (lin_sys_ba.H_cc_ - lin_sys_ba.H_cp_ * H_pp_inv * H_pc_).inverse();
+  Eigen::MatrixXf Schur = lin_sys_ba.H_cc_ - lin_sys_ba.H_cp_ * H_pp_inv * H_pc_;
+  Eigen::MatrixXf Schur_inv = pinvDense( Schur );
   lin_sys_ba.dx_c = Schur_inv * ( -lin_sys_ba.b_c_ + lin_sys_ba.H_cp_ * H_pp_inv * lin_sys_ba.b_p_);
   lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ - H_pc_ * lin_sys_ba.dx_c );
+  // std::cout << lin_sys_ba.dx_c << '\n';
 
   // // no schur
-  // lin_sys_ba.dx_c = lin_sys_ba.H_cc_.inverse() * ( -lin_sys_ba.b_c_ );
+  // lin_sys_ba.dx_c = pinvDense(lin_sys_ba.H_cc_) * ( -lin_sys_ba.b_c_ );
   // lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ );
+  // // // std::cout << H_pp_inv.diagonal() << std::endl;
+
+  if(debug_optimization){
+    // dso_->points_handler_->projectActivePointsOnLastFrame();
+    // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
+    dso_->spectator_->renderState();
+    dso_->spectator_->showSpectator();
+    std::cout << "chi " << lin_sys_ba.chi << std::endl;
+  }
 
   lin_sys_ba.updateCameras();
   lin_sys_ba.updatePoints();
@@ -408,13 +435,6 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba){
   updateBMarg(lin_sys_ba);
 
 
-  if(debug_optimization){
-    // dso_->points_handler_->projectActivePointsOnLastFrame();
-    // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
-    dso_->spectator_->renderState();
-    dso_->spectator_->showSpectator();
-    std::cout << "chi " << lin_sys_ba.chi << std::endl;
-  }
 }
 
 void BundleAdj::marginalizePointsAndKeyframes(){
@@ -450,39 +470,39 @@ void BundleAdj::marginalizePointsAndKeyframes(){
 
   // ***************************************************************************************
 
-  // iterate through frames with active points
-  for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
-    CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
-
-    // if(cam_r->points_container_->active_points_.empty()){
-    //   dso_->cameras_container_->removeFrameWithActPts(cam_r);
-    //   continue;
-    // }
-
-    cam_couple_container_ = new CamCoupleContainer(dso_,cam_r, true);
-
-
-    // for( ActivePoint* active_pt : cam_r->points_container_->active_points_ ){
-    for( int j=cam_r->points_container_->active_points_.size()-1; j>=0; j-- ){
-      ActivePoint* active_pt = cam_r->points_container_->active_points_[j];
-      active_pt->p_idx_=-1;
-
-      std::vector<MeasBA*>* measurement_vector = new std::vector<MeasBA*>;
-      bool measurements_are_valid = getMeasurementsInit( active_pt,i, measurement_vector);
-      if(!measurements_are_valid){
-        // n_points_occlusions_++;
-        // occlusion=true;
-        if(active_pt->new_){
-          active_pt->remove();
-          n_points_removed_++;
-        }
-        else{
-          // std::cout << "APPPPPP" << std::endl;
-          marginalizePoint(active_pt, cam_couple_container_);
-        }
-      }
-    }
-  }
+  // // iterate through frames with active points
+  // for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
+  //   CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
+  //
+  //   // if(cam_r->points_container_->active_points_.empty()){
+  //   //   dso_->cameras_container_->removeFrameWithActPts(cam_r);
+  //   //   continue;
+  //   // }
+  //
+  //   cam_couple_container_ = new CamCoupleContainer(dso_,cam_r);
+  //
+  //
+  //
+  //   for( int j=cam_r->points_container_->active_points_.size()-1; j>=0; j-- ){
+  //     ActivePoint* active_pt = cam_r->points_container_->active_points_[j];
+  //     active_pt->p_idx_=-1;
+  //
+  //     std::vector<MeasBA*>* measurement_vector = new std::vector<MeasBA*>;
+  //     bool measurements_are_valid = getMeasurementsInit( active_pt,i, measurement_vector);
+  //     if(!measurements_are_valid){
+  //       // n_points_occlusions_++;
+  //       // occlusion=true;
+  //       if(active_pt->new_){
+  //         active_pt->remove();
+  //         n_points_removed_++;
+  //       }
+  //       else{
+  //         // std::cout << "APPPPPP" << std::endl;
+  //         marginalizePoint(active_pt, cam_couple_container_);
+  //       }
+  //     }
+  //   }
+  // }
 
 
 
@@ -508,13 +528,8 @@ void BundleAdj::marginalizePointsAndKeyframes(){
       MeasBA measurement(active_pt, cam_couple );
 
       assert(cam_couple->cam_m_==dso_->cameras_container_->keyframes_active_.back());
-      if(!uv_in_range){
+      if(!uv_in_range || measurement.occlusion_){
         // if points is an occlusion in the first keyframe, remove it
-        marginalizePoint(active_pt,cam_couple_container);
-      }
-      else if(measurement.occlusion_){
-        // if points is an occlusion in the first keyframe, remove it
-        // marginalizePoint(active_pt,cam_couple_container);
         if(active_pt->new_){
           active_pt->remove();
           n_points_removed_++;
@@ -523,7 +538,6 @@ void BundleAdj::marginalizePointsAndKeyframes(){
           // std::cout << "APPPPPP" << std::endl;
           marginalizePoint(active_pt, cam_couple_container);
         }
-        // active_pt->remove();
       }
       else{
         active_pt->new_=false;
@@ -618,10 +632,10 @@ void BundleAdj::optimize(){
 
   double t_end=getTime();
   int deltaTime = (t_end-t_start);
-  sharedCoutDebug("   - Bundle adjustment: " + std::to_string(deltaTime) + " ms");
-  sharedCoutDebug("       - N points removed: " + std::to_string(n_points_removed_));
-  sharedCoutDebug("           - Occlusions: " + std::to_string(n_points_occlusions_));
-  sharedCoutDebug("           - Non valid: " + std::to_string(n_points_non_valid_));
+  // sharedCoutDebug("   - Bundle adjustment: " + std::to_string(deltaTime) + " ms");
+  // sharedCoutDebug("       - N points removed: " + std::to_string(n_points_removed_));
+  // sharedCoutDebug("           - Occlusions: " + std::to_string(n_points_occlusions_));
+  // sharedCoutDebug("           - Non valid: " + std::to_string(n_points_non_valid_));
   sharedCoutDebug("       - N points marginalized: " + std::to_string(n_points_marginalized_));
 
 
@@ -629,7 +643,7 @@ void BundleAdj::optimize(){
 
 }
 
-void MarginalizationHandler::loadPriorInLinSys(PriorMeas* prior_meas){
+float MarginalizationHandler::loadPriorInLinSys(PriorMeas* prior_meas){
 
   float weight = prior_meas->getWeight();
 
@@ -649,16 +663,20 @@ void MarginalizationHandler::loadPriorInLinSys(PriorMeas* prior_meas){
   lin_sys_increment_->b_c_.segment<6>(m_idx) += prior_meas->J_m_transpose*(weight*prior_meas->error);
 
   lin_sys_increment_->b_p_(p_idx) += prior_meas->J_d*weight*prior_meas->error;
+
+  return weight*prior_meas->error*prior_meas->error;
 }
 
 void MarginalizationHandler::loadPriorsInLinSys(){
 
-
+  float chi = 0;
   // iterate through all priors
   for(PriorMeas* prior_meas : prior_measurements_){
-    loadPriorInLinSys(prior_meas);
+    chi += loadPriorInLinSys(prior_meas);
     delete prior_meas;
   }
+
+  std::cout << "chi marg: " << chi/prior_measurements_.size() << std::endl;
 
   prior_measurements_.clear();
 
@@ -672,8 +690,15 @@ void MarginalizationHandler::uploadHBTilde(){
   lin_sys_increment_->H_cc_ = lin_sys_increment_->H_cc_.selfadjointView<Eigen::Upper>();
   Eigen::MatrixXf H_pc = lin_sys_increment_->H_cp_.transpose();
 
+  // lin_sys_increment_->visualizeH();
+
+  // use schur
   Eigen::MatrixXf H_tilde_increment = (lin_sys_increment_->H_cc_ - lin_sys_increment_->H_cp_ * H_pp_inv * H_pc);
   Eigen::VectorXf b_tilde_increment = (lin_sys_increment_->b_c_ - lin_sys_increment_->H_cp_ * H_pp_inv * lin_sys_increment_->b_p_);
+
+  // // no schur
+  // Eigen::MatrixXf H_tilde_increment = (lin_sys_increment_->H_cc_ );
+  // Eigen::VectorXf b_tilde_increment = (lin_sys_increment_->b_c_);
 
   H_tilde_ += H_tilde_increment;
   b_tilde_ += b_tilde_increment;

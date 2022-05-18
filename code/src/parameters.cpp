@@ -11,7 +11,8 @@ bool use_spectator= true;
 // code parameters
 bool do_marginalization = true;
 bool first_2_active_kfs_fixed = false;
-bool marg_pts_in_marg_kf = true;
+bool marg_pts_in_marg_kf = false;
+bool first_est_jac = false;
 bool take_gt_poses=false;
 bool take_gt_points=false;
 // int guess_type=POSE_CONSTANT;
@@ -49,7 +50,7 @@ float percentage_marg_pts_threshold= 0.1;
 // float percentage_marg_pts_threshold= 0.5;
 
 // optimization
-int max_iterations_ba=7;
+int max_iterations_ba=10;
 int max_num_active_points=2000;
 
 float intensity_coeff= 1;
@@ -57,7 +58,7 @@ float gradient_coeff= 1;
 float phase_coeff= 1./(4.*PI);
 
 float damp_cam= 0;
-// float damp_point_invdepth= FLT_MAX;
+// float damp_point_invdepth= 0;
 float damp_point_invdepth= 10e3;
 float huber_threshold=(intensity_coeff*gradient_coeff)*0.02;
 // float sat_threshold=0.04;

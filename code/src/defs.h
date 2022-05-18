@@ -517,6 +517,7 @@ inline Eigen::DiagonalMatrix<float,Eigen::Dynamic> invDiagonalMatrix(Eigen::Vect
 
   for(int i=0; i<size; i++){
     float val = vec_in[i];
+    if(val!=0)
       mat_out.diagonal()[i]=(1.0/val);
   }
 

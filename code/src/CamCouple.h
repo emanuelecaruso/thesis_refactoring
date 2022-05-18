@@ -11,16 +11,21 @@ class CamCouple{
     CameraForMapping* cam_r_; // cam to be projected
     CameraForMapping* cam_m_; // cam on which project
     Eigen::Isometry3f T; //cam_r expressed in cam_m
+    bool lin_computed_;
+    Eigen::Isometry3f T0; //cam_r expressed in cam_m (linearization point)
 
 
     CamCouple(CameraForMapping* cam_r, CameraForMapping* cam_m):
     cam_r_(cam_r),
-    cam_m_(cam_m)
+    cam_m_(cam_m),
+    lin_computed_(false)
     {
       update();
+      getTLin();
     }
 
     void update();
+    void getTLin();
     // EpipolarLine* getEpSegment(Candidate* candidate, int bound_idx);
     // EpipolarLine* getEpSegmentDefaultBounds(float u1, float v1);
 
@@ -41,7 +46,11 @@ class CamCouple{
   private:
     Eigen::Matrix3f r;
     Eigen::Vector3f t;
+    Eigen::Matrix3f r0;
+    Eigen::Vector3f t0;
     float f, f2, w, h, w2, h2;
+
+
     Eigen::Vector2f cam_r_projected_in_cam_m;
 
     //Parameters for slope
@@ -51,6 +60,9 @@ class CamCouple{
     float A_bv,B_bv,C_bv,D_bv, E_bv,F_bv,G_bv,H_bv;
     //Parameters for depth
     float A_d, B_d, C_d, D_d;
+
+    float A0_bu,B0_bu,C0_bu,D0_bu,E0_bu,F0_bu,G0_bu,H0_bu;
+    float A0_bv,B0_bv,C0_bv,D0_bv,E0_bv,F0_bv,G0_bv,H0_bv;
 
     // // Jm params
     // float P1, P2, P3, P4;
