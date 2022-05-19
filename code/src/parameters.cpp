@@ -5,7 +5,8 @@
 bool debug_initialization=false;
 bool debug_mapping=false;
 bool debug_tracking=false;
-bool debug_optimization= true;
+bool debug_optimization= false;
+int debug_start_frame = 0;
 bool use_spectator= true;
 
 // code parameters
@@ -15,8 +16,8 @@ bool marg_pts_in_marg_kf = false;
 bool first_est_jac = false;
 bool take_gt_poses=false;
 bool take_gt_points=false;
-// int guess_type=POSE_CONSTANT;
-int guess_type=VELOCITY_CONSTANT;
+int guess_type=POSE_CONSTANT;
+// int guess_type=VELOCITY_CONSTANT;
 int opt_norm=HUBER;
 // int opt_norm=QUADRATIC;
 // int image_id=INTENSITY_ID;

@@ -177,8 +177,7 @@ void Tracker::trackCam(){
         double t_end=getTime();
         deltaTime_tot+=(t_end-t_start);
 
-        // if(debug_tracking && dso_->frame_current_idx_>37){
-        if(debug_tracking ){
+        if(debug_tracking  && dso_->frame_current_idx_>=debug_start_frame){
 
           // std::cout << "level " << level << std::endl;
           // std::cout << "level " << level << ", chi " << lin_sys_tracking.chi << std::endl;

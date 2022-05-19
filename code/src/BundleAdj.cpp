@@ -56,12 +56,13 @@ bool BundleAdj::getMeasurementsInit(ActivePoint* active_point, int i, std::vecto
 
   // std::cout << active_point->cost_threshold_*0.2 << std::endl;
   // if( (total_error/n_valid) > (active_point->cost_threshold_) ){
-  if( (total_error/n_valid) >total_error_thresh){
-    // n_points_occlusions_++;
-    // occlusion=true;
-    // active_point->remove();
-    return false;
-  }
+
+  // if( (total_error/n_valid) >total_error_thresh){
+  //   // n_points_occlusions_++;
+  //   // occlusion=true;
+  //   // active_point->remove();
+  //   return false;
+  // }
   // if(occlusion_valid_ratio>occlusion_valid_ratio_thresh){
   //   // n_points_occlusions_++;
   //   // occlusion=true;
@@ -122,16 +123,18 @@ void MarginalizationHandler::setCamIdxs(){
 }
 
 void MarginalizationHandler::removeCamFromHtilde(int idx){
-  unsigned int size = H_tilde_.rows()-6;
+  unsigned int size_old = H_tilde_.rows();
+  unsigned int size_new = H_tilde_.rows()-6;
   assert(H_tilde_.rows() == H_tilde_.cols());
 
-  if( idx < size ){
+  if( idx < size_new ){
     int idx_end = idx+6;
-    H_tilde_.block(idx,0,size-idx,size) = H_tilde_.block(idx_end,0,size-idx,size);
-    H_tilde_.block(0,idx,size,size-idx) = H_tilde_.block(0,idx_end,size,size-idx);
+    H_tilde_.block(idx,0,size_old-idx_end,size_old) = H_tilde_.block(idx_end,0,size_old-idx_end,size_old);
+    H_tilde_.block(0,idx,size_old,size_old-idx_end) = H_tilde_.block(0,idx_end,size_old,size_old-idx_end);
   }
 
-  H_tilde_.conservativeResize(size,size);
+  H_tilde_.conservativeResize(size_new,size_new);
+
 }
 
 void MarginalizationHandler::addCamToHtilde(){
@@ -147,14 +150,15 @@ void MarginalizationHandler::addCamToHtilde(){
 }
 
 void MarginalizationHandler::removeCamFromBtilde(int idx){
-  unsigned int size = b_tilde_.size()-6;
+  unsigned int size_old = b_tilde_.rows();
+  unsigned int size_new = b_tilde_.rows()-6;
 
-  if( idx < size ){
+  if( idx < size_new ){
     int idx_end = idx+6;
-    b_tilde_.segment(idx,size-idx) = b_tilde_.segment(idx_end,size-idx);
+    b_tilde_.segment(idx,size_old-idx_end) = b_tilde_.segment(idx_end,size_old-idx_end);
   }
+  b_tilde_.conservativeResize(size_new);
 
-  b_tilde_.conservativeResize(size);
 }
 
 void MarginalizationHandler::addCamToBtilde(){
@@ -293,7 +297,7 @@ bool BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* 
 
 void BundleAdj::marginalize(){
 
-  if(debug_optimization){
+  if(debug_optimization && dso_->frame_current_idx_>=debug_start_frame){
     // dso_->points_handler_->projectActivePointsOnLastFrame();
     // dso_->points_handler_->showProjectedActivePoints("before marg");
   }
@@ -312,11 +316,11 @@ void BundleAdj::marginalize(){
 void BundleAdj::integrateMargTerms(LinSysBA& lin_sys_ba){
 
   // // std::cout << "porcoddioooo\n" << marginalization_handler_->H_tilde_ << "\n\n" << marginalization_handler_->b_tilde_ << std::endl;
-  lin_sys_ba.H_cc_.setZero();
-  lin_sys_ba.H_cp_.setZero();
-  lin_sys_ba.H_pp_.setZero();
-  lin_sys_ba.b_c_.setZero();
-  lin_sys_ba.b_p_.setZero();
+  // lin_sys_ba.H_cc_.setZero();
+  // lin_sys_ba.H_cp_.setZero();
+  // lin_sys_ba.H_pp_.setZero();
+  // lin_sys_ba.b_c_.setZero();
+  // lin_sys_ba.b_p_.setZero();
 
   // iterate through keyframes with priors
   for( int i=0; i<marginalization_handler_->keyframes_with_priors_.size(); i++ ){
@@ -410,21 +414,23 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba){
   // use schur
   Eigen::MatrixXf Schur = lin_sys_ba.H_cc_ - lin_sys_ba.H_cp_ * H_pp_inv * H_pc_;
   Eigen::MatrixXf Schur_inv = pinvDense( Schur );
+
   lin_sys_ba.dx_c = Schur_inv * ( -lin_sys_ba.b_c_ + lin_sys_ba.H_cp_ * H_pp_inv * lin_sys_ba.b_p_);
   lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ - H_pc_ * lin_sys_ba.dx_c );
-  // std::cout << lin_sys_ba.dx_c << '\n';
+
 
   // // no schur
   // lin_sys_ba.dx_c = pinvDense(lin_sys_ba.H_cc_) * ( -lin_sys_ba.b_c_ );
   // lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ );
-  // // // std::cout << H_pp_inv.diagonal() << std::endl;
 
-  if(debug_optimization){
+  if(debug_optimization && dso_->frame_current_idx_>=debug_start_frame){
     // dso_->points_handler_->projectActivePointsOnLastFrame();
     // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
-    dso_->spectator_->renderState();
-    dso_->spectator_->showSpectator();
+    // dso_->spectator_->renderState();
+    // dso_->spectator_->showSpectator();
     std::cout << "chi " << lin_sys_ba.chi << std::endl;
+    // std::cout << "dc " << lin_sys_ba.dx_c << std::endl;
+    // std::cout << "dp " << lin_sys_ba.dx_p << std::endl;
   }
 
   lin_sys_ba.updateCameras();
@@ -615,6 +621,7 @@ void BundleAdj::optimize(){
       }
     }
 
+    assert(num_points>0);
     lin_sys_ba.reinitWithNewPoints(num_points);
 
     lin_sys_ba.buildLinearSystem(measurement_vec_vec);

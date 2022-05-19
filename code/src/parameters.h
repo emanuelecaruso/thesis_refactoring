@@ -16,6 +16,7 @@ extern bool debug_initialization;
 extern bool debug_mapping;
 extern bool debug_tracking;
 extern bool debug_optimization;
+extern int debug_start_frame;
 extern bool use_spectator;
 
 // code parameters

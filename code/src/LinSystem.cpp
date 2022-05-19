@@ -134,7 +134,6 @@ float Meas::getWeight(){
 
   }
 
-  // std::cout << huber_threshold << std::endl;
   assert(std::isfinite(weight_mest));
 
   // float  weight = weight_mest*(1.0/var_);

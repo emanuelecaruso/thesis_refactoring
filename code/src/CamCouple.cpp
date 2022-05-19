@@ -38,9 +38,9 @@ void CamCouple::getTLin(){
     T0=T;
   }
 
-  r=T0.linear();
-  t=T0.translation();
-  
+  r0=T0.linear();
+  t0=T0.translation();
+
   A0_bu=4*f*r0(0,0) + 2*r0(2,0)*w;
   B0_bu=4*f*r0(0,1) + 2*r0(1,2)*w;
   C0_bu=4*f2*r0(0,2) - r0(2,0)*w2 - 2*f*h*r0(0,1) - 2*f*r0(0,0)*w + 2*f*r0(2,2)*w - h*r0(1,2)*w;
@@ -110,6 +110,35 @@ void CamCouple::getBoundsParameters(){
 
 }
 
+
+// void CamCouple::getJrParameters(){
+//   C1 = f*r(0,0)*r(1,2);
+//   C2 = f*r(2,0)*t(0);
+//   C3 = f*r(0,0)*t(2);
+//   C4 = f*r(0,2)*r(2,0);
+//   C5 = f*r(0,0)*r(2,2);
+//   C6 = f*r(0,1)*r(2,0);
+//   C7 = f*r(1,2)*t(0);
+//   C8 = f*r(0,1)*t(2);
+//   C9 = f*r(0,2)*r(1,2);
+//   C10 = f*r(0,1)*r(2,2);
+//   C11 = f*r(2,2)*t(0);
+//   C12 = f*r(0,2)*t(2);
+//
+//   D1 = f*r(1,1)*r(2,0);
+//   D2 = f*r(1,0)*r(1,2);
+//   D3 = f*r(1,2)*r(2,0);
+//   D4 = f*r(1,0)*r(2,2);
+//   D5 = f*r(2,0)*t(1);
+//   D6 = f*r(1,0)*t(2);
+//   D7 = f*r(1,2)*r(1,2);
+//   D8 = f*r(1,1)*r(2,2);
+//   D9 = f*r(1,2)*t(1);
+//   D10 = f*r(1,1)*t(2);
+//   D11 = f*r(2,2)*t(1);
+//   D12 = f*r(1,2)*t(2);
+// }
+
 void CamCouple::getJrParameters(){
   C1 = f*r0(0,0)*r0(1,2);
   C2 = f*r0(2,0)*t0(0);
@@ -143,11 +172,11 @@ Eigen::Matrix<float,2,1> CamCouple::getJd_(ActivePoint* active_pt ){
   float v1 = active_pt->uv_.y();
   float invd1 = active_pt->invdepth_;
 
-  // float du = -(C0_bu*H0_bu - D0_bu*G0_bu + A0_bu*H0_bu*u1 - D0_bu*E0_bu*u1 + B0_bu*H0_bu*v1 - D0_bu*F0_bu*v1)/pow( (H0_bu*invd1 + G0_bu + E0_bu*u1 + F0_bu*v1) ,2);
-  // float dv = -(C0_bv*H0_bv - D0_bv*G0_bv + A0_bv*H0_bv*u1 - D0_bv*E0_bv*u1 + B0_bv*H0_bv*v1 - D0_bv*F0_bv*v1)/pow( (H0_bv*invd1 + G0_bv + E0_bv*u1 + F0_bv*v1), 2);
+  float du = -(C0_bu*H0_bu - D0_bu*G0_bu + A0_bu*H0_bu*u1 - D0_bu*E0_bu*u1 + B0_bu*H0_bu*v1 - D0_bu*F0_bu*v1)/pow( (H0_bu*invd1 + G0_bu + E0_bu*u1 + F0_bu*v1) ,2);
+  float dv = -(C0_bv*H0_bv - D0_bv*G0_bv + A0_bv*H0_bv*u1 - D0_bv*E0_bv*u1 + B0_bv*H0_bv*v1 - D0_bv*F0_bv*v1)/pow( (H0_bv*invd1 + G0_bv + E0_bv*u1 + F0_bv*v1), 2);
 
-  float du = -(C_bu*H_bu - D_bu*G_bu + A_bu*H_bu*u1 - D_bu*E_bu*u1 + B_bu*H_bu*v1 - D_bu*F_bu*v1)/pow( (H_bu*invd1 + G_bu + E_bu*u1 + F_bu*v1) ,2);
-  float dv = -(C_bv*H_bv - D_bv*G_bv + A_bv*H_bv*u1 - D_bv*E_bv*u1 + B_bv*H_bv*v1 - D_bv*F_bv*v1)/pow( (H_bv*invd1 + G_bv + E_bv*u1 + F_bv*v1), 2);
+  // float du = -(C_bu*H_bu - D_bu*G_bu + A_bu*H_bu*u1 - D_bu*E_bu*u1 + B_bu*H_bu*v1 - D_bu*F_bu*v1)/pow( (H_bu*invd1 + G_bu + E_bu*u1 + F_bu*v1) ,2);
+  // float dv = -(C_bv*H_bv - D_bv*G_bv + A_bv*H_bv*u1 - D_bv*E_bv*u1 + B_bv*H_bv*v1 - D_bv*F_bv*v1)/pow( (H_bv*invd1 + G_bv + E_bv*u1 + F_bv*v1), 2);
   Eigen::Matrix<float,2,1> Jd;
 
   Jd << du,
@@ -166,6 +195,7 @@ Eigen::Matrix<float,2,6> CamCouple::getJr_(ActivePoint* active_pt ){
   float pbz2 = pb.z()*pb.z();
 
   float den=pbx2*pow(r0(2,0),2) + 2*pb.x()*pb.y()*r0(1,2)*r0(2,0) + 2*pb.x()*pb.z()*r0(2,0)*r0(2,2) + 2*pb.x()*r0(2,0)*t0(2) + pby2*pow(r0(1,2),2) + 2*pb.y()*pb.z()*r0(1,2)*r0(2,2) + 2*pb.y()*r0(1,2)*t0(2) + pbz2*pow(r0(2,2),2) + 2*pb.z()*r0(2,2)*t0(2) + pow(t0(2),2);
+  // float den=pbx2*pow(r(2,0),2) + 2*pb.x()*pb.y()*r(1,2)*r(2,0) + 2*pb.x()*pb.z()*r(2,0)*r(2,2) + 2*pb.x()*r(2,0)*t(2) + pby2*pow(r(1,2),2) + 2*pb.y()*pb.z()*r(1,2)*r(2,2) + 2*pb.y()*r(1,2)*t(2) + pbz2*pow(r(2,2),2) + 2*pb.z()*r(2,2)*t(2) + pow(t(2),2);
 
   float num_Jru1 = (C6 - C1)*pb.y() + (C4 - C5)*pb.z() + C2 - C3;
   float Jru1 = num_Jru1/den;
@@ -213,6 +243,7 @@ Eigen::Matrix<float,2,6> CamCouple::getJr_(ActivePoint* active_pt ){
   float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
   Jr *= (pixels_meter_ratio/pow(2,active_pt->level_));
 
+  assert(Jr.allFinite());
   return Jr;
 }
 
@@ -292,12 +323,6 @@ Eigen::Matrix<float,2,6> CamCouple::getJm_old_(ActivePoint* active_pt ){
   J_first_ = coeff*((proj_jacobian)*K);
   assert(J_first_.allFinite());
 
-  // if(J_first_->norm()>10){
-  //   std::cout << "JFIRSTTTTTT " << *J_first_ <<"\n\ncoeff " << coeff << "\n\nproj_jac " << proj_jacobian << "\n\nK " << K << std::endl;
-  // }
-  // assert(!J_first->isInf());
-
-  // return J_first_;
 
   Eigen::Matrix<float, 3,6> state_jacobian ;
 

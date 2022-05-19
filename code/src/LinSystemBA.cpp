@@ -18,6 +18,7 @@ void MeasBA::loadJacobians(ActivePoint* active_point){
     Eigen::Matrix<float,2,6> Jr_ = cam_couple_->getJr_(active_point);
     Eigen::Matrix<float,2,1> Jd_ = cam_couple_->getJd_(active_point);
 
+
     // update J_m and error for intensity
     Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian( INTENSITY_ID);
     J_m += image_jacobian_intensity*Jm_;
@@ -77,6 +78,12 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
 
   // get weight
   float weight = measurement->getWeight();
+  assert(std::isfinite(weight));
+  assert(measurement->J_m_transpose.allFinite());
+  assert(measurement->J_m.allFinite());
+  assert(std::isfinite(measurement->error));
+  assert(measurement->J_r.allFinite());
+  assert(measurement->J_r_transpose.allFinite());
 
   // ********* H *********
 
@@ -141,12 +148,17 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
 
   omega_(p_idx) += measurement->J_d*(1.0/measurement->var_)*measurement->J_d;
 
-  return measurement->error*weight*measurement->error;
+  float chi = measurement->error*weight*measurement->error;
+  assert(std::isfinite(chi));
+  return chi;
 }
 
 
 void LinSysBA::buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement_vec_vec ){
   int count = 0;
+  assert(b_p_.allFinite());
+  assert(H_cp_.allFinite());
+  assert(b_c_.allFinite());
 
   // iterate through all measurements
   for(int i=0; i<measurement_vec_vec.size(); i++){
@@ -157,12 +169,16 @@ void LinSysBA::buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement
     }
   }
 
+  assert(measurement_vec_vec.size()>0);
+  assert(count>0);
+  assert(b_p_.allFinite());
+  assert(H_cp_.allFinite());
+  assert(b_c_.allFinite());
   // *********  MARG PRIORS  *********
 
   // build linear system marg
   // LinSysBAMarg lin_sys_marg(this);
   // lin_sys_marg.loadMargPriors();
-
 
   chi /= (float)count;
 

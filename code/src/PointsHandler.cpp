@@ -19,7 +19,7 @@ bool PointsHandler::sampleCandidates(){
   int reg_level = trunc(std::log( (float)(n_pixels_tot)/num)/std::log(4));
 
 
-  std::cout << reg_level << std::endl;
+  std::cout << "reg_level " << reg_level << std::endl;
   reg_level=std::min(reg_level,5);
   reg_level=std::max(reg_level,1);
 
@@ -90,7 +90,7 @@ bool PointsHandler::sampleCandidates(){
     reg_level+=diff;
     reg_level=std::min(reg_level,5);
     reg_level=std::max(reg_level,1);
-    std::cout << reg_level << std::endl;
+    std::cout << "reg_level " << reg_level << std::endl;
 
   }
 
@@ -280,7 +280,8 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
       return false;
     }
     case 2:{
-      cand->cost_threshold_*1.1;
+      cand->cost_threshold_;
+      // cand->cost_threshold_*1.1;
       n_cands_no_min_++;
       return true;
     }

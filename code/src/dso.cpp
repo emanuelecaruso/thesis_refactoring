@@ -121,7 +121,7 @@ bool Dso::doDso(){
     points_handler_->sampleCandidates(); // sample candidates as high gradient points
 
     // debug mapping
-    if(debug_mapping){
+    if(debug_mapping && frame_current_idx_>=debug_start_frame){
       // cameras_container_->keyframes_active_[0]->points_container_->showCoarseActivePoints(2);
       // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
       // points_handler_->showCandidates();
@@ -136,18 +136,10 @@ bool Dso::doDso(){
   bundle_adj_->marginalize();
   // bundle adjustment optimization
   bundle_adj_->optimize();
-  // // marginalize points not in last camera
-  // bundle_adj_->marginalize();
-  // // bundle adjustment optimization
-  // bundle_adj_->optimize();
-  // // marginalize points not in last camera
-  // bundle_adj_->marginalize();
-  // // bundle adjustment optimization
-  // bundle_adj_->optimize();
 
 
   if(use_spectator){
-    points_handler_->showProjectedActivePoints("last kf");
+    // points_handler_->showProjectedActivePoints("last kf");
     spectator_->renderState();
     spectator_->showSpectator(1);
   }
@@ -181,7 +173,6 @@ void Dso::updateCamerasFromEnvironment(){
     cameras_container_->addFrame(cam);
 
     // locker.unlock();
-    // std::cout << "CAM UPDATED" << std::endl;
     frame_updated_.notify_all();
 
     double t_end=getTime();
