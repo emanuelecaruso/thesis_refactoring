@@ -97,12 +97,12 @@ void PointsContainer::showActivePoints(){
 }
 
 
-void PointsContainer::showProjectedActivePoints(){
+void PointsContainer::showProjectedActivePoints( int wtk){
   std::string name = cam_->name_+" , "+std::to_string(active_points_projected_.size())+" projected active points";
-  showProjectedActivePoints(name);
+  showProjectedActivePoints(name,wtk);
 }
 
-void PointsContainer::showProjectedActivePoints(const std::string& name){
+void PointsContainer::showProjectedActivePoints(const std::string& name, int wtk){
   double alpha = 1;
 
   Image<colorRGB>* show_img( cam_->pyramid_->getC(candidate_level)->returnColoredImgFromIntensityImg(name) );
@@ -114,11 +114,28 @@ void PointsContainer::showProjectedActivePoints(const std::string& name){
   }
 
   show_img->show(pow(1,candidate_level));
-  cv::waitKey(0);
+  cv::waitKey(wtk);
 
 }
 
-
+// void CandidateProjected::init(Candidate* cand, std::shared_ptr<CamCouple> cam_couple_){
+//   float d2;
+//   cam_couple_->reprojection(cand->uv_,1./cand->invdepth_,uv_,d2);
+//   cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, cand->level_);
+//   cam_=cam_couple_->cam_m_;
+//   level_=cand->level_;
+//   invdepth_=1.0/d2;
+// }
+//
+//
+// void ActivePointProjected::init(ActivePoint* active_pt, std::shared_ptr<CamCouple> cam_couple_){
+//   float d2;
+//   cam_couple_->reprojection(active_pt->uv_,1./active_pt->invdepth_,uv_,d2);
+//   cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, active_pt->level_);
+//   cam_=cam_couple_->cam_m_;
+//   level_=active_pt->level_;
+//   invdepth_=1.0/d2;
+// }
 
 void CandidateProjected::init(Candidate* cand, std::shared_ptr<CamCouple> cam_couple_){
   cam_couple_->getUv( cand->uv_.x(),cand->uv_.y(),1./cand->invdepth_,uv_.x(),uv_.y() );

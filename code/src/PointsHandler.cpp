@@ -16,10 +16,10 @@ bool PointsHandler::sampleCandidates(){
   int num = num_candidates;
   // int num =(max_num_active_points-dso_->frame_current_->points_container_->active_points_projected_.size())+1;
 
-  int reg_level = trunc(std::log( (float)(n_pixels_tot)/num)/std::log(4));
+  int reg_level = trunc(std::log( (float)(n_pixels_tot)/num)/std::log(4))+1;
 
 
-  std::cout << "reg_level " << reg_level << std::endl;
+  // std::cout << "reg_level " << reg_level << std::endl;
   reg_level=std::min(reg_level,5);
   reg_level=std::max(reg_level,1);
 
@@ -90,7 +90,7 @@ bool PointsHandler::sampleCandidates(){
     reg_level+=diff;
     reg_level=std::min(reg_level,5);
     reg_level=std::max(reg_level,1);
-    std::cout << "reg_level " << reg_level << std::endl;
+    // std::cout << "reg_level " << reg_level << std::endl;
 
   }
 
@@ -114,11 +114,11 @@ void PointsHandler::showActivePoints(){
   dso_->frame_current_->points_container_->showActivePoints();
 }
 
-void PointsHandler::showProjectedActivePoints(){
-  dso_->frame_current_->points_container_->showProjectedActivePoints();
+void PointsHandler::showProjectedActivePoints( int i){
+  dso_->frame_current_->points_container_->showProjectedActivePoints(i);
 }
-void PointsHandler::showProjectedActivePoints(const std::string& name){
-  dso_->frame_current_->points_container_->showProjectedActivePoints(name);
+void PointsHandler::showProjectedActivePoints(const std::string& name, int i){
+  dso_->frame_current_->points_container_->showProjectedActivePoints(name, i);
 }
 
 void PointsHandler::projectCandidatesOnLastFrame(){
@@ -256,7 +256,7 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
   float der = (uv_min-uv_max).norm()/((1.0/cand->depth_min_)-(1.0/cand->depth_max_));
   if(der<der_threshold){
     n_cands_var_too_high_++;
-    return true;
+    return false;
   }
 
   // create epipolar line
@@ -268,12 +268,15 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
   int min_found = CandTracker.searchMin();
   switch (min_found){
     case 0:{
-      if(CandTracker.updateCand())
+      if(CandTracker.updateCand()){
         n_cands_tracked_++;
-      else
+        return true;
+      }
+      else{
         n_cands_var_too_high_++;
+        return false;
+      }
 
-      return true;
     }
     case 1:{
       n_cands_repeptitive_++;
@@ -283,7 +286,7 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
       cand->cost_threshold_;
       // cand->cost_threshold_*1.1;
       n_cands_no_min_++;
-      return true;
+      return false;
     }
   }
 }
@@ -339,7 +342,6 @@ bool CandTracker::updateCand(){
   float depth;
   cam_couple_->getD1( cand_->uv_.x(), cand_->uv_.y(), depth, coord, ep_segment_.u_or_v );
   cand_->invdepth_=1./depth;
-  // std::cout << cand_->invdepth_ << std::endl;
 
   // get standard deviation
   float standard_deviation = getStandardDeviation();

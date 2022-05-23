@@ -27,6 +27,7 @@ extern bool first_est_jac;
 
 extern bool take_gt_poses;
 extern bool take_gt_points;
+extern bool take_gt_initialization;
 extern int guess_type;
 extern int opt_norm;
 extern int image_id;
@@ -46,7 +47,9 @@ extern float der_threshold;
 // mapping
 extern float cost_threshold;
 extern float g_th;
-
+extern float intensity_coeff;
+extern float gradient_coeff;
+extern float phase_coeff;
 extern float var_threshold;
 
 // keyframe selection
@@ -57,9 +60,8 @@ extern float percentage_marg_pts_threshold;
 // optimization
 extern int max_iterations_ba;
 extern int max_num_active_points;
-extern float intensity_coeff;
-extern float gradient_coeff;
-extern float phase_coeff;
+extern float intensity_coeff_ba;
+extern float gradient_coeff_ba;
 extern float damp_cam;
 extern float damp_point_invdepth;
 extern float huber_threshold;

@@ -35,8 +35,8 @@ class PointsHandler{
     void showProjectedCandidates(const std::string& name);
     void showActivePoints();
     void showCoarseActivePoints(int level);
-    void showProjectedActivePoints(const std::string& name);
-    void showProjectedActivePoints();
+    void showProjectedActivePoints(const std::string& name, int i=0);
+    void showProjectedActivePoints( int i=0);
 
     bool sampleCandidates();
     void projectCandidatesOnLastFrame();

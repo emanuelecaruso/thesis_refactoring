@@ -36,7 +36,7 @@ float Meas::getError( ActivePoint* active_point, int image_type){
       z = cam_couple_->cam_r_->pyramid_->getC(level_)->evalPixelBilinear(pixel_r);
     }
     z_hat = cam_couple_->cam_m_->pyramid_->getC(level_)->evalPixelBilinear(pixel_);
-    error = intensity_coeff*(z_hat-z);
+    error = intensity_coeff_ba*(z_hat-z);
   }
   else if(image_type==GRADIENT_ID){
     if(level_==0){
@@ -46,7 +46,7 @@ float Meas::getError( ActivePoint* active_point, int image_type){
       z = cam_couple_->cam_r_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_r);
     }
     z_hat = cam_couple_->cam_m_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_);
-    error = gradient_coeff*(z_hat-z);
+    error = gradient_coeff_ba*(z_hat-z);
   }
   if(abs(error)>1){
     std::cout << "error "<< error << " level " << level_ << " z " << z << " pixel r " << active_point->pixel_ << " pixel m " << pixel_ <<  " z hat " << z_hat << " image_type " << image_type << " rows " << cam_couple_->cam_m_->pyramid_->getC(level_)->image_.rows << " cols " << cam_couple_->cam_m_->pyramid_->getC(level_)->image_.cols << " valid " << valid_ << std::endl;
@@ -61,12 +61,12 @@ Eigen::Matrix<float,1,2> Meas::getImageJacobian( int image_type){
   Eigen::Matrix<float,1,2> image_jacobian;
 
   if(image_type==INTENSITY_ID){
-    image_jacobian << intensity_coeff*cam_couple_->cam_m_->pyramid_->getCDX(level_)->evalPixelBilinear(pixel_),
-                      intensity_coeff*cam_couple_->cam_m_->pyramid_->getCDY(level_)->evalPixelBilinear(pixel_);
+    image_jacobian << intensity_coeff_ba*cam_couple_->cam_m_->pyramid_->getCDX(level_)->evalPixelBilinear(pixel_),
+                      intensity_coeff_ba*cam_couple_->cam_m_->pyramid_->getCDY(level_)->evalPixelBilinear(pixel_);
   }
   else if(image_type==GRADIENT_ID){
-    image_jacobian << gradient_coeff*cam_couple_->cam_m_->pyramid_->getMagnDX(level_)->evalPixelBilinear(pixel_),
-                      gradient_coeff*cam_couple_->cam_m_->pyramid_->getMagnDY(level_)->evalPixelBilinear(pixel_);
+    image_jacobian << gradient_coeff_ba*cam_couple_->cam_m_->pyramid_->getMagnDX(level_)->evalPixelBilinear(pixel_),
+                      gradient_coeff_ba*cam_couple_->cam_m_->pyramid_->getMagnDY(level_)->evalPixelBilinear(pixel_);
   }
 
   return image_jacobian;
@@ -91,7 +91,8 @@ bool Meas::init(ActivePoint* active_point){
   }
 
   // control on error
-  if(abs(error)>chi_occlusion_threshold){
+  // if(abs(error)>chi_occlusion_threshold){
+  if(abs(error)>active_point->cost_threshold_){
     occlusion_ = true;
     return false;
   }
@@ -107,7 +108,7 @@ float Meas::getWeight(){
   // m estimator
   float u = abs(error);
   if(u>sat_threshold){
-    weight_mest = sat_threshold;
+    weight_mest = sat_threshold/u;
   }
   else{
     switch (opt_norm)

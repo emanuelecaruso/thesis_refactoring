@@ -77,6 +77,7 @@ class Dso{
     void setFirstKeyframe();
     void initialize();
     bool doDso();
+    void saveJsonForBlender();
 
   private:
 

@@ -313,13 +313,11 @@ void CandidatesActivator::clearParentIfEmpty( Region* reg){
       }
 
 
-      // std::cout << "1111 " << std::endl;
       // remove from parent
       assert(checkElementInVec(reg->parent_->subregions_, reg));
       removeFromVecByElement(reg->parent_->subregions_, reg);
       assert(!checkElementInVec(reg->parent_->subregions_, reg));
 
-      // std::cout << "2222 " << std::endl;
 
       // change parent var_
       if(reg->var_ == reg->parent_->var_){

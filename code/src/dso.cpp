@@ -61,41 +61,40 @@ void Dso::setFirstKeyframe(){
 
 void Dso::initialize(){
 
-  initializer_->trackCornersLK(); // track corners in subsequent image
-
-  // if a good pose is found ...
-  if(initializer_->findPose()){
-
-    sharedCoutDebug("   - Pose found");
-    if(debug_initialization){
-      initializer_->showCornersTrackCurr();
-    }
-
-    // ... add last keyframe
-    keyframe_handler_->addKeyframe(true); // add fixed keyframe
-    points_handler_->trackCandidates(take_gt_points); // track existing candidates
-
-
-    // project candidates and active points on last frame
-    candidates_activator_->activateCandidates();
-
-    points_handler_->sampleCandidates(); // sample candidates as high gradient points
-
-    if(debug_mapping){
-
-      // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
-      // points_handler_->sampleCandidates();
-      // points_handler_->showCandidates();
-      // points_handler_->projectActivePointsOnLastFrame();
-
-      points_handler_->showProjectedCandidates();
-      points_handler_->showProjectedActivePoints();
-    }
-
-    to_initialize_=false;
-
+  if(take_gt_initialization){
+    tracker_->trackCam(true); // fix first frame to groundtruth pose
   }
+  else{
 
+    initializer_->trackCornersLK(); // track corners in subsequent image
+
+    // if a good pose is found ...
+    if(initializer_->findPose()){
+
+      sharedCoutDebug("   - Pose found");
+      if(debug_initialization){
+        initializer_->showCornersTrackCurr();
+      }
+    }
+  }
+  keyframe_handler_->addKeyframe(true);  // add fixed keyframe
+  points_handler_->trackCandidates(take_gt_points); // track existing candidates
+
+  // project candidates and active points on last frame
+  candidates_activator_->activateCandidates();
+  points_handler_->sampleCandidates(); // sample candidates as high gradient points
+
+  if(debug_mapping){
+
+    // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
+    // points_handler_->sampleCandidates();
+    // points_handler_->showCandidates();
+    // points_handler_->projectActivePointsOnLastFrame();
+
+    points_handler_->showProjectedCandidates();
+    points_handler_->showProjectedActivePoints();
+  }
+  to_initialize_=false;
 }
 
 
@@ -127,7 +126,7 @@ bool Dso::doDso(){
       // points_handler_->showCandidates();
       points_handler_->projectCandidatesOnLastFrame();
       points_handler_->projectActivePointsOnLastFrame();
-      points_handler_->showProjectedCandidates( "cands proj 1/1");
+      points_handler_->showProjectedCandidates( "cands proj");
       points_handler_->showProjectedActivePoints(" act pts proj");
     }
   }
@@ -139,7 +138,15 @@ bool Dso::doDso(){
 
 
   if(use_spectator){
-    // points_handler_->showProjectedActivePoints("last kf");
+
+    // for( int i = 0; i<cameras_container_->keyframes_active_.size()-1; i++){
+    //   frame_current_->points_container_->active_points_projected_.clear();
+    //   CameraForMapping* keyframe = cameras_container_->keyframes_active_[i];
+    //   points_handler_->projectActivePoints( keyframe , frame_current_ );
+    //   points_handler_->showProjectedActivePoints("last kf "+std::to_string(i),0);
+    // }
+
+    points_handler_->showProjectedActivePoints("last kf ",1);
     spectator_->renderState();
     spectator_->showSpectator(1);
   }
@@ -196,3 +203,156 @@ void Dso::updateCamerasFromEnvironment(){
   sharedCout("\nVideo stream ended");
 
 }
+
+
+// bool Dso::makeJsonForActivePts(const std::string& path_name, CameraForMapping* camera){
+//
+//   // std::cout << "creating json (active pts)" << std::endl;
+//   //
+//   //   const char* path_name_ = path_name.c_str(); // dataset name
+//   //   struct stat info;
+//   //   if( stat( path_name_, &info ) != 0 )
+//   //   { }
+//   //   else if( info.st_mode & S_IFDIR )
+//   //   {
+//   //     // isdir
+//   //     return 0;
+//   //   }
+//   //   else
+//   //   {
+//   //     // printf( "%s is not a directory\n", path_name );
+//   //     std::string st = "rm " + path_name;
+//   //     const char *str = st.c_str();
+//   //
+//   //   }
+//   //
+//   //   std::string st = "touch "+path_name;
+//   //   const char *str = st.c_str();
+//   //
+//   //   json j;
+//   //
+//   //   j["cameras"][camera->name_];
+//   //   int count=0;
+//   //   for(RegionWithProjActivePoints* reg_proj : *(camera->regions_projected_active_points_->region_vec_) ){
+//   //
+//   //
+//   //     for(int i=0; i<reg_proj->active_pts_proj_vec_->size(); i++){
+//   //
+//   //       ActivePointProjected* active_pt_proj = reg_proj->active_pts_proj_vec_->at(i);
+//   //
+//   //       int level = active_pt_proj->level_;
+//   //       Eigen::Vector2f uv = active_pt_proj->uv_ ;
+//   //       Eigen::Vector3f p;
+//   //       camera->pointAtDepth( uv, 1.0/active_pt_proj->invdepth_, p);
+//   //       std::stringstream ss;
+//   //       ss << std::setw(6) << std::setfill('0') << count;
+//   //       std::string idx = ss.str();
+//   //       j["cameras"][camera->name_]["p"+idx] = {
+//   //         {"level", level},
+//   //         {"invdepth_var", active_pt_proj->active_point_->invdepth_var_},
+//   //         {"position", {p[0],p[1],p[2]}}
+//   //       };
+//   //       count++;
+//   //
+//   //     }
+//   //
+//   //   }
+//   //   // write prettified JSON to another file
+//   //   std::ofstream o(path_name);
+//   //   o << std::setw(4) << j << std::endl;
+//   //   o.close();
+//
+//     return 1;
+// }
+//
+//
+// bool Dso::makeJsonForCameras(const std::string& path_name){
+//
+//   std::cout << "creating json (cameras)" << std::endl;
+//
+//     const char* path_name_ = path_name.c_str(); // dataset name
+//     struct stat info;
+//     if( stat( path_name_, &info ) != 0 )
+//     { }
+//     else if( info.st_mode & S_IFDIR )
+//     {
+//       // isdir
+//       return 0;
+//     }
+//     else
+//     {
+//       // printf( "%s is not a directory\n", path_name );
+//       std::string st = "rm " + path_name;
+//       const char *str = st.c_str();
+//
+//     }
+//
+//     std::string st = "touch "+path_name;
+//     const char *str = st.c_str();
+//
+//     json j;
+//
+//     const CamParameters* cam_params = camera_vector_->at(0)->cam_parameters_;
+//     j["cam_parameters"] = {
+//       {"width", cam_params->width*1000},  // width in millimeters
+//       {"lens", cam_params->lens*1000},  // lens in millimeters
+//       {"min_depth", cam_params->min_depth},
+//       {"max_depth", cam_params->max_depth}
+//     };
+//
+//     for(CameraForMapping* camera : *camera_vector_){
+//
+//       // Eigen::Matrix3f R=camera->frame_camera_wrt_world_->linear();
+//       // Eigen::Vector3f t=camera->frame_camera_wrt_world_->translation();
+//       Eigen::Isometry3f T = *(camera->frame_camera_wrt_world_);
+//
+//       // if(camera->name_=="Camera0000"){
+//       //   std::cout << T.linear() << std::endl;
+//       //   std::cout << T.translation() << std::endl<< std::endl;
+//       // }
+//       Eigen::Matrix3f R;
+//
+//       Eigen::Matrix3f flipper;
+//       flipper << 1,0,0, 0,-1,0, 0,0,-1;
+//       // T.linear()=(flipper*(T.linear().transpose())).transpose();
+//       // R=(flipper*(T.linear().transpose())).transpose();
+//       R=(flipper*(T.linear().transpose())).transpose();
+//
+//       // if(camera->name_=="Camera0000"){
+//       //   std::cout << T.linear() << std::endl;
+//       //   std::cout << T.translation() << std::endl<< std::endl;
+//       // }
+//
+//
+//       // T.linear()=flipper*T.linear();
+//       Vector6f v;
+//       v.head<3>()=T.translation();
+//       v[3]=-std::atan2( -R(2,1) , R(2,2) );
+//       v[4]=-std::atan2( R(2,0) , sqrt(1-R(2,0)) );
+//       v[5]=-std::atan2( -R(1,0) , R(0,0) );
+//
+//       // if(camera->name_=="Camera0000"){
+//       //   std::cout << R << std::endl;
+//       //   std::cout << v.head<3>() << std::endl;
+//       //   std::cout << v.tail<3>() << std::endl<< std::endl;
+//       // }
+//
+//       j["cameras"][camera->name_];
+//
+//       // std::stringstream ss;
+//       // ss << std::setw(6) << std::setfill('0') << count;
+//       // std::string idx = ss.str();
+//       j["cameras"][camera->name_] = {
+//         {"pose", {v[0],v[1],v[2],v[3],v[4],v[5]}}
+//       };
+//     }
+//
+//     // write prettified JSON to another file
+//     std::ofstream o(path_name);
+//     o << std::setw(4) << j << std::endl;
+//     o.close();
+//
+//     return 1;
+//
+//
+// }

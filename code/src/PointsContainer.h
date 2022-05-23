@@ -242,8 +242,8 @@ class PointsContainer{
     void showProjectedCandidates();
     void showProjectedCandidates( const std::string& name );
     void showActivePoints();
-    void showProjectedActivePoints();
-    void showProjectedActivePoints( const std::string& name );
+    void showProjectedActivePoints( int wtk=0);
+    void showProjectedActivePoints( const std::string& name, int wtk=0 );
 
   protected:
 };

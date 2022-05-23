@@ -339,7 +339,7 @@ Eigen::Matrix<float,2,6> CamCouple::getJm_old_(ActivePoint* active_pt ){
 void CamCouple::getDepthParameters(){
   A_d=r(2,0)/f;
   B_d=r(1,2)/f;
-  C_d=r(2,2) - (h*r(1,2) - r(2,0)*w)/(2*f);
+  C_d=r(2,2) - (r(2,0)*w)/(2*f) - (h*r(1,2))/(2*f);
   D_d=t(2);
 }
 
@@ -424,6 +424,7 @@ bool CamCouple::getD1(float u1, float v1, float& d1, float u2, float v2){
 
 }
 
+
 bool CamCouple::getD2(float u1, float v1, float d1, float& d2){
   d2=(A_d*u1*d1+B_d*v1*d1+C_d*d1+D_d);
   // assert(!std::isnan(d2));
@@ -431,8 +432,14 @@ bool CamCouple::getD2(float u1, float v1, float d1, float& d2){
     return false;
   }
   return true;
-
 }
+
+bool CamCouple::reprojection(const Eigen::Vector2f& uv1, float d1, Eigen::Vector2f& uv2, float& d2){
+  Eigen::Vector3f p;
+  cam_r_->pointAtDepth(uv1, d1, p);
+  cam_m_->projectPoint(p, uv2, d2 );
+}
+
 // //
 // // EpipolarLine* CamCouple::getEpSegment(Candidate* candidate, int bound_idx){
 // //

@@ -68,11 +68,11 @@ bool BundleAdj::getMeasurementsInit(ActivePoint* active_point, int i, std::vecto
   //   // occlusion=true;
   //   return false;
   // }
-  // if(valid_ratio<valid_ratio_thresh){
-  //   // n_points_non_valid_++;
-  //   // non_valid=true;
-  //   return false;
-  // }
+  if(valid_ratio<valid_ratio_thresh){
+    // n_points_non_valid_++;
+    // non_valid=true;
+    return false;
+  }
 
   // if(occlusion){
   // // if(occlusion || non_valid){
@@ -90,8 +90,9 @@ bool BundleAdj::getMeasurementsInit(ActivePoint* active_point, int i, std::vecto
 
 bool BundleAdj::getMeasurements(ActivePoint* active_point, int i, std::vector<MeasBA*>* measurement_vector){
 
-  getMeasurementsInit( active_point, i,  measurement_vector);
-
+  bool measurements_valid = getMeasurementsInit( active_point, i,  measurement_vector);
+  if(!measurements_valid)
+    return false;
   // load jacobians
   // iterate through all active keyframes
   for( MeasBA* measurement : *measurement_vector){
@@ -223,7 +224,6 @@ bool BundleAdj::createPrior(ActivePoint* active_point, std::shared_ptr<CamCouple
 
   PriorMeas* prior_meas = new PriorMeas(active_point,cam_couple);
   if(prior_meas->valid_ && !prior_meas->occlusion_){
-    // std::cout << cam_couple->cam_m_->name_ << " " << abs(prior_meas->error) << " " << chi_occlusion_threshold << std::endl;
 
     marginalization_handler_->prior_measurements_.push_back(prior_meas);
 
@@ -418,10 +418,12 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba){
   lin_sys_ba.dx_c = Schur_inv * ( -lin_sys_ba.b_c_ + lin_sys_ba.H_cp_ * H_pp_inv * lin_sys_ba.b_p_);
   lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ - H_pc_ * lin_sys_ba.dx_c );
 
-
   // // no schur
   // lin_sys_ba.dx_c = pinvDense(lin_sys_ba.H_cc_) * ( -lin_sys_ba.b_c_ );
   // lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ );
+
+  // lin_sys_ba.dx_c.setZero();
+  // lin_sys_ba.dx_p.setZero();
 
   if(debug_optimization && dso_->frame_current_idx_>=debug_start_frame){
     // dso_->points_handler_->projectActivePointsOnLastFrame();
@@ -509,7 +511,7 @@ void BundleAdj::marginalizePointsAndKeyframes(){
   //     }
   //   }
   // }
-
+  //
 
 
   // ***************************************************************************************
@@ -612,7 +614,10 @@ void BundleAdj::optimize(){
 
         std::vector<MeasBA*>* measurement_vector = new std::vector<MeasBA*>;
 
-        getMeasurements(active_pt, i, measurement_vector);
+        bool measurements_valid = getMeasurements(active_pt, i, measurement_vector);
+        if(!measurements_valid)
+          continue;
+
         active_pt->p_idx_=num_points;
         num_points++;
         measurement_vec_vec.push_back(measurement_vector);

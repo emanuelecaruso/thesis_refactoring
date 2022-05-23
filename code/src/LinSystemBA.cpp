@@ -51,6 +51,8 @@ void LinSysBA::reinitWithNewPoints(int n_points){
   omega_.resize(p_size_);
 
   clear();
+  dx_p.setZero();
+  dx_c.setZero();
 
   chi=0;
 }
