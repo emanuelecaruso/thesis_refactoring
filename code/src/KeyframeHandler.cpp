@@ -13,10 +13,11 @@ bool KeyframeHandler::addKeyframe(bool fixed){
   }
   else{
     // get optical flow distance
-    float flow_dist = getFlowDist();
+    float flow_dist;
+    bool valid = getFlowDist(flow_dist);
 
     // eval optical flow distance
-    if(flow_dist>flow_dist_threshold){
+    if(flow_dist>flow_dist_threshold || !valid ){
       dso_->cameras_container_->addActiveKeyframe(dso_->frame_current_);
       sharedCoutDebug("   - Keyframe added");
       marginalizeKeyframe();
@@ -126,7 +127,7 @@ bool KeyframeHandler::marginalizeKeyframe(){
 
 
 
-float KeyframeHandler::getFlowDist(){
+bool KeyframeHandler::getFlowDist(float& flow_dist){
   // project active points in last two frames
   CameraForMapping* curr_frame = dso_->frame_current_;
   CameraForMapping* last_kf = dso_->cameras_container_->keyframes_active_.back();
@@ -154,9 +155,9 @@ float KeyframeHandler::getFlowDist(){
     delete cam_couple_curr_frame;
     delete cam_couple_last_kf;
   }
-
-  float avg_dist = sum_dist/num_dists;
-
-  return avg_dist;
-
+  if (num_dists>0){
+    flow_dist = sum_dist/num_dists;
+    return true;
+  }
+  return false;
 }

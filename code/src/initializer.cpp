@@ -120,6 +120,12 @@ void Initializer::trackCornersLK(){
 }
 
 bool Initializer::findPose(){
+
+  double t_start=getTime();
+
+
+  trackCornersLK(); // track corners in subsequent image
+
   // estimate homography
   // cv::Mat H = findHomography();
 
@@ -142,6 +148,10 @@ bool Initializer::findPose(){
     cam->assignPose(T);
     // cam->assignPose0(T);
 
+
+    double t_end=getTime();
+    int deltaTime = (t_end-t_start);
+    sharedCoutDebug("   - Pose found, "+ std::to_string(deltaTime) + " ms");
 
     // dso_->camera_vector_->at(dso_->frame_current_)->assignPose(*(dso_->environment_->camera_vector_->at(dso_->frame_current_)->frame_camera_wrt_world_));  //gt
     return true;

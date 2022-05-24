@@ -17,7 +17,7 @@ class KeyframeHandler{
     bool addKeyframe(bool fixed);
 
   protected:
-    float getFlowDist();
+    bool getFlowDist(float& flow_dist);
     bool marginalizeKeyframe();
     float getPercentuageMarg(CameraForMapping* keyframe);
     void marginalize(CameraForMapping* keyframe);

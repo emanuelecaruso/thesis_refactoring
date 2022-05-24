@@ -66,12 +66,11 @@ void Dso::initialize(){
   }
   else{
 
-    initializer_->trackCornersLK(); // track corners in subsequent image
+    // initializer_->trackCornersLK(); // track corners in subsequent image
 
     // if a good pose is found ...
     if(initializer_->findPose()){
 
-      sharedCoutDebug("   - Pose found");
       if(debug_initialization){
         initializer_->showCornersTrackCurr();
       }
@@ -83,6 +82,8 @@ void Dso::initialize(){
   // project candidates and active points on last frame
   candidates_activator_->activateCandidates();
   points_handler_->sampleCandidates(); // sample candidates as high gradient points
+
+  bundle_adj_->optimize(true);
 
   if(debug_mapping){
 

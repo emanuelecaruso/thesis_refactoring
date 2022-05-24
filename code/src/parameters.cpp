@@ -11,12 +11,12 @@ bool use_spectator= true;
 
 // code parameters
 bool do_marginalization = true;
-bool first_2_active_kfs_fixed = false;
+bool first_2_active_kfs_fixed = true;
 bool marg_pts_in_marg_kf = false;
-bool first_est_jac = true;
+bool first_est_jac = false;
 bool take_gt_poses=false;
 bool take_gt_points=false;
-bool take_gt_initialization=true;
+bool take_gt_initialization=false;
 // int guess_type=POSE_CONSTANT;
 int guess_type=VELOCITY_CONSTANT;
 int opt_norm=HUBER;
@@ -49,7 +49,7 @@ float phase_coeff= 1./(4.*PI);
 
 // keyframe selection
 int num_active_keyframes=7;
-float flow_dist_threshold=0.0001;
+float flow_dist_threshold=0.00001;
 // float flow_dist_threshold=0.0005;
 float percentage_marg_pts_threshold= 0.01;
 // float percentage_marg_pts_threshold= 0.5;
@@ -62,7 +62,7 @@ float intensity_coeff_ba= 0.2;
 float gradient_coeff_ba= 1;
 
 float damp_cam= 0;
-float damp_point_invdepth= 0.00000001;
+float damp_point_invdepth= 1000;
 // float damp_point_invdepth= 10e3;
 // float damp_point_invdepth= FLT_MAX;
 
@@ -92,8 +92,8 @@ int end_frame=120;
 int fps=30;
 
 // initializer parameters
-int n_corners= 1000;
-float quality_level= 0.01;
+int n_corners= 2000;
+float quality_level= 0.001;
 float min_distance= 10;
 float err_threshold= 5;
 int size_window= 21;

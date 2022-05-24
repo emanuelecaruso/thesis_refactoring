@@ -393,7 +393,7 @@ void BundleAdj::updateBMarg(LinSysBA& lin_sys_ba){
 
 }
 
-void BundleAdj::updateState(LinSysBA& lin_sys_ba){
+void BundleAdj::updateState(LinSysBA& lin_sys_ba, bool only_pts){
 
   if(do_marginalization){
     integrateMargTerms(lin_sys_ba);
@@ -412,15 +412,18 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba){
   Eigen::MatrixXf H_pc_ = lin_sys_ba.H_cp_.transpose();
 
   // use schur
-  Eigen::MatrixXf Schur = lin_sys_ba.H_cc_ - lin_sys_ba.H_cp_ * H_pp_inv * H_pc_;
-  Eigen::MatrixXf Schur_inv = pinvDense( Schur );
+  if(!only_pts){
+    Eigen::MatrixXf Schur = lin_sys_ba.H_cc_ - lin_sys_ba.H_cp_ * H_pp_inv * H_pc_;
+    Eigen::MatrixXf Schur_inv = pinvDense( Schur );
+    lin_sys_ba.dx_c = Schur_inv * ( -lin_sys_ba.b_c_ + lin_sys_ba.H_cp_ * H_pp_inv * lin_sys_ba.b_p_);
+    lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ - H_pc_ * lin_sys_ba.dx_c );
+  }
+  // no schur
+  else{
+    // lin_sys_ba.dx_c = pinvDense(lin_sys_ba.H_cc_) * ( -lin_sys_ba.b_c_ );
+    lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ );
+  }
 
-  lin_sys_ba.dx_c = Schur_inv * ( -lin_sys_ba.b_c_ + lin_sys_ba.H_cp_ * H_pp_inv * lin_sys_ba.b_p_);
-  lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ - H_pc_ * lin_sys_ba.dx_c );
-
-  // // no schur
-  // lin_sys_ba.dx_c = pinvDense(lin_sys_ba.H_cc_) * ( -lin_sys_ba.b_c_ );
-  // lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ );
 
   // lin_sys_ba.dx_c.setZero();
   // lin_sys_ba.dx_p.setZero();
@@ -428,8 +431,8 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba){
   if(debug_optimization && dso_->frame_current_idx_>=debug_start_frame){
     // dso_->points_handler_->projectActivePointsOnLastFrame();
     // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
-    // dso_->spectator_->renderState();
-    // dso_->spectator_->showSpectator();
+    dso_->spectator_->renderState();
+    dso_->spectator_->showSpectator();
     std::cout << "chi " << lin_sys_ba.chi << std::endl;
     // std::cout << "dc " << lin_sys_ba.dx_c << std::endl;
     // std::cout << "dp " << lin_sys_ba.dx_p << std::endl;
@@ -573,7 +576,7 @@ void BundleAdj::marginalizePointsAndKeyframes(){
   }
 }
 
-void BundleAdj::optimize(){
+void BundleAdj::optimize(bool only_pts){
 
   double t_start=getTime();
 
@@ -630,7 +633,7 @@ void BundleAdj::optimize(){
     lin_sys_ba.reinitWithNewPoints(num_points);
 
     lin_sys_ba.buildLinearSystem(measurement_vec_vec);
-    updateState(lin_sys_ba);
+    updateState(lin_sys_ba, only_pts);
 
 
     // if(debug_optimization){

@@ -63,7 +63,7 @@ class BundleAdj{
     {};
 
     // ********** methods **********
-    void optimize();
+    void optimize(bool only_pts=false);
     void marginalize();
     void setCamData();
     bool getMeasurements(ActivePoint* active_point, int i, std::vector<MeasBA*>* measurement_vector);
@@ -75,7 +75,7 @@ class BundleAdj{
 
   protected:
     void marginalizePointsAndKeyframes();
-    void updateState(LinSysBA& lin_sys_ba);
+    void updateState(LinSysBA& lin_sys_ba, bool only_pts=false);
     void integrateMargTerms(LinSysBA& lin_sys_ba);
     void updateBMarg(LinSysBA& lin_sys_ba);
 };

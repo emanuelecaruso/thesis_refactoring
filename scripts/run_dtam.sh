@@ -3,8 +3,8 @@ cd code
 
 # Blender datasets
 # dataset_name='bunny_scene_cycles'
-dataset_name='bunny_scene'
-# dataset_name='cube_scene'
+# dataset_name='bunny_scene'
+dataset_name='cube_scene'
 
 # TUM datasets
 # dataset_name='sequence_01'
