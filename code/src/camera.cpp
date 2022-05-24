@@ -57,18 +57,20 @@ void Camera::clearImgs(){
 
 Eigen::Matrix3f* Camera::compute_K(){
 
-  float lens = cam_parameters_->lens;
+  float fx = cam_parameters_->fx;
+  float fy = cam_parameters_->fy;
   float width = cam_parameters_->width;
   float height = cam_parameters_->height;
 
-  assert(lens>0);
+  assert(fx>0);
+  assert(fy>0);
   assert(width>0);
   assert(height>0);
 
   Eigen::Matrix3f* K = new Eigen::Matrix3f;
   *K <<
-      lens ,  0   , width/2,
-      0    ,  lens, height/2,
+      fx   ,  0   , width/2,
+      0    ,  fy  , height/2,
       0    ,  0   ,       1 ;
 
   return K;
@@ -167,7 +169,7 @@ bool Camera::projectPoint(const Eigen::Vector3f& p, Eigen::Vector2f& uv, float& 
   uv = p_proj.head<2>()*(1./p_proj.z());
 
   // return wether the projected point is in front or behind the camera
-  if (p_proj.z()<cam_parameters_->lens)
+  if (p_proj.z()<0)
     return false;
 
   return true;
@@ -182,7 +184,7 @@ bool Camera::projectPoint(const Eigen::Vector3f& p, Eigen::Vector2f& uv ) const 
   uv = p_proj.head<2>()*(1./p_proj.z());
 
   // return wether the projected point is in front or behind the camera
-  if (p_proj.z()<cam_parameters_->lens)
+  if (p_proj.z()<0)
     return false;
 
   return true;
@@ -195,7 +197,7 @@ bool Camera::projectPointInCamFrame(const Eigen::Vector3f& p_incamframe, Eigen::
   uv = p_proj.head<2>()*(1./p_proj.z());
 
   // return wether the projected point is in front or behind the camera
-  if (p_proj.z()<cam_parameters_->lens)
+  if (p_proj.z()<0)
     return false;
 
   return true;

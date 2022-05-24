@@ -51,7 +51,7 @@ slv_u2 = subs(slv_u2,d2,slv_d2);
 JMu = jacobian(slv_u2,[dx1,dx2,dx3,dx4,dx5,dx6]);
 JMu = subs(JMu,[dx1,dx2,dx3,dx4,dx5,dx6],[0,0,0,0,0,0]);
 JMu = simplify(JMu,'Steps',1000);
-JMu = collect(JMu,[pb0, pb1, pb2]);
+JMu = collect(JMu,[pb0, pb1, pb2])
 
 [N,D] = numden(JMu(6));
 N= collect(N,[pb0, pb1, pb2])

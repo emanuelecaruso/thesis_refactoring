@@ -1,7 +1,7 @@
 clear
 clc
 
-syms fx fy d1 d2 w h u1 v1 u2 v2
+syms f fx fy d1 d2 w h u1 v1 u2 v2
 syms r00 r01 r02 r10 r11 r12 r20 r21 r22 t0 t0 t1 t2
 syms slope1 slope2 vh
 
@@ -54,32 +54,32 @@ JRu = collect(JRu,[pb0, pb1, pb2]);
 for i = 1:6
     [N,D] = numden(JRu(i));
     N= collect(N,[pb0, pb1, pb2]);
-    D= collect(D,[pb0, pb1, pb2])
-    CN = coeffs(N,[pb0, pb1, pb2]);
-    CD = coeffs(D,[pb0, pb1, pb2]);
+    D= collect(D,[pb0, pb1, pb2]);
+    CN = coeffs(N,[pb0, pb1, pb2])
+    CD = coeffs(D,[pb0, pb1, pb2])
     size(CN);
     size(CD);
 end
 
 %%
 
-% disp("v2")
-expr3 = mlt(2) == a(2);
-slv_v2 = solve(expr3,v2);
-slv_v2 = subs(slv_v2,d2,slv_d2);
-JRv = jacobian(slv_v2,[dx1,dx2,dx3,dx4,dx5,dx6]);
-JRv = subs(JRv,[dx1,dx2,dx3,dx4,dx5,dx6],[0,0,0,0,0,0]);
-JRv = simplify(JRv,'Steps',1000);
-JRv = collect(JRv,[pb0, pb1, pb2])
-for i = 1:6
-    [N,D] = numden(JRv(i));
-    N= collect(N,[pb0, pb1, pb2]);
-    D= collect(D,[pb0, pb1, pb2])
-    CN = coeffs(N,[pb0, pb1, pb2]);
-    CD = coeffs(D,[pb0, pb1, pb2]);
-    size(CN);
-    size(CD);
-end
+% % disp("v2")
+% expr3 = mlt(2) == a(2);
+% slv_v2 = solve(expr3,v2);
+% slv_v2 = subs(slv_v2,d2,slv_d2);
+% JRv = jacobian(slv_v2,[dx1,dx2,dx3,dx4,dx5,dx6]);
+% JRv = subs(JRv,[dx1,dx2,dx3,dx4,dx5,dx6],[0,0,0,0,0,0]);
+% JRv = simplify(JRv,'Steps',1000);
+% JRv = collect(JRv,[pb0, pb1, pb2])
+% for i = 1:6
+%     [N,D] = numden(JRv(i));
+%     N= collect(N,[pb0, pb1, pb2]);
+%     D= collect(D,[pb0, pb1, pb2])
+%     CN = coeffs(N,[pb0, pb1, pb2]);
+%     CD = coeffs(D,[pb0, pb1, pb2]);
+%     size(CN);
+%     size(CD);
+% end
 
 %%
 

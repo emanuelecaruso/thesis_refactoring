@@ -26,15 +26,16 @@ void Initializer::compute_cv_K(){
 
   float pixel_meter_ratio = dso_->cam_parameters_->pixel_meter_ratio;
   // express focal length (lens) and principal point in pixels
-  float f_in_pixels = dso_->cam_parameters_->lens*pixel_meter_ratio;
+  float fx_in_pixels = dso_->cam_parameters_->fx*pixel_meter_ratio;
+  float fy_in_pixels = dso_->cam_parameters_->fy*pixel_meter_ratio;
   float pp_x = dso_->cam_parameters_->resolution_x/2;
   float pp_y = dso_->cam_parameters_->resolution_y/2;
 
   // compute camera matrix K for opencv
   Eigen::Matrix3f K;
-  K <<  f_in_pixels ,  0          ,  pp_x,
-        0           ,  f_in_pixels,  pp_y,
-        0           ,  0          ,  1 ;
+  K <<  fx_in_pixels ,  0           ,  pp_x,
+        0            ,  fy_in_pixels,  pp_y,
+        0            ,  0           ,  1 ;
 
   eigen2cv(K, cv_K);
 }

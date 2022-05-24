@@ -234,13 +234,7 @@ CamParameters* Environment::loadCamParametersTUM(const std::string& path_name, c
       count++;
     }
   }
-  // res_x 640
-  // res_y 480
-  // fx 256
-  // fy 254.4
-  // cx 319.5
-  // cy 239.5
-  // pxlmtrratio 1000
+
 
   return nullptr;
 
