@@ -528,6 +528,8 @@ executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o: \
  /usr/local/include/opencv4/opencv2/cudastereo.hpp \
  /usr/local/include/opencv4/opencv2/cudawarping.hpp /usr/include/dirent.h \
  /usr/include/x86_64-linux-gnu/bits/dirent.h \
+ /usr/include/x86_64-linux-gnu/sys/stat.h \
+ /usr/include/x86_64-linux-gnu/bits/stat.h \
  /home/emanuele/Scrivania/thesis_refactoring/code/src/environment.h \
  /home/emanuele/Scrivania/thesis_refactoring/code/src/camera.h \
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h \

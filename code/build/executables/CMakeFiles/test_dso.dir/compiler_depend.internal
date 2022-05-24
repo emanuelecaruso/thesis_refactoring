@@ -597,6 +597,8 @@ executables/CMakeFiles/test_dso.dir/__/src/BundleAdj.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -1237,6 +1239,8 @@ executables/CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -1872,6 +1876,8 @@ executables/CMakeFiles/test_dso.dir/__/src/CameraForMapping.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -2496,6 +2502,8 @@ executables/CMakeFiles/test_dso.dir/__/src/CamerasContainer.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -3131,6 +3139,8 @@ executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -3771,6 +3781,8 @@ executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -4406,6 +4418,8 @@ executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -5041,6 +5055,8 @@ executables/CMakeFiles/test_dso.dir/__/src/LinSystemBA.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -5676,6 +5692,8 @@ executables/CMakeFiles/test_dso.dir/__/src/LinSystemTracking.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -6312,6 +6330,8 @@ executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -6936,6 +6956,8 @@ executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -7576,6 +7598,8 @@ executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/camera.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
@@ -8195,6 +8219,8 @@ executables/CMakeFiles/test_dso.dir/__/src/Tracker.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -8835,6 +8861,8 @@ executables/CMakeFiles/test_dso.dir/__/src/camera.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -9453,6 +9481,8 @@ executables/CMakeFiles/test_dso.dir/__/src/dso.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -10093,6 +10123,8 @@ executables/CMakeFiles/test_dso.dir/__/src/environment.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -10120,8 +10152,6 @@ executables/CMakeFiles/test_dso.dir/__/src/environment.cpp.o
  /usr/include/c++/7/condition_variable
  /usr/include/c++/7/atomic
  /usr/include/c++/7/bits/atomic_futex.h
- /usr/include/x86_64-linux-gnu/sys/stat.h
- /usr/include/x86_64-linux-gnu/bits/stat.h
 
 executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o
  /home/emanuele/Scrivania/thesis_refactoring/code/src/epline.cpp
@@ -10719,6 +10749,8 @@ executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -11344,6 +11376,8 @@ executables/CMakeFiles/test_dso.dir/__/src/image.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
 
 executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o
  /home/emanuele/Scrivania/thesis_refactoring/code/src/initializer.cpp
@@ -11941,6 +11975,8 @@ executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp
  /usr/include/c++/7/ciso646
@@ -12580,6 +12616,8 @@ executables/CMakeFiles/test_dso.dir/__/src/parameters.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
 
 executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o
@@ -13177,6 +13215,8 @@ executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o
  /usr/local/include/opencv4/opencv2/cudawarping.hpp
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/environment.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/camera.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/parameters.h
@@ -14027,6 +14067,8 @@ executables/CMakeFiles/test_dso.dir/test_dso.cpp.o
  /usr/include/dirent.h
  /usr/include/x86_64-linux-gnu/bits/dirent.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/defs.h
+ /usr/include/x86_64-linux-gnu/sys/stat.h
+ /usr/include/x86_64-linux-gnu/bits/stat.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/environment.h
  /home/emanuele/Scrivania/thesis_refactoring/code/src/camera.h
  /home/emanuele/Scrivania/thesis_refactoring/code/libs/json.hpp

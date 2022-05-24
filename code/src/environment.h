@@ -23,7 +23,12 @@ class Environment{
 
   private:
     std::vector<Camera*>* loadCameraVector(const std::string& path_name, const std::string& dataset_name, int end_frame);
+    std::vector<Camera*>* loadCameraVectorBlender(const std::string& path_name, const std::string& dataset_name, int end_frame);
+    std::vector<Camera*>* loadCameraVectorTUM(const std::string& path_name, const std::string& dataset_name, int end_frame);
+
     CamParameters* loadCamParameters(const std::string& path_name, const std::string& dataset_name);
+    CamParameters* loadCamParametersBlender(const std::string& path_name, const std::string& dataset_name);
+    CamParameters* loadCamParametersTUM(const std::string& path_name, const std::string& dataset_name);
 
     // double saveState(std::string path_name, Camera_cpu* camera_cpu);
 

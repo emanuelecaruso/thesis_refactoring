@@ -10,6 +10,23 @@ using json = nlohmann::json;
 
 std::vector<Camera*>* Environment::loadCameraVector(const std::string& path_name, const std::string& dataset_name, int end_frame){
 
+  std::string json_path = path_name+"/"+dataset_name+".json";
+  std::string data_path = path_name+"/data.txt";
+  std::string times_path = path_name+"/times.txt";
+  std::string images_path = path_name+"/images";
+
+  if(file_exists(json_path))
+    loadCameraVectorBlender(path_name, dataset_name, end_frame);
+  else if(file_exists(data_path) && dir_exists(images_path) )
+    loadCameraVectorTUM(path_name, dataset_name, end_frame);
+  else
+    throw std::invalid_argument( "non valid dataset" );
+
+}
+
+
+std::vector<Camera*>* Environment::loadCameraVectorBlender(const std::string& path_name, const std::string& dataset_name, int end_frame){
+
   std::vector<Camera*>* camera_vector = nullptr;
 
   const char* path_name_ = path_name.c_str(); // dataset name
@@ -86,62 +103,117 @@ std::vector<Camera*>* Environment::loadCameraVector(const std::string& path_name
 }
 
 
+std::vector<Camera*>* Environment::loadCameraVectorTUM(const std::string& path_name, const std::string& dataset_name, int end_frame){
+
+    std::vector<Camera*>* camera_vector = nullptr;
+
+    std::string data_path = path_name+"/data.txt";
+    std::string times_path = path_name+"/times.txt";
+    std::string images_path = path_name+"/images";
+
+    int count =0;
+
+    std::fstream newfile;
+    newfile.open(times_path);  // open a file to perform write operation using file object
+    if (newfile.is_open()){ //checking whether the file is open
+      std::string line;
+      while(getline(newfile, line)){ //read data from file object and put it into string.
+        if (count>end_frame)
+          break;
+        std::vector <std::string> tokens; // store the string in vector
+        split_str (line, ' ', tokens); // call function to split the string
+        std::string cam_name = tokens.front();
+        std::string time = tokens.back();
+
+        Camera* camera = new Camera(cam_name,cam_parameters_, images_path+"/"+cam_name+".jpg" );
+        camera_vector->push_back(camera);
+        std::cout << camera->name_ << " added in env" << std::endl;
+        count++;
+      }
+    }
+
+
+    return camera_vector;
+}
+
 CamParameters* Environment::loadCamParameters(const std::string& path_name, const std::string& dataset_name){
+  std::string json_path = path_name+"/"+dataset_name+".json";
+  std::string data_path = path_name+"/data.txt";
+  std::string times_path = path_name+"/times.txt";
+  std::string images_path = path_name+"/images";
 
-  CamParameters* cam_parameters_out = nullptr;
-
-  const char* path_name_ = path_name.c_str(); // dataset name
-
-  std::string complete_path = path_name+"/"+dataset_name+".json";
-
-  struct stat info;
-  if( stat( path_name_, &info ) != 0 )
-  {
-    printf( "ERROR: Dataset NOT found: %s \n", path_name_ );
-    exit(1);
-    // return cam_parameters_out;
-  }
-  else if( info.st_mode & S_IFDIR )
-  {
-    printf( "Dataset found: %s \n",path_name_ );
-  }
+  if(file_exists(json_path))
+    loadCamParametersBlender(path_name, dataset_name);
+  else if(file_exists(data_path) && dir_exists(images_path) )
+    loadCamParametersTUM(path_name, dataset_name);
   else
-  {
-    printf( "ERROR: %s Is not a directory\n", path_name_ );
-    exit(1);
-    // return cam_parameters_out;
-  }
+    throw std::invalid_argument( "non valid dataset" );
 
-
-
-  // read a JSON file
-  std::ifstream i(complete_path);
-  json j;
-  i >> j;
-
-
-  auto environment = j.at("environment");
-  try{
-    const float lens = environment.at("lens");
-    const float max_depth = environment.at("max_depth");
-    const float min_depth = environment.at("min_depth");
-    const float width = environment.at("width");
-    const int resolution_x = environment.at("resolution_x");
-    const int resolution_y = environment.at("resolution_y");
-
-    cam_parameters_out = new CamParameters(
-      resolution_x, resolution_y, width,
-      lens, min_depth, max_depth);
-
-  } catch (std::exception& e) {
-    std::string error = ": missing values in json file for environment";
-    std::cout << error << std::endl;
-    return cam_parameters_out;
-  };
-
-  return cam_parameters_out;
 
 }
+
+CamParameters* Environment::loadCamParametersBlender(const std::string& path_name, const std::string& dataset_name){
+
+    CamParameters* cam_parameters_out = nullptr;
+
+    const char* path_name_ = path_name.c_str(); // dataset name
+
+    std::string complete_path = path_name+"/"+dataset_name+".json";
+
+    struct stat info;
+    if( stat( path_name_, &info ) != 0 )
+    {
+      printf( "ERROR: Dataset NOT found: %s \n", path_name_ );
+      exit(1);
+      // return cam_parameters_out;
+    }
+    else if( info.st_mode & S_IFDIR )
+    {
+      printf( "Dataset found: %s \n",path_name_ );
+    }
+    else
+    {
+      printf( "ERROR: %s Is not a directory\n", path_name_ );
+      exit(1);
+      // return cam_parameters_out;
+    }
+
+
+
+    // read a JSON file
+    std::ifstream i(complete_path);
+    json j;
+    i >> j;
+
+
+    auto environment = j.at("environment");
+    try{
+      const float lens = environment.at("lens");
+      const float max_depth = environment.at("max_depth");
+      const float min_depth = environment.at("min_depth");
+      const float width = environment.at("width");
+      const int resolution_x = environment.at("resolution_x");
+      const int resolution_y = environment.at("resolution_y");
+
+      cam_parameters_out = new CamParameters(
+        resolution_x, resolution_y, width,
+        lens, min_depth, max_depth);
+
+    } catch (std::exception& e) {
+      std::string error = ": missing values in json file for environment";
+      std::cout << error << std::endl;
+      return cam_parameters_out;
+    };
+
+    return cam_parameters_out;
+
+}
+
+CamParameters* Environment::loadCamParametersTUM(const std::string& path_name, const std::string& dataset_name){
+  return nullptr;
+
+}
+
 
 void Environment::debugAllCameras(bool show_imgs) const {
 

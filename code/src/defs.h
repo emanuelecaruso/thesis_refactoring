@@ -9,7 +9,8 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <mutex>
-
+#include <sys/types.h>
+#include <sys/stat.h>
 
 
 //ds opencv keys
@@ -429,6 +430,8 @@ inline Eigen::Isometry3f v2t_inv(Vector6f& t){
 
   return T;
 }
+#define BLENDER 0
+#define TUM 1
 
 #define POSE_CONSTANT 0
 #define VELOCITY_CONSTANT 1
@@ -701,4 +704,30 @@ inline void appendElement(Eigen::VectorXf& vec)
 
   vec(vec.size()-1)=0;
 
+}
+
+inline bool file_exists(const std::string& name) {
+    return ( access( name.c_str(), F_OK ) != -1 );
+}
+
+inline bool dir_exists(const std::string& path_name){
+  const char* path_name_ = path_name.c_str(); // dataset name
+  struct stat info;
+  if( stat( path_name_, &info ) != 0 )
+    return false;
+  else if( info.st_mode & S_IFDIR )
+    return true;
+  return false;
+}
+
+inline void split_str( std::string const &str, const char delim, std::vector <std::string> &out )
+{
+  // create a stream from the string
+  std::stringstream s(str);
+
+  std::string s2;
+  while (std:: getline (s, s2, delim) )
+  {
+      out.push_back(s2); // store the string in s2
+  }
 }

@@ -596,6 +596,8 @@ executables/CMakeFiles/test_dso.dir/__/src/BundleAdj.cpp.o: ../src/BundleAdj.cpp
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -1235,6 +1237,8 @@ executables/CMakeFiles/test_dso.dir/__/src/CamCouple.cpp.o: ../src/CamCouple.cpp
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -1869,6 +1873,8 @@ executables/CMakeFiles/test_dso.dir/__/src/CameraForMapping.cpp.o: ../src/Camera
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -2492,6 +2498,8 @@ executables/CMakeFiles/test_dso.dir/__/src/CamerasContainer.cpp.o: ../src/Camera
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -3126,6 +3134,8 @@ executables/CMakeFiles/test_dso.dir/__/src/CandidatesActivator.cpp.o: ../src/Can
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -3765,6 +3775,8 @@ executables/CMakeFiles/test_dso.dir/__/src/KeyframeHandler.cpp.o: ../src/Keyfram
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -4399,6 +4411,8 @@ executables/CMakeFiles/test_dso.dir/__/src/LinSystem.cpp.o: ../src/LinSystem.cpp
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -5033,6 +5047,8 @@ executables/CMakeFiles/test_dso.dir/__/src/LinSystemBA.cpp.o: ../src/LinSystemBA
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -5667,6 +5683,8 @@ executables/CMakeFiles/test_dso.dir/__/src/LinSystemTracking.cpp.o: ../src/LinSy
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -6302,6 +6320,8 @@ executables/CMakeFiles/test_dso.dir/__/src/PointsContainer.cpp.o: ../src/PointsC
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -6925,6 +6945,8 @@ executables/CMakeFiles/test_dso.dir/__/src/PointsHandler.cpp.o: ../src/PointsHan
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -7564,6 +7586,8 @@ executables/CMakeFiles/test_dso.dir/__/src/Pyramid.cpp.o: ../src/Pyramid.cpp \
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/camera.h \
   ../src/parameters.h \
   ../libs/json.hpp \
@@ -8182,6 +8206,8 @@ executables/CMakeFiles/test_dso.dir/__/src/Tracker.cpp.o: ../src/Tracker.cpp \
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -8821,6 +8847,8 @@ executables/CMakeFiles/test_dso.dir/__/src/camera.cpp.o: ../src/camera.cpp \
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -9438,6 +9466,8 @@ executables/CMakeFiles/test_dso.dir/__/src/dso.cpp.o: ../src/dso.cpp \
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -10077,6 +10107,8 @@ executables/CMakeFiles/test_dso.dir/__/src/environment.cpp.o: ../src/environment
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -10103,9 +10135,7 @@ executables/CMakeFiles/test_dso.dir/__/src/environment.cpp.o: ../src/environment
   /usr/include/c++/7/thread \
   /usr/include/c++/7/condition_variable \
   /usr/include/c++/7/atomic \
-  /usr/include/c++/7/bits/atomic_futex.h \
-  /usr/include/x86_64-linux-gnu/sys/stat.h \
-  /usr/include/x86_64-linux-gnu/bits/stat.h
+  /usr/include/c++/7/bits/atomic_futex.h
 
 executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o: ../src/epline.cpp \
   /usr/include/stdc-predef.h \
@@ -10702,6 +10732,8 @@ executables/CMakeFiles/test_dso.dir/__/src/epline.cpp.o: ../src/epline.cpp \
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -11325,7 +11357,9 @@ executables/CMakeFiles/test_dso.dir/__/src/image.cpp.o: ../src/image.cpp \
   /usr/local/include/opencv4/opencv2/cudastereo.hpp \
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
-  /usr/include/x86_64-linux-gnu/bits/dirent.h
+  /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h
 
 executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: ../src/initializer.cpp \
   /usr/include/stdc-predef.h \
@@ -11922,6 +11956,8 @@ executables/CMakeFiles/test_dso.dir/__/src/initializer.cpp.o: ../src/initializer
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h \
   ../libs/json.hpp \
   /usr/include/c++/7/ciso646 \
@@ -12560,6 +12596,8 @@ executables/CMakeFiles/test_dso.dir/__/src/parameters.cpp.o: ../src/parameters.c
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/parameters.h
 
 executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o: ../src/spectator.cpp \
@@ -13156,6 +13194,8 @@ executables/CMakeFiles/test_dso.dir/__/src/spectator.cpp.o: ../src/spectator.cpp
   /usr/local/include/opencv4/opencv2/cudawarping.hpp \
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/environment.h \
   ../src/camera.h \
   ../src/parameters.h \
@@ -14004,6 +14044,8 @@ executables/CMakeFiles/test_dso.dir/test_dso.cpp.o: ../executables/test_dso.cpp 
   /usr/include/dirent.h \
   /usr/include/x86_64-linux-gnu/bits/dirent.h \
   ../src/defs.h \
+  /usr/include/x86_64-linux-gnu/sys/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
   ../src/environment.h \
   ../src/camera.h \
   ../libs/json.hpp \
@@ -14052,10 +14094,6 @@ executables/CMakeFiles/test_dso.dir/test_dso.cpp.o: ../executables/test_dso.cpp 
 ../src/initializer.cpp:
 
 ../src/epline.cpp:
-
-/usr/include/x86_64-linux-gnu/bits/stat.h:
-
-/usr/include/x86_64-linux-gnu/sys/stat.h:
 
 ../src/dso.cpp:
 
@@ -14108,6 +14146,10 @@ executables/CMakeFiles/test_dso.dir/test_dso.cpp.o: ../executables/test_dso.cpp 
 /usr/include/c++/7/forward_list:
 
 /usr/include/c++/7/ciso646:
+
+/usr/include/x86_64-linux-gnu/bits/stat.h:
+
+/usr/include/x86_64-linux-gnu/sys/stat.h:
 
 /usr/local/include/opencv4/opencv2/cudastereo.hpp:
 
