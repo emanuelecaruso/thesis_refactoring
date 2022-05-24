@@ -210,6 +210,38 @@ CamParameters* Environment::loadCamParametersBlender(const std::string& path_nam
 }
 
 CamParameters* Environment::loadCamParametersTUM(const std::string& path_name, const std::string& dataset_name){
+
+  std::vector<std::string> data_tokens{
+    "res_x", "res_y", "fx", "fy", "cx", "cy", "pxlmtrratio"
+  };
+  std::vector<float> cam_data(7);
+  int count = 0;
+
+  std::string data_path = path_name+"/data.txt";
+
+  std::fstream newfile;
+  newfile.open(data_path);  // open a file to perform write operation using file object
+  if (newfile.is_open()){ //checking whether the file is open
+    std::string line;
+    while(getline(newfile, line)){ //read data from file object and put it into string.
+
+      std::vector <std::string> tokens; // store the string in vector
+      split_str (line, ' ', tokens); // call function to split the string
+      assert(tokens.front()==data_tokens[count]);
+      cam_data[count]=std::stof(tokens.back());
+
+      std::cout << cam_data[count] << std::endl;
+      count++;
+    }
+  }
+  // res_x 640
+  // res_y 480
+  // fx 256
+  // fy 254.4
+  // cx 319.5
+  // cy 239.5
+  // pxlmtrratio 1000
+
   return nullptr;
 
 }

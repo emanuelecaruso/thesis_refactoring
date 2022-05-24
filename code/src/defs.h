@@ -186,22 +186,32 @@ struct CamParameters{
   const float width;
   const float height;
   const float lens;
+  const float fx;
+  const float fy;
   const float min_depth;
   const float max_depth;
   const float pixel_width;
   const float pixel_meter_ratio;
 
   CamParameters(int resolution_x_, int resolution_y_,
-   float width_,float lens_,float min_depth_,float max_depth_):
+  float width_,float lens_,float min_depth_,float max_depth_):
   resolution_x(resolution_x_), resolution_y(resolution_y_), aspect((float)resolution_x_/(float)resolution_y_),
-  width(width_), height(width_/aspect), lens(lens_), min_depth(min_depth_), max_depth(max_depth_),
+  width(width_), height(width_/aspect), lens(lens_), fx(lens_), fy(lens_), min_depth(min_depth_), max_depth(max_depth_),
+  pixel_width(width/(float)resolution_x), pixel_meter_ratio((float)resolution_x/width)
+  { };
+
+  CamParameters(int resolution_x_, int resolution_y_,
+  float width_,float fx_,float fy_,float min_depth_,float max_depth_):
+  resolution_x(resolution_x_), resolution_y(resolution_y_), aspect((float)resolution_x_/(float)resolution_y_),
+  width(width_), height(width_/aspect), lens(fx_), fx(fx_), fy(fy_), min_depth(min_depth_), max_depth(max_depth_),
   pixel_width(width/(float)resolution_x), pixel_meter_ratio((float)resolution_x/width)
   { };
 
   // clone
   CamParameters(const CamParameters* cam_parameters):
   resolution_x(cam_parameters->resolution_x), resolution_y(cam_parameters->resolution_y), aspect((float)resolution_x/(float)resolution_y),
-  width(cam_parameters->width), height(width/aspect), lens(cam_parameters->lens), min_depth(cam_parameters->min_depth), max_depth(cam_parameters->max_depth),
+  width(cam_parameters->width), height(width/aspect), lens(cam_parameters->lens), fx(cam_parameters->fx), fy(cam_parameters->fy),
+  min_depth(cam_parameters->min_depth), max_depth(cam_parameters->max_depth),
   pixel_width(width/(float)resolution_x), pixel_meter_ratio((float)resolution_x/width)
   { };
 
