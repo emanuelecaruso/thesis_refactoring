@@ -378,14 +378,9 @@ bool CamCouple::getCoord(float u1, float v1, float d1, float& coord, bool u_or_v
 }
 
 bool CamCouple::getUv(float u1, float v1, float d1, float& u2, float& v2 ){
-  u2=(A_bu*u1*d1+B_bu*v1*d1+C_bu*d1+D_bu)/(E_bu*u1*d1+F_bu*v1*d1+G_bu*d1+H_bu);
-  v2=(A_bv*u1*d1+B_bv*v1*d1+C_bv*d1+D_bv)/(E_bv*u1*d1+F_bv*v1*d1+G_bv*d1+H_bv);
-  // assert(!std::isnan(u2));
-  // assert(!std::isnan(v2));
-  if (std::isnan(u2) || std::isnan(v2) || std::isinf(u2) || std::isinf(v2) ){
-    return false;
-  }
-  return true;
+  bool u2_valid = getCoord(u1,v1,d1,u2,true);
+  bool v2_valid = getCoord(u1,v1,d1,v2,false);
+  return (u2_valid&&v2_valid);
 
 }
 

@@ -16,9 +16,9 @@ std::vector<Camera*>* Environment::loadCameraVector(const std::string& path_name
   std::string images_path = path_name+"/images";
 
   if(file_exists(json_path))
-    loadCameraVectorBlender(path_name, dataset_name, end_frame);
+    return loadCameraVectorBlender(path_name, dataset_name, end_frame);
   else if(file_exists(data_path) && dir_exists(images_path) )
-    loadCameraVectorTUM(path_name, dataset_name, end_frame);
+    return loadCameraVectorTUM(path_name, dataset_name, end_frame);
   else
     throw std::invalid_argument( "non valid dataset" );
 
@@ -143,9 +143,9 @@ CamParameters* Environment::loadCamParameters(const std::string& path_name, cons
   std::string images_path = path_name+"/images";
 
   if(file_exists(json_path))
-    loadCamParametersBlender(path_name, dataset_name);
+    return loadCamParametersBlender(path_name, dataset_name);
   else if(file_exists(data_path) && dir_exists(images_path) )
-    loadCamParametersTUM(path_name, dataset_name);
+    return loadCamParametersTUM(path_name, dataset_name);
   else
     throw std::invalid_argument( "non valid dataset" );
 
