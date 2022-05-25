@@ -11,7 +11,7 @@ bool use_spectator= true;
 
 // code parameters
 bool do_marginalization = true;
-bool first_2_active_kfs_fixed = true;
+bool first_2_active_kfs_fixed = false;
 bool marg_pts_in_marg_kf = false;
 bool first_est_jac = false;
 bool take_gt_poses=false;
