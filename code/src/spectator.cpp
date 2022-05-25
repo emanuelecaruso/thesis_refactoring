@@ -12,8 +12,7 @@ CamParameters* Spectator::initCamParams(){
 }
 
 Camera* Spectator::initCam(){
-  Image<pixelIntensity>* null_shared_ptr = nullptr;
-  Camera* spectator_cam (new Camera("Spectator", spectator_params_, null_shared_ptr));
+  Camera* spectator_cam (new Camera("Spectator", spectator_params_));
   return spectator_cam;
 }
 

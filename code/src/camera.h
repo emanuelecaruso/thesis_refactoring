@@ -16,6 +16,7 @@ class Camera{
     Image<float>* invdepth_map_;
     Eigen::Isometry3f* frame_camera_wrt_world_;
     Eigen::Isometry3f* frame_world_wrt_camera_;
+    float exposure_time_;
     std::mutex mu_access_pose;
 
     // clone camera
@@ -27,7 +28,8 @@ class Camera{
       image_intensity_(cam->image_intensity_),
       invdepth_map_(cam->invdepth_map_ ),
       frame_camera_wrt_world_(new Eigen::Isometry3f ),
-      frame_world_wrt_camera_(new Eigen::Isometry3f )
+      frame_world_wrt_camera_(new Eigen::Isometry3f ),
+      exposure_time_(cam->exposure_time_)
       {
         if(copy_pose){
           *frame_camera_wrt_world_=(*(cam->frame_camera_wrt_world_));
@@ -35,54 +37,28 @@ class Camera{
         }
       }
 
-    Camera(const std::string& name, const CamParameters* cam_parameters,
-           const Image<pixelIntensity>* image_intensity):
+    Camera(const std::string& name, const CamParameters* cam_parameters, float exposure_time=1):
            name_(name),
            cam_parameters_(cam_parameters),
            K_(compute_K()),
            Kinv_( new Eigen::Matrix3f(K_->inverse()) ),
-           image_intensity_( image_intensity ),
+           image_intensity_( nullptr ),
            frame_camera_wrt_world_(new Eigen::Isometry3f),
-           frame_world_wrt_camera_(new Eigen::Isometry3f)
+           frame_world_wrt_camera_(new Eigen::Isometry3f),
+           exposure_time_(exposure_time)
            { };
 
-    Camera(const std::string& name, const CamParameters* cam_parameters,
-            const Image<pixelIntensity>* image_intensity,
-            Image<float>* invdepth_map ):
-            name_(name),
-            cam_parameters_(cam_parameters),
-            K_(compute_K()),
-            Kinv_( new Eigen::Matrix3f(K_->inverse()) ),
-            image_intensity_( image_intensity ),
-            invdepth_map_( invdepth_map ),
-            frame_camera_wrt_world_(new Eigen::Isometry3f),
-            frame_world_wrt_camera_(new Eigen::Isometry3f)
-            { };
-
      Camera(const std::string& name, const CamParameters* cam_parameters,
-            const std::string& path_rgb):
-            name_(name),
-            cam_parameters_(cam_parameters),
-            K_(compute_K()),
-            Kinv_( new Eigen::Matrix3f(K_->inverse()) ),
-            image_intensity_( returnIntensityImgFromPath( path_rgb ) ),
-            frame_camera_wrt_world_(new Eigen::Isometry3f),
-            frame_world_wrt_camera_(new Eigen::Isometry3f)
-            { };
-
-    Camera(const std::string& name, const CamParameters* cam_parameters,
-           const Image<pixelIntensity>* image_intensity, Eigen::Isometry3f* frame_world_wrt_camera,
-               Eigen::Isometry3f* frame_camera_wrt_world ):
-           Camera(name, cam_parameters, image_intensity )
-           {
-             frame_world_wrt_camera_=frame_world_wrt_camera;
-             frame_camera_wrt_world_=frame_camera_wrt_world;
-           };
+            const std::string& path_rgb, float exposure_time=1):
+            Camera( name, cam_parameters, exposure_time)
+            {
+              image_intensity_=returnIntensityImgFromPath( path_rgb );
+            };
 
     Camera(const std::string& name, const CamParameters* cam_parameters,
            nlohmann::basic_json<>::value_type f,
-           const std::string& path_rgb):
-    Camera( name,cam_parameters, path_rgb )
+           const std::string& path_rgb, float exposure_time=1):
+    Camera( name,cam_parameters, path_rgb, exposure_time )
     {
       loadPoseFromJsonVal(f);
       invdepth_map_ = new Image< float >("invdepth_"+name_);
@@ -91,8 +67,8 @@ class Camera{
 
     Camera(const std::string& name, const CamParameters* cam_parameters,
            nlohmann::basic_json<>::value_type f,
-           const std::string& path_rgb,  const std::string& path_depth ):
-    Camera( name,cam_parameters, f, path_rgb )
+           const std::string& path_rgb,  const std::string& path_depth, float exposure_time=1 ):
+    Camera( name,cam_parameters, f, path_rgb, exposure_time )
     {
       loadDepthMap(path_depth);
     };
