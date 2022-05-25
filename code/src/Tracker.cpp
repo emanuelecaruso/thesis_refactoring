@@ -171,7 +171,7 @@ void Tracker::trackCam(){
 
 
         // assert(n_meas>0);
-        lin_sys_tracking.updateCameraPose();
+        lin_sys_tracking.updateCameraState();
 
 
         double t_end=getTime();

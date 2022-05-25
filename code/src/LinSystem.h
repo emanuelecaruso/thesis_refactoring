@@ -70,6 +70,8 @@ class LinSysBlocks : public LinSys{
 
     // ********** methods **********
     bool visualizeH();
+    bool visualizeB();
+
     void clear();
     void reset();
     void resize(int c_size, int p_size);

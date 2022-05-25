@@ -408,7 +408,7 @@ inline Vector6f t2v(const Eigen::Isometry3f& T){
   return t;
 }
 
-inline Eigen::Isometry3f v2t(const Vector6f& t){
+inline Eigen::Isometry3f v2t(Vector6f& t){
   // t_inv is new_T_old
   Eigen::Isometry3f T;
   T.translation()=t.head<3>();

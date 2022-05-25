@@ -20,6 +20,8 @@ bool Meas::getPixelOfProjectedActivePoint(ActivePoint* active_point){
 }
 
 float Meas::getError( ActivePoint* active_point, int image_type){
+  CameraForMapping* cam_r = cam_couple_->cam_r_;
+  CameraForMapping* cam_m = cam_couple_->cam_m_;
   float z, z_hat;
   float error;
   // pxl pixel_r = active_point->pixel_/(pow(2,level_));
@@ -33,25 +35,22 @@ float Meas::getError( ActivePoint* active_point, int image_type){
       z = active_point->c_;
     }
     else{
-      z = cam_couple_->cam_r_->pyramid_->getC(level_)->evalPixelBilinear(pixel_r);
+      z = cam_r->pyramid_->getC(level_)->evalPixelBilinear(pixel_r);
     }
-    z_hat = cam_couple_->cam_m_->pyramid_->getC(level_)->evalPixelBilinear(pixel_);
-    error = intensity_coeff_ba*(z_hat-z);
+    z_hat = cam_m->pyramid_->getC(level_)->evalPixelBilinear(pixel_);
+    error = intensity_coeff_ba*((z_hat-cam_m->b_exposure_)-cam_couple_->exposure_coefficient*(z-cam_r->b_exposure_));
   }
   else if(image_type==GRADIENT_ID){
     if(level_==0){
       z = active_point->magn_cd_;
     }
     else{
-      z = cam_couple_->cam_r_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_r);
+      z = cam_r->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_r);
     }
-    z_hat = cam_couple_->cam_m_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_);
-    error = gradient_coeff_ba*(z_hat-z);
+    z_hat = cam_m->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_);
+    error = gradient_coeff_ba*(z_hat-cam_couple_->exposure_coefficient*z);
   }
-  if(abs(error)>1){
-    std::cout << "error "<< error << " level " << level_ << " z " << z << " pixel r " << active_point->pixel_ << " pixel m " << pixel_ <<  " z hat " << z_hat << " image_type " << image_type << " rows " << cam_couple_->cam_m_->pyramid_->getC(level_)->image_.rows << " cols " << cam_couple_->cam_m_->pyramid_->getC(level_)->image_.cols << " valid " << valid_ << std::endl;
-    std::exit(1);
-  }
+
   return error;
 
 }
@@ -257,4 +256,46 @@ bool LinSysBlocks::visualizeH(){
   waitkey(0);
   delete img_H;
 
+  return true;
+}
+
+bool LinSysBlocks::visualizeB(){
+  Image<colorRGB>* img_B = new Image<colorRGB>("B");
+  int size = c_size_+p_size_;
+  if (size == 0)
+    return false;
+  // img_H->initImage(c_size_,c_size_);
+  img_B->initImage(size,1);
+  img_B->setAllPixels( white);
+
+  // pose segment
+  for(int i=0; i<c_size_; i++){
+    float val;
+    val=b_c_(i);
+
+    if (val!=0){
+      img_B->setPixel(i,0, red);
+    }
+    else{
+      img_B->setPixel(i,0, white);
+    }
+
+  }
+  // point point block
+  for(int i=0; i<p_size_; i++){
+    if (b_p_(i)!=0){
+      img_B->setPixel(i+c_size_,0, blue);
+    }
+    else{
+      img_B->setPixel(i+c_size_,0, white);
+
+    }
+
+  }
+
+  img_B->show(3);
+  waitkey(0);
+  delete img_B;
+
+  return true;
 }

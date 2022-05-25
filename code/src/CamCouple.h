@@ -11,14 +11,14 @@ class CamCouple{
     CameraForMapping* cam_r_; // cam to be projected
     CameraForMapping* cam_m_; // cam on which project
     Eigen::Isometry3f T; //cam_r expressed in cam_m
-    bool lin_computed_;
     Eigen::Isometry3f T0; //cam_r expressed in cam_m (linearization point)
+    float exposure_coefficient;
+    float exposure_coefficient0;
 
 
     CamCouple(CameraForMapping* cam_r, CameraForMapping* cam_m):
     cam_r_(cam_r),
-    cam_m_(cam_m),
-    lin_computed_(false)
+    cam_m_(cam_m)
     {
       update();
       getTLin();
@@ -43,6 +43,8 @@ class CamCouple{
     Eigen::Matrix<float,2,6> getJm_(ActivePoint* active_pt);
     Eigen::Matrix<float,2,6> getJm_old_(ActivePoint* active_pt);
     Eigen::Matrix<float,2,6> getJr_(ActivePoint* active_pt);
+    Eigen::Matrix<float,1,2> getJm_exposure_(ActivePoint* active_pt);
+    Eigen::Matrix<float,1,2> getJr_exposure_(ActivePoint* active_pt);
 
   private:
     Eigen::Matrix3f r;

@@ -4,17 +4,17 @@
 #include "PointsContainer.h"
 
 class Dso;
-
+class MarginalizationHandler;
 
 class MeasBA : public Meas {
   public:
 
 
     // ********** members **********
-    Eigen::Matrix<float,1,6> J_r;
-    Eigen::Matrix<float,6,1> J_r_transpose;
-    Eigen::Matrix<float,1,6> J_m;
-    Eigen::Matrix<float,6,1> J_m_transpose;
+    Eigen::Matrix<float,1,8> J_r;
+    Eigen::Matrix<float,8,1> J_r_transpose;
+    Eigen::Matrix<float,1,8> J_m;
+    Eigen::Matrix<float,8,1> J_m_transpose;
     float J_d;
 
     // ********** constructor **********
@@ -45,7 +45,10 @@ class LinSysBA : public LinSysBlocks{
 
     void init();
     void reinitWithNewPoints(int n_points);
-    void buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement_vec_vec );
+    void buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement_vec_vec, MarginalizationHandler* marginalization_handler );
+    void integrateMargPriors(MarginalizationHandler* marginalization_handler);
+    void integrateExposurePriors();
+
     void updateCameras();
     void updatePoints();
   protected:
@@ -56,8 +59,8 @@ class LinSysBA : public LinSysBlocks{
 class PriorMeas : public Meas{
   public:
     // ********** members **********
-    Eigen::Matrix<float,1,6> J_m;
-    Eigen::Matrix<float,6,1> J_m_transpose;
+    Eigen::Matrix<float,1,8> J_m;
+    Eigen::Matrix<float,8,1> J_m_transpose;
     float J_d;
     int p_idx_;
 

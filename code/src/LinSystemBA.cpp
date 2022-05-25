@@ -21,18 +21,21 @@ void MeasBA::loadJacobians(ActivePoint* active_point){
 
     // update J_m and error for intensity
     Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian( INTENSITY_ID);
-    J_m += image_jacobian_intensity*Jm_;
-    J_r += image_jacobian_intensity*Jr_;
+    J_m.block<1,6>(0,0) += image_jacobian_intensity*Jm_;
+    J_r.block<1,6>(0,0) += image_jacobian_intensity*Jr_;
     J_d += image_jacobian_intensity*Jd_;
 
 
     // update J_m and error for gradient
     if(image_id==GRADIENT_ID){
       Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian( GRADIENT_ID);
-      J_m += image_jacobian_gradient*Jm_;
-      J_r += image_jacobian_gradient*Jr_;
+      J_m.block<1,6>(0,0) += image_jacobian_gradient*Jm_;
+      J_r.block<1,6>(0,0) += image_jacobian_gradient*Jr_;
       J_d += image_jacobian_gradient*Jd_;
     }
+
+    J_m.block<1,2>(0,6) += cam_couple_->getJm_exposure_(active_point);
+    J_r.block<1,2>(0,6) += cam_couple_->getJr_exposure_(active_point);
 
     J_m_transpose= J_m.transpose();
     J_r_transpose= J_r.transpose();
@@ -68,12 +71,12 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
 
   if(!no_r){
     assert(r_idx < c_size_);
-    r_idx = measurement->cam_couple_->cam_r_->cam_data_for_ba_->c_idx_*6;
+    r_idx = measurement->cam_couple_->cam_r_->cam_data_for_ba_->c_idx_*8;
   }
 
   if(!no_m){
     assert(m_idx < c_size_);
-    m_idx = measurement->cam_couple_->cam_m_->cam_data_for_ba_->c_idx_*6;
+    m_idx = measurement->cam_couple_->cam_m_->cam_data_for_ba_->c_idx_*8;
   }
 
   assert(p_idx < p_size_);
@@ -93,21 +96,21 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
 
   // m-m
   if(!no_m){
-    H_cc_.block<6,6>(m_idx,m_idx).triangularView<Eigen::Upper>() += measurement->J_m_transpose*weight*measurement->J_m;
+    H_cc_.block<8,8>(m_idx,m_idx).triangularView<Eigen::Upper>() += measurement->J_m_transpose*weight*measurement->J_m;
   }
 
   // // r-r
   if(!no_r){
-    H_cc_.block<6,6>(r_idx,r_idx).triangularView<Eigen::Upper>() += measurement->J_r_transpose*weight*measurement->J_r;
+    H_cc_.block<8,8>(r_idx,r_idx).triangularView<Eigen::Upper>() += measurement->J_r_transpose*weight*measurement->J_r;
   }
 
   // m-r
   if(!no_r && !no_m){
     if(m_idx<r_idx){
-      H_cc_.block<6,6>(m_idx,r_idx) += measurement->J_m_transpose*weight*measurement->J_r;
+      H_cc_.block<8,8>(m_idx,r_idx) += measurement->J_m_transpose*weight*measurement->J_r;
     }
     else{
-      H_cc_.block<6,6>(r_idx,m_idx) += measurement->J_r_transpose*weight*measurement->J_m;
+      H_cc_.block<8,8>(r_idx,m_idx) += measurement->J_r_transpose*weight*measurement->J_m;
     }
   }
 
@@ -115,12 +118,12 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
 
   // m-p
   if(!no_m){
-    H_cp_.block<6,1>(m_idx,p_idx) += measurement->J_m_transpose*(weight*measurement->J_d);
+    H_cp_.block<8,1>(m_idx,p_idx) += measurement->J_m_transpose*(weight*measurement->J_d);
   }
 
   // r-p
   if(!no_r){
-    H_cp_.block<6,1>(r_idx,p_idx) += measurement->J_r_transpose*(weight*measurement->J_d);
+    H_cp_.block<8,1>(r_idx,p_idx) += measurement->J_r_transpose*(weight*measurement->J_d);
   }
 
   // POINT POINT BLOCK
@@ -134,12 +137,12 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
   // cam segment
   // m
   if(!no_m){
-    b_c_.segment<6>(m_idx) += measurement->J_m_transpose*(weight*measurement->error);
+    b_c_.segment<8>(m_idx) += measurement->J_m_transpose*(weight*measurement->error);
   }
 
   // r
   if(!no_r){
-    b_c_.segment<6>(r_idx) += measurement->J_r_transpose*(weight*measurement->error);
+    b_c_.segment<8>(r_idx) += measurement->J_r_transpose*(weight*measurement->error);
   }
 
   // p
@@ -156,7 +159,76 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
 }
 
 
-void LinSysBA::buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement_vec_vec ){
+void LinSysBA::integrateMargPriors(MarginalizationHandler* marginalization_handler_){
+
+  // H_cc_.setZero();
+  // H_cp_.setZero();
+  // H_pp_.setZero();
+  // b_c_.setZero();
+  // b_p_.setZero();
+
+  // iterate through keyframes with priors
+  for( int i=0; i<marginalization_handler_->keyframes_with_priors_.size(); i++ ){
+    CameraForMapping* cam_r = marginalization_handler_->keyframes_with_priors_[i];
+    bool no_r = cam_r->fixed_ || cam_r->marginalized_;
+    if(no_r)
+      continue;
+
+    int c_marg_idx_r = cam_r->cam_data_for_ba_->c_marg_idx_*8;
+    int c_idx_r = cam_r->cam_data_for_ba_->c_idx_*8;
+    H_cc_.block<8,8>(c_idx_r,c_idx_r).triangularView<Eigen::Upper>() += marginalization_handler_->H_tilde_.block<8,8>(c_marg_idx_r,c_marg_idx_r);
+    b_c_.segment<8>(c_idx_r) += marginalization_handler_->b_tilde_.segment<8>(c_marg_idx_r);
+
+    // off diagonal terms
+    for( int j=i+1; j<marginalization_handler_->keyframes_with_priors_.size(); j++ ){
+      CameraForMapping* cam_m = marginalization_handler_->keyframes_with_priors_[j];
+      bool no_m = cam_m->fixed_ || cam_m->marginalized_;
+      if(no_m)
+        continue;
+
+      int c_idx_m = cam_m->cam_data_for_ba_->c_idx_*8;
+      int c_marg_idx_m = cam_m->cam_data_for_ba_->c_marg_idx_*8;
+
+      assert(c_idx_r>=0 && c_idx_r<H_cc_.rows() || no_r);
+      assert(c_idx_m>=0 && c_idx_m<H_cc_.rows() || no_m);
+      assert(c_marg_idx_r>=0 && c_marg_idx_r<marginalization_handler_->H_tilde_.rows() );
+      assert(c_marg_idx_m>=0 && c_marg_idx_m<marginalization_handler_->H_tilde_.rows() );
+
+      // m-r
+      if(!no_r && !no_m){
+        if(c_idx_m<c_idx_r){
+          H_cc_.block<8,8>(c_idx_m,c_idx_r) += marginalization_handler_->H_tilde_.block<8,8>(c_marg_idx_m,c_marg_idx_r);
+        }
+        else{
+          H_cc_.block<8,8>(c_idx_r,c_idx_m) += marginalization_handler_->H_tilde_.block<8,8>(c_marg_idx_r,c_marg_idx_m);
+        }
+      }
+
+    }
+  }
+
+}
+
+
+void LinSysBA::integrateExposurePriors(){
+
+  // iterate through keyframes
+  for(int i=0; i<dso_->cameras_container_->keyframes_active_.size(); i++){
+    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
+    if(!keyframe->fixed_){
+      int j = keyframe->cam_data_for_ba_->c_idx_;
+      int a=j+6;
+      int b=j+7;
+      // H_cc_(a,a) += 2*lambda_a*keyframe->a_exposure_+damp_exposure;
+      // H_cc_(b,b) += 2*lambda_b*keyframe->b_exposure_+damp_exposure;
+      H_cc_(a,a) = FLT_MAX;
+      H_cc_(b,b) = FLT_MAX;
+    }
+  }
+
+}
+
+void LinSysBA::buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement_vec_vec, MarginalizationHandler* marginalization_handler ){
   int count = 0;
   assert(b_p_.allFinite());
   assert(H_cp_.allFinite());
@@ -176,17 +248,25 @@ void LinSysBA::buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement
   assert(b_p_.allFinite());
   assert(H_cp_.allFinite());
   assert(b_c_.allFinite());
-  // *********  MARG PRIORS  *********
-
-  // build linear system marg
-  // LinSysBAMarg lin_sys_marg(this);
-  // lin_sys_marg.loadMargPriors();
 
   chi /= (float)count;
 
+  // *********  MARG PRIORS  *********
+
+
+  // integrate marginalization priors
+  if(do_marginalization){
+    integrateMargPriors(marginalization_handler);
+  }
+
+  // *********  EXPOSURE PRIORS  *********
+
+  integrateExposurePriors();
+
+  // visualize hessian / b
   // visualizeH();
-  // iterate through all marginalized measurements
-  // TODO
+  // visualizeB();
+
 }
 
 
@@ -199,11 +279,20 @@ void LinSysBA::updateCameras(){
     if (keyframe->fixed_)
       continue;
 
-    Vector6f dx_curr = dx_c.segment<6>(keyframe->cam_data_for_ba_->c_idx_*6);
+    Eigen::Matrix<float,8,1> dx_curr = dx_c.segment<8>(keyframe->cam_data_for_ba_->c_idx_*8);
+    Eigen::Matrix<float,6,1> dx_pose = dx_curr.segment<6>(0);
 
-    Eigen::Isometry3f frame_camera_wrt_world =(*(keyframe->frame_camera_wrt_world_))*v2t_inv(dx_curr);
+    Eigen::Isometry3f frame_camera_wrt_world =(*(keyframe->frame_camera_wrt_world_))*v2t_inv(dx_pose);
     keyframe->assignPose( frame_camera_wrt_world );
 
+    // update exposure parameters
+    keyframe->a_exposure_+= dx_curr(6);
+    keyframe->b_exposure_+= dx_curr(7);
+    // std::cout << "PORCODDIOOOO " << keyframe->a_exposure_ << " " << keyframe->b_exposure_ << std::endl;
+    if(!keyframe->cam_data_for_ba_->has_prior_){
+      keyframe->cam_data_for_ba_->a_exposure_0_=keyframe->a_exposure_;
+      keyframe->cam_data_for_ba_->b_exposure_0_=keyframe->b_exposure_;
+    }
   }
 
 
@@ -230,7 +319,7 @@ void LinSysBA::updatePoints(){
         int n = col.rows()-(std::count(col.data(), col.data() + col.size(), 0));
         // float var = ( 1.0/ ( (H_pp_[active_pt->p_idx_]) ) )+10e-32;
         // float var = ( 1.0/ ( (H_pp_[active_pt->p_idx_]) ) )+0.00000000001;
-        float var = (1.0/( (omega_(active_pt->p_idx_)/(n/6)) +0.00001))+0.00001;
+        float var = (1.0/( (omega_(active_pt->p_idx_)/(n/8)) +0.00001))+0.00001;
         // std::cout << var << " " << omega_(active_pt->p_idx_) << " " << n << std::endl;
         // std::cout << H_pp_[active_pt->p_idx_] << " " << var << " " << n <<  std::endl;
 
@@ -255,7 +344,7 @@ void LinSysBA::init(){
     }
   }
 
-  c_size_ = count*6;
+  c_size_ = count*8;
 
   H_cc_.resize(c_size_,c_size_);
   b_c_.resize(c_size_);
@@ -278,17 +367,18 @@ void PriorMeas::loadJacobians(ActivePoint* active_point, std::shared_ptr<CamCoup
 
   // update J_m and error for intensity
   Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian( INTENSITY_ID);
-  J_m += image_jacobian_intensity*Jm_;
+  J_m.block<1,6>(0,0) += image_jacobian_intensity*Jm_;
   J_d += image_jacobian_intensity*Jd_;
 
 
   // update J_m and error for gradient
   if(image_id==GRADIENT_ID){
     Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian( GRADIENT_ID);
-    J_m += image_jacobian_gradient*Jm_;
+    J_m.block<1,6>(0,0) += image_jacobian_gradient*Jm_;
     J_d += image_jacobian_gradient*Jd_;
   }
 
+  J_m.block<1,2>(0,6) += cam_couple_->getJm_exposure_(active_point);
   J_m_transpose= J_m.transpose();
 
 }

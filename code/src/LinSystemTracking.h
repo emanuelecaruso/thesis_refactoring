@@ -9,8 +9,8 @@ class MeasTracking : public Meas{
   public:
     // ********** members **********
 
-    Eigen::Matrix<float,1,6> J_m;
-    Eigen::Matrix<float,6,1> J_m_transpose;
+    Eigen::Matrix<float,1,8> J_m;
+    Eigen::Matrix<float,8,1> J_m_transpose;
 
     // ********** constructor **********
     MeasTracking(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple , int level):
@@ -24,9 +24,10 @@ class MeasTracking : public Meas{
 class LinSysTracking : public LinSys{
   public:
     // ********** members **********
-    Eigen::Matrix<float,6,6> H;
-    Eigen::Matrix<float,6,1> b;
-    Eigen::Matrix<float,6,1> dx;
+    Eigen::Matrix<float,8,8> H;
+    Eigen::Matrix<float,8,1> b;
+    Eigen::Matrix<float,8,1> dx;
+
 
     // ********** constructor **********
     LinSysTracking(Dso* dso):
@@ -37,7 +38,7 @@ class LinSysTracking : public LinSys{
 
     // ********** methods **********
     void addMeasurement( MeasTracking& measurement );
-    void updateCameraPose();
+    void updateCameraState();
     void clear();
 
 

@@ -125,11 +125,11 @@ void MarginalizationHandler::setCamIdxs(){
 
 void MarginalizationHandler::removeCamFromHtilde(int idx){
   unsigned int size_old = H_tilde_.rows();
-  unsigned int size_new = H_tilde_.rows()-6;
+  unsigned int size_new = H_tilde_.rows()-8;
   assert(H_tilde_.rows() == H_tilde_.cols());
 
   if( idx < size_new ){
-    int idx_end = idx+6;
+    int idx_end = idx+8;
     H_tilde_.block(idx,0,size_old-idx_end,size_old) = H_tilde_.block(idx_end,0,size_old-idx_end,size_old);
     H_tilde_.block(0,idx,size_old,size_old-idx_end) = H_tilde_.block(0,idx_end,size_old,size_old-idx_end);
   }
@@ -143,19 +143,19 @@ void MarginalizationHandler::addCamToHtilde(){
   assert(H_tilde_.rows() == H_tilde_.cols());
   int size = H_tilde_.rows();
 
-  H_tilde_.conservativeResizeLike(Eigen::MatrixXf::Zero(H_tilde_.rows()+6,H_tilde_.rows()+6));
+  H_tilde_.conservativeResizeLike(Eigen::MatrixXf::Zero(H_tilde_.rows()+8,H_tilde_.rows()+8));
 
-  assert(size+6==H_tilde_.rows());
+  assert(size+8==H_tilde_.rows());
 
 
 }
 
 void MarginalizationHandler::removeCamFromBtilde(int idx){
   unsigned int size_old = b_tilde_.rows();
-  unsigned int size_new = b_tilde_.rows()-6;
+  unsigned int size_new = b_tilde_.rows()-8;
 
   if( idx < size_new ){
-    int idx_end = idx+6;
+    int idx_end = idx+8;
     b_tilde_.segment(idx,size_old-idx_end) = b_tilde_.segment(idx_end,size_old-idx_end);
   }
   b_tilde_.conservativeResize(size_new);
@@ -165,9 +165,9 @@ void MarginalizationHandler::removeCamFromBtilde(int idx){
 void MarginalizationHandler::addCamToBtilde(){
   int size = b_tilde_.rows();
 
-  b_tilde_.conservativeResizeLike(Eigen::VectorXf::Zero(6+size));
+  b_tilde_.conservativeResizeLike(Eigen::VectorXf::Zero(8+size));
 
-  assert(size+6==b_tilde_.size());
+  assert(size+8==b_tilde_.size());
 
 }
 
@@ -179,10 +179,10 @@ void MarginalizationHandler::removeKeyframeWithPriors(CameraForMapping* keyframe
   removeFromVecByIdx(keyframes_with_priors_, idx);
 
   // remove col/row in H tilde
-  removeCamFromHtilde( idx*6 );
+  removeCamFromHtilde( idx*8 );
 
   // remove element in b tilde
-  removeCamFromBtilde( idx*6 );
+  removeCamFromBtilde( idx*8 );
   // .
 
 }
@@ -278,6 +278,8 @@ bool BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* 
         // fix linearization point
         cam_couple->cam_m_->cam_data_for_ba_->frame_camera_wrt_world_0_=*(cam_couple->cam_m_->frame_camera_wrt_world_);
         cam_couple->cam_m_->cam_data_for_ba_->frame_world_wrt_camera_0_=*(cam_couple->cam_m_->frame_world_wrt_camera_);
+        cam_couple->cam_m_->cam_data_for_ba_->a_exposure_0_=cam_couple->cam_m_->a_exposure_;
+        cam_couple->cam_m_->cam_data_for_ba_->b_exposure_0_=cam_couple->cam_m_->b_exposure_;
       }
 
     }
@@ -285,11 +287,9 @@ bool BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* 
 
   if(valid){
     n_points_marginalized_++;
-    // save linearization point of camera
+
   }
 
-
-  // delete active point
 
   return valid;
 
@@ -313,56 +313,6 @@ void BundleAdj::marginalize(){
 
 }
 
-void BundleAdj::integrateMargTerms(LinSysBA& lin_sys_ba){
-
-  // // std::cout << "porcoddioooo\n" << marginalization_handler_->H_tilde_ << "\n\n" << marginalization_handler_->b_tilde_ << std::endl;
-  // lin_sys_ba.H_cc_.setZero();
-  // lin_sys_ba.H_cp_.setZero();
-  // lin_sys_ba.H_pp_.setZero();
-  // lin_sys_ba.b_c_.setZero();
-  // lin_sys_ba.b_p_.setZero();
-
-  // iterate through keyframes with priors
-  for( int i=0; i<marginalization_handler_->keyframes_with_priors_.size(); i++ ){
-    CameraForMapping* cam_r = marginalization_handler_->keyframes_with_priors_[i];
-    bool no_r = cam_r->fixed_ || cam_r->marginalized_;
-    if(no_r)
-      continue;
-
-    int c_marg_idx_r = cam_r->cam_data_for_ba_->c_marg_idx_*6;
-    int c_idx_r = cam_r->cam_data_for_ba_->c_idx_*6;
-    lin_sys_ba.H_cc_.block<6,6>(c_idx_r,c_idx_r).triangularView<Eigen::Upper>() += marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_r,c_marg_idx_r);
-    lin_sys_ba.b_c_.segment<6>(c_idx_r) += marginalization_handler_->b_tilde_.segment<6>(c_marg_idx_r);
-
-    // off diagonal terms
-    for( int j=i+1; j<marginalization_handler_->keyframes_with_priors_.size(); j++ ){
-      CameraForMapping* cam_m = marginalization_handler_->keyframes_with_priors_[j];
-      bool no_m = cam_m->fixed_ || cam_m->marginalized_;
-      if(no_m)
-        continue;
-
-      int c_idx_m = cam_m->cam_data_for_ba_->c_idx_*6;
-      int c_marg_idx_m = cam_m->cam_data_for_ba_->c_marg_idx_*6;
-
-      assert(c_idx_r>=0 && c_idx_r<lin_sys_ba.H_cc_.rows() || no_r);
-      assert(c_idx_m>=0 && c_idx_m<lin_sys_ba.H_cc_.rows() || no_m);
-      assert(c_marg_idx_r>=0 && c_marg_idx_r<marginalization_handler_->H_tilde_.rows() );
-      assert(c_marg_idx_m>=0 && c_marg_idx_m<marginalization_handler_->H_tilde_.rows() );
-
-      // m-r
-      if(!no_r && !no_m){
-        if(c_idx_m<c_idx_r){
-          lin_sys_ba.H_cc_.block<6,6>(c_idx_m,c_idx_r) += marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_m,c_marg_idx_r);
-        }
-        else{
-          lin_sys_ba.H_cc_.block<6,6>(c_idx_r,c_idx_m) += marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_r,c_marg_idx_m);
-        }
-      }
-
-    }
-  }
-
-}
 
 void BundleAdj::updateBMarg(LinSysBA& lin_sys_ba){
   Eigen::VectorXf dx_c = lin_sys_ba.dx_c;
@@ -373,14 +323,14 @@ void BundleAdj::updateBMarg(LinSysBA& lin_sys_ba){
   for( int i=0; i<marginalization_handler_->keyframes_with_priors_.size(); i++ ){
     CameraForMapping* cam_r = marginalization_handler_->keyframes_with_priors_[i];
     bool no_r = cam_r->fixed_ || cam_r->marginalized_;
-    int c_marg_idx_r = cam_r->cam_data_for_ba_->c_marg_idx_*6;
-    int c_idx_r = cam_r->cam_data_for_ba_->c_idx_*6;
+    int c_marg_idx_r = cam_r->cam_data_for_ba_->c_marg_idx_*8;
+    int c_idx_r = cam_r->cam_data_for_ba_->c_idx_*8;
     if(no_r){
-      dx_c_marg.segment<6>(c_marg_idx_r).setZero();
+      dx_c_marg.segment<8>(c_marg_idx_r).setZero();
     }
     else{
 
-      dx_c_marg.segment<6>(c_marg_idx_r) = dx_c.segment<6>(c_idx_r);
+      dx_c_marg.segment<8>(c_marg_idx_r) = dx_c.segment<8>(c_idx_r);
     }
 
 
@@ -395,9 +345,6 @@ void BundleAdj::updateBMarg(LinSysBA& lin_sys_ba){
 
 void BundleAdj::updateState(LinSysBA& lin_sys_ba, bool only_pts){
 
-  if(do_marginalization){
-    integrateMargTerms(lin_sys_ba);
-  }
 
   // lin_sys_ba.visualizeH();
 
@@ -417,6 +364,9 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba, bool only_pts){
     Eigen::MatrixXf Schur_inv = pinvDense( Schur );
     lin_sys_ba.dx_c = Schur_inv * ( -lin_sys_ba.b_c_ + lin_sys_ba.H_cp_ * H_pp_inv * lin_sys_ba.b_p_);
     lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ - H_pc_ * lin_sys_ba.dx_c );
+
+    // lin_sys_ba.dx_c = pinvDense(lin_sys_ba.H_cc_) * ( -lin_sys_ba.b_c_ );
+
   }
   // no schur
   else{
@@ -539,14 +489,16 @@ void BundleAdj::marginalizePointsAndKeyframes(){
       MeasBA measurement(active_pt, cam_couple );
 
       assert(cam_couple->cam_m_==dso_->cameras_container_->keyframes_active_.back());
-      if(!uv_in_range || measurement.occlusion_){
+      // if(!uv_in_range || measurement.occlusion_){
+      // if(!uv_in_range || abs(measurement.error)>chi_occlusion_threshold){
+      if(!uv_in_range || abs(measurement.error)>active_pt->cost_threshold_){
+
         // if points is an occlusion in the first keyframe, remove it
         if(active_pt->new_){
           active_pt->remove();
           n_points_removed_++;
         }
         else{
-          // std::cout << "APPPPPP" << std::endl;
           marginalizePoint(active_pt, cam_couple_container);
         }
       }
@@ -562,7 +514,7 @@ void BundleAdj::marginalizePointsAndKeyframes(){
   }
 
   // resize new linear system
-  n_cams_marg = marginalization_handler_->keyframes_with_priors_.size()*6;
+  n_cams_marg = marginalization_handler_->keyframes_with_priors_.size()*8;
   marginalization_handler_->lin_sys_increment_->resize(n_cams_marg, n_points_marginalized_);
   assert(marginalization_handler_->H_tilde_.rows()==marginalization_handler_->lin_sys_increment_->H_cc_.rows());
 
@@ -632,7 +584,7 @@ void BundleAdj::optimize(bool only_pts){
     assert(num_points>0);
     lin_sys_ba.reinitWithNewPoints(num_points);
 
-    lin_sys_ba.buildLinearSystem(measurement_vec_vec);
+    lin_sys_ba.buildLinearSystem(measurement_vec_vec, marginalization_handler_);
     updateState(lin_sys_ba, only_pts);
 
 
@@ -662,20 +614,20 @@ float MarginalizationHandler::loadPriorInLinSys(PriorMeas* prior_meas){
 
   float weight = prior_meas->getWeight();
 
-  int m_idx = prior_meas->cam_couple_->cam_m_->cam_data_for_ba_->c_marg_idx_*6;
+  int m_idx = prior_meas->cam_couple_->cam_m_->cam_data_for_ba_->c_marg_idx_*8;
   int p_idx = prior_meas->p_idx_;
 
   assert(m_idx < lin_sys_increment_->c_size_);
   assert(p_idx < lin_sys_increment_->p_size_);
 
-  lin_sys_increment_->H_cc_.block<6,6>(m_idx,m_idx).triangularView<Eigen::Upper>() += prior_meas->J_m_transpose*weight*prior_meas->J_m;
+  lin_sys_increment_->H_cc_.block<8,8>(m_idx,m_idx).triangularView<Eigen::Upper>() += prior_meas->J_m_transpose*weight*prior_meas->J_m;
 
-  lin_sys_increment_->H_cp_.block<6,1>(m_idx,p_idx) += prior_meas->J_m_transpose*(weight*prior_meas->J_d);
+  lin_sys_increment_->H_cp_.block<8,1>(m_idx,p_idx) += prior_meas->J_m_transpose*(weight*prior_meas->J_d);
 
 
   lin_sys_increment_->H_pp_(p_idx) += prior_meas->J_d*weight*prior_meas->J_d;
 
-  lin_sys_increment_->b_c_.segment<6>(m_idx) += prior_meas->J_m_transpose*(weight*prior_meas->error);
+  lin_sys_increment_->b_c_.segment<8>(m_idx) += prior_meas->J_m_transpose*(weight*prior_meas->error);
 
   lin_sys_increment_->b_p_(p_idx) += prior_meas->J_d*weight*prior_meas->error;
 
