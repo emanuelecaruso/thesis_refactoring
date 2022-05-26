@@ -31,6 +31,9 @@ class Meas{
     float getError( ActivePoint* active_point, int image_type);
     bool getPixelOfProjectedActivePoint(ActivePoint* active_point);
     float getWeight();
+  protected:
+    float getErrorIntensity(float z, float z_hat, ActivePoint* active_pt);
+    float getErrorGradient(float z, float z_hat, ActivePoint* active_pt);
 
 };
 
@@ -71,7 +74,7 @@ class LinSysBlocks : public LinSys{
     // ********** methods **********
     bool visualizeH();
     bool visualizeB();
-    
+
     void clear();
     void reset();
     void resize(int c_size, int p_size);

@@ -123,7 +123,9 @@ class CamDataForBA{
     // linearization point
     Eigen::Isometry3f frame_camera_wrt_world_0_;
     Eigen::Isometry3f frame_world_wrt_camera_0_;
-
+    float a_exposure_0_;
+    float b_exposure_0_;
+    
     // ********** constructor **********
     CamDataForBA():
     c_idx_(-1),

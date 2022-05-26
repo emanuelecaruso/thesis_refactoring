@@ -271,6 +271,8 @@ bool BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* 
         // fix linearization point
         cam_couple->cam_m_->cam_data_for_ba_->frame_camera_wrt_world_0_=*(cam_couple->cam_m_->frame_camera_wrt_world_);
         cam_couple->cam_m_->cam_data_for_ba_->frame_world_wrt_camera_0_=*(cam_couple->cam_m_->frame_world_wrt_camera_);
+        cam_couple->cam_m_->cam_data_for_ba_->a_exposure_0_=cam_couple->cam_m_->a_exposure_;
+        cam_couple->cam_m_->cam_data_for_ba_->b_exposure_0_=cam_couple->cam_m_->b_exposure_;
       }
 
     }

@@ -17,6 +17,8 @@ class Camera{
     Eigen::Isometry3f* frame_camera_wrt_world_;
     Eigen::Isometry3f* frame_world_wrt_camera_;
     float exposure_time_;
+    float a_exposure_;
+    float b_exposure_;
     std::mutex mu_access_pose;
 
     // clone camera
@@ -29,7 +31,9 @@ class Camera{
       invdepth_map_(cam->invdepth_map_ ),
       frame_camera_wrt_world_(new Eigen::Isometry3f ),
       frame_world_wrt_camera_(new Eigen::Isometry3f ),
-      exposure_time_(cam->exposure_time_)
+      exposure_time_(cam->exposure_time_),
+      a_exposure_(cam->a_exposure_),
+      b_exposure_(cam->b_exposure_)
       {
         if(copy_pose){
           *frame_camera_wrt_world_=(*(cam->frame_camera_wrt_world_));
@@ -45,7 +49,9 @@ class Camera{
            image_intensity_( nullptr ),
            frame_camera_wrt_world_(new Eigen::Isometry3f),
            frame_world_wrt_camera_(new Eigen::Isometry3f),
-           exposure_time_(exposure_time)
+           exposure_time_(exposure_time),
+           a_exposure_(0),
+           b_exposure_(0)
            { };
 
      Camera(const std::string& name, const CamParameters* cam_parameters,

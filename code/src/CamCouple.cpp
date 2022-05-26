@@ -32,10 +32,13 @@ void CamCouple::getTLin(){
     reorthonormalization(relative_transf);
 
     T0 = relative_transf;
+    exposure_coefficient0 = (cam_m_->exposure_time_*exp(cam_m_->cam_data_for_ba_->a_exposure_0_-cam_r_->cam_data_for_ba_->a_exposure_0_))/cam_r_->exposure_time_;
 
   }
   else{
     T0=T;
+    exposure_coefficient0=exposure_coefficient;
+
   }
 
   r0=T0.linear();
@@ -72,6 +75,7 @@ void CamCouple::update(){
   h2=h*h;
   r=T.linear();
   t=T.translation();
+  exposure_coefficient = (cam_m_->exposure_time_*exp(cam_m_->a_exposure_-cam_r_->a_exposure_))/cam_r_->exposure_time_;
 
   cam_m_->projectCam(cam_r_, cam_r_projected_in_cam_m);
 
@@ -192,6 +196,41 @@ void CamCouple::getJrParameters(){
 }
 
 
+Eigen::Matrix<float,1,2> CamCouple::getJm_exposure_(ActivePoint* active_pt ){
+
+  Eigen::Matrix<float,1,2> Jm_exposure;
+  Jm_exposure.setZero();
+
+  // float Jm1 = -intensity_coeff_ba*exposure_coefficient0*(active_pt->c_-cam_r_->cam_data_for_ba_->b_exposure_0_);
+  // float Jm2 = -intensity_coeff_ba;
+  //
+  // if(image_id==GRADIENT_ID){
+  //   Jm1 += (-gradient_coeff_ba*exposure_coefficient0*active_pt->magn_cd_);
+  //   Jm2 += (-gradient_coeff_ba);
+  // }
+  //
+  // Jm_exposure << Jm1, Jm2;
+
+  return Jm_exposure;
+}
+
+Eigen::Matrix<float,1,2> CamCouple::getJr_exposure_(ActivePoint* active_pt ){
+
+  Eigen::Matrix<float,1,2> Jr_exposure;
+  Jr_exposure.setZero();
+
+  // float Jr1 = intensity_coeff_ba*exposure_coefficient0*(active_pt->c_-cam_r_->cam_data_for_ba_->b_exposure_0_);
+  // float Jr2 = intensity_coeff_ba*exposure_coefficient0;
+  //
+  // if(image_id==GRADIENT_ID){
+  //   Jr1 += (gradient_coeff_ba*exposure_coefficient0*active_pt->magn_cd_);
+  //   Jr2 += (gradient_coeff_ba*exposure_coefficient0);
+  // }
+  //
+  // Jr_exposure << Jr1, Jr2;
+  return Jr_exposure;
+}
+
 Eigen::Matrix<float,2,6> CamCouple::getJr_(ActivePoint* active_pt ){
   Eigen::Vector3f pb = active_pt->p_incamframe_;
   float pbx2 = pb.x()*pb.x();
@@ -247,6 +286,7 @@ Eigen::Matrix<float,2,6> CamCouple::getJr_(ActivePoint* active_pt ){
 
   float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
   Jr *= (pixels_meter_ratio/pow(2,active_pt->level_));
+  Jr *= exposure_coefficient0;
 
   assert(Jr.allFinite());
   return Jr;

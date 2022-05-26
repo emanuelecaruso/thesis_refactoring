@@ -19,15 +19,30 @@ bool Meas::getPixelOfProjectedActivePoint(ActivePoint* active_point){
   return true;
 }
 
+float Meas::getErrorIntensity(float z, float z_hat, ActivePoint* active_pt){
+  float exp_coeff = cam_couple_->exposure_coefficient;
+  float b_m = cam_couple_->cam_m_->b_exposure_;
+  float b_r = cam_couple_->cam_r_->b_exposure_;
+  float error = intensity_coeff_ba*((z_hat-b_m)-exp_coeff*(z-b_r));
+  // float error = intensity_coeff_ba*(z_hat-z);
+  return error;
+}
+float Meas::getErrorGradient(float z, float z_hat, ActivePoint* active_pt){
+  float exp_coeff = cam_couple_->exposure_coefficient;
+  float b_m = cam_couple_->cam_m_->b_exposure_;
+  float b_r = cam_couple_->cam_r_->b_exposure_;
+  float error = gradient_coeff_ba*(z_hat-(exp_coeff*z));
+  // float error = gradient_coeff_ba*(z_hat-z);
+  return error;
+}
+
+
 float Meas::getError( ActivePoint* active_point, int image_type){
   float z, z_hat;
-  float error;
   // pxl pixel_r = active_point->pixel_/(pow(2,level_));
   pxl pixel_r;
   active_point->cam_->uv2pixelCoords( active_point->uv_, pixel_r, level_);
-  // pixel_r.x() = (int)(active_point->pixel_.x()/pow(2,level_));
-  // pixel_r.y() = (int)(active_point->pixel_.y()/pow(2,level_));
-  // std::cout << active_point->pixel_ << " " << pixel_r << std::endl;
+
   if(image_type==INTENSITY_ID){
     if(level_==0){
       z = active_point->c_;
@@ -36,7 +51,11 @@ float Meas::getError( ActivePoint* active_point, int image_type){
       z = cam_couple_->cam_r_->pyramid_->getC(level_)->evalPixelBilinear(pixel_r);
     }
     z_hat = cam_couple_->cam_m_->pyramid_->getC(level_)->evalPixelBilinear(pixel_);
-    error = intensity_coeff_ba*(z_hat-z);
+
+    float error = getErrorIntensity( z, z_hat, active_point);
+    return error;
+
+
   }
   else if(image_type==GRADIENT_ID){
     if(level_==0){
@@ -46,13 +65,11 @@ float Meas::getError( ActivePoint* active_point, int image_type){
       z = cam_couple_->cam_r_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_r);
     }
     z_hat = cam_couple_->cam_m_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_);
-    error = gradient_coeff_ba*(z_hat-z);
+
+    float error = getErrorGradient(z, z_hat, active_point);
+    return error;
+
   }
-  if(abs(error)>1){
-    std::cout << "error "<< error << " level " << level_ << " z " << z << " pixel r " << active_point->pixel_ << " pixel m " << pixel_ <<  " z hat " << z_hat << " image_type " << image_type << " rows " << cam_couple_->cam_m_->pyramid_->getC(level_)->image_.rows << " cols " << cam_couple_->cam_m_->pyramid_->getC(level_)->image_.cols << " valid " << valid_ << std::endl;
-    std::exit(1);
-  }
-  return error;
 
 }
 
