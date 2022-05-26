@@ -57,6 +57,10 @@ float damp_cam= 0;
 float damp_point_invdepth= 1000;
 // float damp_point_invdepth= 10e3;
 // float damp_point_invdepth= FLT_MAX;
+float damp_exposure= 0.000;
+float lambda_a= 0;
+float lambda_b= 0;
+
 float huber_threshold=coeff_sum_ba*0.05;
 // float sat_threshold=0.04;
 float sat_threshold=coeff_sum_ba*111111;

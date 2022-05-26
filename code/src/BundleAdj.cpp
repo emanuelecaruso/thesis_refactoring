@@ -358,6 +358,9 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba, bool only_pts){
     Eigen::MatrixXf Schur_inv = pinvDense( Schur );
     lin_sys_ba.dx_c = Schur_inv * ( -lin_sys_ba.b_c_ + lin_sys_ba.H_cp_ * H_pp_inv * lin_sys_ba.b_p_);
     lin_sys_ba.dx_p = H_pp_inv * ( -lin_sys_ba.b_p_ - H_pc_ * lin_sys_ba.dx_c );
+
+    // lin_sys_ba.dx_c = pinvDense(lin_sys_ba.H_cc_) * ( -lin_sys_ba.b_c_ );
+
   }
   // no schur
   else{

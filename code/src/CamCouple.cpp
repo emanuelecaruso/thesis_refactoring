@@ -199,17 +199,17 @@ void CamCouple::getJrParameters(){
 Eigen::Matrix<float,1,2> CamCouple::getJm_exposure_(ActivePoint* active_pt ){
 
   Eigen::Matrix<float,1,2> Jm_exposure;
-  Jm_exposure.setZero();
+  // Jm_exposure.setZero();
 
-  // float Jm1 = -intensity_coeff_ba*exposure_coefficient0*(active_pt->c_-cam_r_->cam_data_for_ba_->b_exposure_0_);
-  // float Jm2 = -intensity_coeff_ba;
-  //
-  // if(image_id==GRADIENT_ID){
-  //   Jm1 += (-gradient_coeff_ba*exposure_coefficient0*active_pt->magn_cd_);
-  //   Jm2 += (-gradient_coeff_ba);
-  // }
-  //
-  // Jm_exposure << Jm1, Jm2;
+  float Jm1 = -intensity_coeff_ba*exposure_coefficient0*(active_pt->c_-cam_r_->cam_data_for_ba_->b_exposure_0_);
+  float Jm2 = -intensity_coeff_ba;
+
+  if(image_id==GRADIENT_ID){
+    Jm1 += (-gradient_coeff_ba*exposure_coefficient0*active_pt->magn_cd_);
+    Jm2 += (-gradient_coeff_ba);
+  }
+
+  Jm_exposure << Jm1, Jm2;
 
   return Jm_exposure;
 }
@@ -217,17 +217,17 @@ Eigen::Matrix<float,1,2> CamCouple::getJm_exposure_(ActivePoint* active_pt ){
 Eigen::Matrix<float,1,2> CamCouple::getJr_exposure_(ActivePoint* active_pt ){
 
   Eigen::Matrix<float,1,2> Jr_exposure;
-  Jr_exposure.setZero();
+  // Jr_exposure.setZero();
 
-  // float Jr1 = intensity_coeff_ba*exposure_coefficient0*(active_pt->c_-cam_r_->cam_data_for_ba_->b_exposure_0_);
-  // float Jr2 = intensity_coeff_ba*exposure_coefficient0;
-  //
-  // if(image_id==GRADIENT_ID){
-  //   Jr1 += (gradient_coeff_ba*exposure_coefficient0*active_pt->magn_cd_);
-  //   Jr2 += (gradient_coeff_ba*exposure_coefficient0);
-  // }
-  //
-  // Jr_exposure << Jr1, Jr2;
+  float Jr1 = intensity_coeff_ba*exposure_coefficient0*(active_pt->c_-cam_r_->cam_data_for_ba_->b_exposure_0_);
+  float Jr2 = intensity_coeff_ba*exposure_coefficient0;
+
+  if(image_id==GRADIENT_ID){
+    Jr1 += (gradient_coeff_ba*exposure_coefficient0*active_pt->magn_cd_);
+    Jr2 += (gradient_coeff_ba*exposure_coefficient0);
+  }
+
+  Jr_exposure << Jr1, Jr2;
   return Jr_exposure;
 }
 

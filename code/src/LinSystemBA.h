@@ -51,6 +51,7 @@ class LinSysBA : public LinSysBlocks{
   protected:
     float addMeasurement(MeasBA* measurement, int p_idx);
     void integrateMargPriors(MarginalizationHandler* marginalization_handler);
+    void integrateExposurePriors();
 
 };
 

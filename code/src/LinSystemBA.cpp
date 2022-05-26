@@ -34,6 +34,11 @@ void MeasBA::loadJacobians(ActivePoint* active_point){
       J_d += image_jacobian_gradient*Jd_;
     }
 
+    if(J_SZ==8){
+      J_r.tail<2>() += cam_couple_->getJr_exposure_(active_point);
+      J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point);
+    }
+
     J_m_transpose= J_m.transpose();
     J_r_transpose= J_r.transpose();
 }
@@ -206,6 +211,24 @@ void LinSysBA::integrateMargPriors(MarginalizationHandler* marginalization_handl
 
 }
 
+void LinSysBA::integrateExposurePriors(){
+
+  // iterate through keyframes
+  for(int i=0; i<dso_->cameras_container_->keyframes_active_.size(); i++){
+    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
+    if(!keyframe->fixed_){
+      int j = keyframe->cam_data_for_ba_->c_idx_*J_SZ;
+      int a=j+6;
+      int b=j+7;
+      H_cc_(a,a) += 2*lambda_a*abs(keyframe->a_exposure_)+damp_exposure;
+      H_cc_(b,b) += 2*lambda_b*abs(keyframe->b_exposure_)+damp_exposure;
+      // H_cc_(a,a) = FLT_MAX;
+      // H_cc_(b,b) = FLT_MAX;
+    }
+  }
+
+}
+
 void LinSysBA::buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement_vec_vec, MarginalizationHandler* marginalization_handler ){
   int count = 0;
   assert(b_p_.allFinite());
@@ -233,13 +256,16 @@ void LinSysBA::buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement
 
 
   // integrate marginalization priors
-  if(do_marginalization){
+  if(do_marginalization)
     integrateMargPriors(marginalization_handler);
-  }
 
-  // // *********  EXPOSURE PRIORS  *********
-  //
-  // integrateExposurePriors();
+
+  // *********  EXPOSURE PRIORS  *********
+
+
+  if(J_SZ==8)
+    integrateExposurePriors();
+
 
   // visualize hessian / b
   // visualizeH();
@@ -262,9 +288,17 @@ void LinSysBA::updateCameras(){
     Eigen::Isometry3f frame_camera_wrt_world =(*(keyframe->frame_camera_wrt_world_))*v2t_inv(dx_pose);
     keyframe->assignPose( frame_camera_wrt_world );
 
+    if(J_SZ==8){
+      // update exposure parameters
+      keyframe->a_exposure_+= dx_curr(6);
+      keyframe->b_exposure_+= dx_curr(7);
+      if(!keyframe->cam_data_for_ba_->has_prior_){
+        keyframe->cam_data_for_ba_->a_exposure_0_=keyframe->a_exposure_;
+        keyframe->cam_data_for_ba_->b_exposure_0_=keyframe->b_exposure_;
+      }
+    }
+
   }
-
-
 
 }
 
@@ -345,6 +379,10 @@ void PriorMeas::loadJacobians(ActivePoint* active_point, std::shared_ptr<CamCoup
     Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian( GRADIENT_ID);
     J_m.head<6>() += image_jacobian_gradient*Jm_;
     J_d += image_jacobian_gradient*Jd_;
+  }
+
+  if(J_SZ==8){
+    J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point);
   }
 
   J_m_transpose= J_m.transpose();

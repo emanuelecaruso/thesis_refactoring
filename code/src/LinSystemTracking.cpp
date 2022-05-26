@@ -25,6 +25,9 @@ void MeasTracking::loadJacobians(ActivePoint* active_point){
       J_m.head<6>() += image_jacobian_gradient*Jm_;
     }
 
+    if(J_SZ==8){
+      J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point);
+    }
 
     J_m_transpose= J_m.transpose();
 }
@@ -46,6 +49,12 @@ void LinSysTracking::addMeasurement( MeasTracking& measurement ){
 
 void LinSysTracking::updateCameraPose(){
 
+  // exposure priors
+  H(6,6) += 2*lambda_a*abs(dso_->frame_current_->a_exposure_)+damp_exposure;
+  H(7,7) += 2*lambda_b*abs(dso_->frame_current_->b_exposure_)+damp_exposure;
+  // H(6,6) = FLT_MAX;
+  // H(7,7) = FLT_MAX;
+
   // get dx
   dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
   // H = H.selfadjointView<Eigen::Upper>();
@@ -56,7 +65,14 @@ void LinSysTracking::updateCameraPose(){
   Eigen::Isometry3f new_guess = (*(dso_->frame_current_->frame_camera_wrt_world_))*v2t_inv(dx_pose);
   dso_->frame_current_->assignPose(new_guess);
 
+  if(J_SZ==8){
+    // update exposure parameters
+    dso_->frame_current_->a_exposure_+= dx(6);
+    dso_->frame_current_->b_exposure_+= dx(7);
+  }
+
 }
+
 
 void LinSysTracking::clear(){
   H.setZero();
