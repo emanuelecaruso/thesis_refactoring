@@ -1,4 +1,5 @@
 cd code/build
-cmake ..
-make -j8
+cmake .. -GNinja
+cmake --build . --parallel 8
+# make -j8
 cd ..

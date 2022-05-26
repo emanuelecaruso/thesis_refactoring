@@ -11,10 +11,10 @@ class MeasBA : public Meas {
 
 
     // ********** members **********
-    Eigen::Matrix<float,1,6> J_r;
-    Eigen::Matrix<float,6,1> J_r_transpose;
-    Eigen::Matrix<float,1,6> J_m;
-    Eigen::Matrix<float,6,1> J_m_transpose;
+    Eigen::Matrix<float,1,J_SZ> J_r;
+    Eigen::Matrix<float,J_SZ,1> J_r_transpose;
+    Eigen::Matrix<float,1,J_SZ> J_m;
+    Eigen::Matrix<float,J_SZ,1> J_m_transpose;
     float J_d;
 
     // ********** constructor **********
@@ -57,8 +57,8 @@ class LinSysBA : public LinSysBlocks{
 class PriorMeas : public Meas{
   public:
     // ********** members **********
-    Eigen::Matrix<float,1,6> J_m;
-    Eigen::Matrix<float,6,1> J_m_transpose;
+    Eigen::Matrix<float,1,J_SZ> J_m;
+    Eigen::Matrix<float,J_SZ,1> J_m_transpose;
     float J_d;
     int p_idx_;
 

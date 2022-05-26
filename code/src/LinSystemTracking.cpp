@@ -16,13 +16,13 @@ void MeasTracking::loadJacobians(ActivePoint* active_point){
 
     // update J_m and error for intensity
     Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian( INTENSITY_ID);
-    J_m += image_jacobian_intensity*Jm_;
+    J_m.head<6>() += image_jacobian_intensity*Jm_;
 
 
     // update J_m and error for gradient
     if(image_id==GRADIENT_ID){
       Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian( GRADIENT_ID);
-      J_m += image_jacobian_gradient*Jm_;
+      J_m.head<6>() += image_jacobian_gradient*Jm_;
     }
 
 
@@ -50,9 +50,10 @@ void LinSysTracking::updateCameraPose(){
   dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
   // H = H.selfadjointView<Eigen::Upper>();
   // dx = H.completeOrthogonalDecomposition().pseudoInverse()*(-b);
+  Vector6f dx_pose = dx.head<6>();
 
   // update pose
-  Eigen::Isometry3f new_guess = (*(dso_->frame_current_->frame_camera_wrt_world_))*v2t_inv(dx);
+  Eigen::Isometry3f new_guess = (*(dso_->frame_current_->frame_camera_wrt_world_))*v2t_inv(dx_pose);
   dso_->frame_current_->assignPose(new_guess);
 
 }

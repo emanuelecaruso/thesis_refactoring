@@ -82,11 +82,11 @@ class BundleAdj{
 class CamHkuCouple{
 
   // ********** members **********
-  Eigen::Matrix<float,6,1> H_ku_;
+  Eigen::Matrix<float,J_SZ,1> H_ku_;
   CameraForMapping* cam_;
 
   // ********** constructor **********
-  CamHkuCouple(Eigen::Matrix<float,6,1>& H_ku, CameraForMapping* cam):
+  CamHkuCouple(Eigen::Matrix<float,J_SZ,1>& H_ku, CameraForMapping* cam):
   H_ku_(H_ku),
   cam_(cam)
   {}
@@ -119,7 +119,7 @@ class CamDataForBA{
     bool has_prior_;
     // marginalization terms
     Vector6f b_k_;
-    Eigen::Matrix<float,6,6> H_kk_;
+    Eigen::Matrix<float,J_SZ,J_SZ> H_kk_;
     // linearization point
     Eigen::Isometry3f frame_camera_wrt_world_0_;
     Eigen::Isometry3f frame_world_wrt_camera_0_;

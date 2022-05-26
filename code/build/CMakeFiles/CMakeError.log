@@ -1,25 +1,18 @@
 Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
 Change Dir: /home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make -f Makefile cmTC_2945d/fast && /usr/bin/make  -f CMakeFiles/cmTC_2945d.dir/build.make CMakeFiles/cmTC_2945d.dir/build
-make[1]: ingresso nella directory "/home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp"
-Building C object CMakeFiles/cmTC_2945d.dir/src.c.o
-/usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -fPIC  -o CMakeFiles/cmTC_2945d.dir/src.c.o -c /home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp/src.c
-Linking C executable cmTC_2945d
-/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2945d.dir/link.txt --verbose=1
-/usr/bin/cc -fPIC  CMakeFiles/cmTC_2945d.dir/src.c.o -o cmTC_2945d 
-CMakeFiles/cmTC_2945d.dir/src.c.o: nella funzione "main":
+Run Build Command(s):/usr/bin/ninja cmTC_8bdef && [1/2] Building C object CMakeFiles/cmTC_8bdef.dir/src.c.o
+[2/2] Linking C executable cmTC_8bdef
+FAILED: cmTC_8bdef 
+: && /usr/bin/cc -fPIC  CMakeFiles/cmTC_8bdef.dir/src.c.o -o cmTC_8bdef   && :
+CMakeFiles/cmTC_8bdef.dir/src.c.o: nella funzione "main":
 src.c:(.text+0x3e): riferimento non definito a "pthread_create"
 src.c:(.text+0x4a): riferimento non definito a "pthread_detach"
 src.c:(.text+0x56): riferimento non definito a "pthread_cancel"
 src.c:(.text+0x67): riferimento non definito a "pthread_join"
 src.c:(.text+0x7b): riferimento non definito a "pthread_atfork"
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_2945d.dir/build.make:98: recipe for target 'cmTC_2945d' failed
-make[1]: *** [cmTC_2945d] Error 1
-make[1]: uscita dalla directory "/home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp"
-Makefile:127: recipe for target 'cmTC_2945d/fast' failed
-make: *** [cmTC_2945d/fast] Error 2
+ninja: build stopped: subcommand failed.
 
 
 Source file was:
@@ -46,20 +39,13 @@ int main(void)
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make -f Makefile cmTC_5c8e0/fast && /usr/bin/make  -f CMakeFiles/cmTC_5c8e0.dir/build.make CMakeFiles/cmTC_5c8e0.dir/build
-make[1]: ingresso nella directory "/home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp"
-Building C object CMakeFiles/cmTC_5c8e0.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create -o CMakeFiles/cmTC_5c8e0.dir/CheckFunctionExists.c.o -c /usr/local/share/cmake-3.22/Modules/CheckFunctionExists.c
-Linking C executable cmTC_5c8e0
-/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5c8e0.dir/link.txt --verbose=1
-/usr/bin/cc -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create CMakeFiles/cmTC_5c8e0.dir/CheckFunctionExists.c.o -o cmTC_5c8e0  -lpthreads 
+Run Build Command(s):/usr/bin/ninja cmTC_72a4a && [1/2] Building C object CMakeFiles/cmTC_72a4a.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_72a4a
+FAILED: cmTC_72a4a 
+: && /usr/bin/cc -fPIC -DCHECK_FUNCTION_EXISTS=pthread_create  CMakeFiles/cmTC_72a4a.dir/CheckFunctionExists.c.o -o cmTC_72a4a  -lpthreads && :
 /usr/bin/ld: impossibile trovare -lpthreads
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_5c8e0.dir/build.make:98: recipe for target 'cmTC_5c8e0' failed
-make[1]: *** [cmTC_5c8e0] Error 1
-make[1]: uscita dalla directory "/home/emanuele/Scrivania/thesis_refactoring/code/build/CMakeFiles/CMakeTmp"
-Makefile:127: recipe for target 'cmTC_5c8e0/fast' failed
-make: *** [cmTC_5c8e0/fast] Error 2
+ninja: build stopped: subcommand failed.
 
 
 
