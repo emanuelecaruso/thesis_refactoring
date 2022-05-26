@@ -62,6 +62,7 @@ extern int max_iterations_ba;
 extern int max_num_active_points;
 extern float intensity_coeff_ba;
 extern float gradient_coeff_ba;
+extern float coeff_sum_ba;
 extern float damp_cam;
 extern float damp_point_invdepth;
 extern float huber_threshold;

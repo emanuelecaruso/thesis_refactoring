@@ -92,7 +92,7 @@ bool Meas::init(ActivePoint* active_point){
 
   // control on error
   // if(abs(error)>chi_occlusion_threshold){
-  if(abs(error)>active_point->cost_threshold_){
+  if(abs(error)>active_point->cost_threshold_ba_){
     occlusion_ = true;
     return false;
   }

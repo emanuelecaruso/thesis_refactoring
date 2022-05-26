@@ -8,6 +8,7 @@ void PyramidLevel::init(const Image<pixelIntensity>* img){
   magn_cd_=getMagnitude(c_dx_,c_dy_);
   magn_cd_dx_=magn_cd_->compute_sobel_x();
   magn_cd_dy_=magn_cd_->compute_sobel_y();
+  magn_cdd_ =getMagnitude(magn_cd_dx_,magn_cd_dy_);
   phase_cd_=getPhase(c_dx_,c_dy_);
 }
 
@@ -61,6 +62,11 @@ Image<pixelIntensity>* Pyramid::getCDY(int level){
 Image<pixelIntensity>* Pyramid::getMagn(int level){
   assert(level>=0 && level<pyramid_levels_.size());
   return pyramid_levels_[level]->magn_cd_;
+}
+
+Image<pixelIntensity>* Pyramid::getMagn2(int level){
+  assert(level>=0 && level<pyramid_levels_.size());
+  return pyramid_levels_[level]->magn_cdd_;
 }
 
 Image<pixelIntensity>* Pyramid::getMagnDX(int level){

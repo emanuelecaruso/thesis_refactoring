@@ -96,7 +96,6 @@ void PointsContainer::showActivePoints(){
 
 }
 
-
 void PointsContainer::showProjectedActivePoints( int wtk){
   std::string name = cam_->name_+" , "+std::to_string(active_points_projected_.size())+" projected active points";
   showProjectedActivePoints(name,wtk);

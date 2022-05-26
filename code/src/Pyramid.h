@@ -15,6 +15,7 @@ class PyramidLevel{
     Image<pixelIntensity>* magn_cd_;
     Image<pixelIntensity>* magn_cd_dx_;
     Image<pixelIntensity>* magn_cd_dy_;
+    Image<pixelIntensity>* magn_cdd_;
     Image<pixelIntensity>* phase_cd_;
 
     // ********** constructor **********
@@ -52,6 +53,7 @@ class Pyramid{
     Image<pixelIntensity>* getMagn(int level);
     Image<pixelIntensity>* getMagnDX(int level);
     Image<pixelIntensity>* getMagnDY(int level);
+    Image<pixelIntensity>* getMagn2(int level);
     Image<pixelIntensity>* getPhase(int level);
 
 

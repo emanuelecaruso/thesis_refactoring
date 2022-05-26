@@ -3,13 +3,29 @@
 #include "PointsContainer.h"
 #include "CameraForMapping.h"
 
+
+PoseNormError Dso::getTotalPosesNormError(){
+  PoseNormError poses_norm_error_tot;
+  int count = 0;
+  for (CameraForMapping* cam : cameras_container_->frames_){
+    if (cam->keyframe_){
+      PoseNormError cam_pose_norm_error = cam->getPoseNormError();
+      poses_norm_error_tot+=cam_pose_norm_error;
+      count++;
+    }
+  }
+  poses_norm_error_tot/=count;
+  return poses_norm_error_tot;
+}
+
 void Dso::startSequential(){
   std::thread update_cameras_thread_(&Dso::updateCamerasFromEnvironment, this);
   update_cameras_thread_.detach();
 
   while(true){
 
-    loadFrameCurrent();
+    if(!loadFrameCurrent())
+      break;
 
     if(first_frame_to_set_){
       setFirstKeyframe();
@@ -20,13 +36,17 @@ void Dso::startSequential(){
     else{
       doDso();
     }
-
   }
+
+  PoseNormError pose_norm_error = getTotalPosesNormError();
+  pose_norm_error.print();
 }
 
-void Dso::loadFrameCurrent(){
+bool Dso::loadFrameCurrent(){
 
   // sharedCoutDebug("\nFrame "+std::to_string(frame_current_idx_)+" ("+frame_current_->name_+") , frame delay: "+std::to_string(frame_delay));
+  if(frame_current_idx_>=end_frame-1)
+    return false;
 
   if(frame_current_idx_==int(cameras_container_->frames_.size())-1){
     waitForNewFrame();
@@ -42,6 +62,7 @@ void Dso::loadFrameCurrent(){
   }
 
   sharedCoutDebug("\nFrame "+std::to_string(frame_current_idx_)+", delay: "+std::to_string(cameras_container_->frames_.size()-frame_current_idx_));
+  return true;
 }
 
 void Dso::setFirstKeyframe(){
@@ -201,7 +222,7 @@ void Dso::updateCamerasFromEnvironment(){
   }
   // update_cameras_thread_finished_=true;
   // frame_updated_.notify_all();
-  sharedCout("\nVideo stream ended");
+  sharedCoutDebug("\nVideo stream ended");
 
 }
 

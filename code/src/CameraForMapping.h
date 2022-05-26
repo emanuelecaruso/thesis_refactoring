@@ -7,6 +7,52 @@
 class PointsContainer;
 class CamDataForBA;
 
+class PoseNormError{
+  public:
+    float angle;
+    float position_norm;
+
+    // default constructor
+    PoseNormError():
+    angle(0),
+    position_norm(0)
+    {  }
+
+    // assignment constructor
+    PoseNormError(float angle_, float position_error_norm):
+    angle(angle_),
+    position_norm(position_error_norm)
+    {  }
+
+    // += operator
+    PoseNormError& operator+=(const PoseNormError& rhs){
+      /* addition of rhs to *this */
+      assert(!std::isnan(rhs.angle));
+      assert(!std::isnan(rhs.position_norm));
+      this->angle += rhs.angle;
+      this->position_norm += rhs.position_norm;
+
+      return *this; // return the result by reference
+    }
+
+    // /= operator
+    PoseNormError& operator/=(float divisor){
+      /* addition of rhs to *this */
+      assert(divisor>0);
+      this->angle /= divisor;
+      this->position_norm /= divisor;
+
+      return *this; // return the result by reference
+    }
+
+    inline void print(){
+      std::cout << "angle error: " << angle << std::endl;
+      std::cout << "position error norm: " << position_norm << std::endl;
+    }
+
+};
+
+
 class CameraForMapping : public Camera{
   // class CameraForMapping : public Camera{
   public:
@@ -44,9 +90,28 @@ class CameraForMapping : public Camera{
 
     // ********** methods **********
     void setGrountruthPose();
+
+
+    inline PoseNormError getPoseNormError(){
+      // get relative transformation matrix wrt groundtruth
+      Eigen::Isometry3f relative_transf = (*(grountruth_camera_->frame_world_wrt_camera_))*(*(frame_camera_wrt_world_));
+      assert(frame_camera_wrt_world_->linear().allFinite());
+      assert(grountruth_camera_->frame_world_wrt_camera_->linear().allFinite());
+      assert(frame_camera_wrt_world_->translation().allFinite());
+      assert(grountruth_camera_->frame_world_wrt_camera_->translation().allFinite());
+
+      // get angle from rotation matrix
+      float angle = rotation2angle(relative_transf.linear());
+
+      // get norm of translation vector
+      float norm_transl = relative_transf.translation().norm();
+
+      PoseNormError pose_norm_error(angle,norm_transl);
+      return pose_norm_error;
+    };
+
   protected:
     PointsContainer* initializePointsContainer();
     CamDataForBA* initializeDataForBA();
-
 
 };

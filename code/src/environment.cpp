@@ -87,13 +87,13 @@ std::vector<Camera*>* Environment::loadCameraVectorBlender(const std::string& pa
     if( stat( path_depth, &info__ ) != 0 ){
       Camera* camera( new Camera(name,cam_parameters_, f, path_rgb_ ));
       camera_vector->push_back(camera);
-      std::cout << camera->name_ << " added in env" << std::endl;
+      sharedCoutDebug(camera->name_ + " added in env");
       count++;
     }
     else{
       Camera* camera( new Camera(name,cam_parameters_, f, path_rgb_, path_depth_));
       camera_vector->push_back(camera);
-      std::cout << camera->name_ << " added in env" << std::endl;
+      sharedCoutDebug(camera->name_ + " added in env");
       count++;
     }
 
@@ -127,7 +127,7 @@ std::vector<Camera*>* Environment::loadCameraVectorTUM(const std::string& path_n
 
         Camera* camera = new Camera(cam_name,cam_parameters_, images_path+"/"+cam_name+".jpg" );
         camera_vector->push_back(camera);
-        std::cout << camera->name_ << " added in env" << std::endl;
+        sharedCoutDebug(camera->name_ + " added in env");
         count++;
       }
     }

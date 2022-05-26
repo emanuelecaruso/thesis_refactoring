@@ -24,19 +24,12 @@ bool BundleAdj::getMeasurementsInit(ActivePoint* active_point, int i, std::vecto
     assert(cam_couple->cam_m_==dso_->cameras_container_->keyframes_active_[j]);
 
     MeasBA* measurement = new MeasBA(active_point, cam_couple);
-    // if(measurement->occlusion_){
-    //   // if points is an occlusion in the first keyframe, remove it
-    //   if(j==dso_->cameras_container_->keyframes_active_.size()-1){
-    //     active_point->remove();
-    //     // marginalizePoint(active_point,cam_couple_container_);
-    //     n_points_removed_++;
-    //     return false;
-    //   }
-    //
-    //   n_occlusions++;
-    // }
-    // else if(measurement->valid_){
-    if(measurement->valid_){
+    if(measurement->occlusion_){
+
+      n_occlusions++;
+    }
+    else if(measurement->valid_){
+    // if(measurement->valid_){
       total_error+=abs(measurement->error);
       valid=true;
       measurement_vector->push_back(measurement);
@@ -63,11 +56,11 @@ bool BundleAdj::getMeasurementsInit(ActivePoint* active_point, int i, std::vecto
   //   // active_point->remove();
   //   return false;
   // }
-  // if(occlusion_valid_ratio>occlusion_valid_ratio_thresh){
-  //   // n_points_occlusions_++;
-  //   // occlusion=true;
-  //   return false;
-  // }
+  if(occlusion_valid_ratio>occlusion_valid_ratio_thresh){
+    // n_points_occlusions_++;
+    // occlusion=true;
+    return false;
+  }
   if(valid_ratio<valid_ratio_thresh){
     // n_points_non_valid_++;
     // non_valid=true;
@@ -481,40 +474,40 @@ void BundleAdj::marginalizePointsAndKeyframes(){
 
   // ***************************************************************************************
 
-  // // iterate through frames with active points
-  // for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
-  //   CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
-  //
-  //   // if(cam_r->points_container_->active_points_.empty()){
-  //   //   dso_->cameras_container_->removeFrameWithActPts(cam_r);
-  //   //   continue;
-  //   // }
-  //
-  //   cam_couple_container_ = new CamCoupleContainer(dso_,cam_r);
-  //
-  //
-  //
-  //   for( int j=cam_r->points_container_->active_points_.size()-1; j>=0; j-- ){
-  //     ActivePoint* active_pt = cam_r->points_container_->active_points_[j];
-  //     active_pt->p_idx_=-1;
-  //
-  //     std::vector<MeasBA*>* measurement_vector = new std::vector<MeasBA*>;
-  //     bool measurements_are_valid = getMeasurementsInit( active_pt,i, measurement_vector);
-  //     if(!measurements_are_valid){
-  //       // n_points_occlusions_++;
-  //       // occlusion=true;
-  //       if(active_pt->new_){
-  //         active_pt->remove();
-  //         n_points_removed_++;
-  //       }
-  //       else{
-  //         // std::cout << "APPPPPP" << std::endl;
-  //         marginalizePoint(active_pt, cam_couple_container_);
-  //       }
-  //     }
-  //   }
-  // }
-  //
+  // iterate through frames with active points
+  for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
+    CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
+
+    // if(cam_r->points_container_->active_points_.empty()){
+    //   dso_->cameras_container_->removeFrameWithActPts(cam_r);
+    //   continue;
+    // }
+
+    cam_couple_container_ = new CamCoupleContainer(dso_,cam_r);
+
+
+
+    for( int j=cam_r->points_container_->active_points_.size()-1; j>=0; j-- ){
+      ActivePoint* active_pt = cam_r->points_container_->active_points_[j];
+      active_pt->p_idx_=-1;
+
+      std::vector<MeasBA*>* measurement_vector = new std::vector<MeasBA*>;
+      bool measurements_are_valid = getMeasurementsInit( active_pt,i, measurement_vector);
+      if(!measurements_are_valid){
+        // n_points_occlusions_++;
+        // occlusion=true;
+        if(active_pt->new_){
+          active_pt->remove();
+          n_points_removed_++;
+        }
+        else{
+          // std::cout << "APPPPPP" << std::endl;
+          marginalizePoint(active_pt, cam_couple_container_);
+        }
+      }
+    }
+  }
+
 
 
   // ***************************************************************************************
@@ -539,20 +532,20 @@ void BundleAdj::marginalizePointsAndKeyframes(){
       MeasBA measurement(active_pt, cam_couple );
 
       assert(cam_couple->cam_m_==dso_->cameras_container_->keyframes_active_.back());
-      if(!uv_in_range || measurement.occlusion_){
+      // if(!uv_in_range || measurement.occlusion_){
+      if(!uv_in_range || abs(measurement.error)> (active_pt->cost_threshold_ba_) ) {
+      // if(!uv_in_range || abs(measurement.error)> (active_pt->cost_threshold_ba_-(coeff_sum_ba*g_th*0.5)) ) {
         // if points is an occlusion in the first keyframe, remove it
         if(active_pt->new_){
           active_pt->remove();
           n_points_removed_++;
         }
         else{
-          // std::cout << "APPPPPP" << std::endl;
           marginalizePoint(active_pt, cam_couple_container);
         }
       }
       else{
         active_pt->new_=false;
-
       }
 
     }
@@ -647,11 +640,11 @@ void BundleAdj::optimize(bool only_pts){
 
   double t_end=getTime();
   int deltaTime = (t_end-t_start);
-  // sharedCoutDebug("   - Bundle adjustment: " + std::to_string(deltaTime) + " ms");
+  sharedCoutDebug("   - Bundle adjustment: " + std::to_string(deltaTime) + " ms");
   // sharedCoutDebug("       - N points removed: " + std::to_string(n_points_removed_));
   // sharedCoutDebug("           - Occlusions: " + std::to_string(n_points_occlusions_));
   // sharedCoutDebug("           - Non valid: " + std::to_string(n_points_non_valid_));
-  sharedCoutDebug("       - N points marginalized: " + std::to_string(n_points_marginalized_));
+  // sharedCoutDebug("       - N points marginalized: " + std::to_string(n_points_marginalized_));
 
 
 
@@ -691,7 +684,7 @@ void MarginalizationHandler::loadPriorsInLinSys(){
     delete prior_meas;
   }
 
-  std::cout << "chi marg: " << chi/prior_measurements_.size() << std::endl;
+  // std::cout << "chi marg: " << chi/prior_measurements_.size() << std::endl;
 
   prior_measurements_.clear();
 

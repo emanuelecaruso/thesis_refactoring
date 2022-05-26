@@ -24,17 +24,18 @@ bool PointsHandler::sampleCandidates(){
   reg_level=std::max(reg_level,1);
 
   // get image
-  Image<pixelIntensity>* img  = new Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn(candidate_level));
+  Image<pixelIntensity>* img_magn  = new Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn(candidate_level));
+  Image<pixelIntensity>* img_magn2  = new Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn2(candidate_level));
 
   while(true){
 
     int factor = pow(2,reg_level-candidate_level);
 
-    assert(!(img->image_.rows%factor));
-    assert(!(img->image_.cols%factor));
+    assert(!(img_magn->image_.rows%factor));
+    assert(!(img_magn->image_.cols%factor));
 
-    int n_regions_x = img->image_.cols/factor;
-    int n_regions_y = img->image_.rows/factor;
+    int n_regions_x = img_magn->image_.cols/factor;
+    int n_regions_y = img_magn->image_.rows/factor;
     int region_width = factor;
     int region_height = factor;
 
@@ -47,12 +48,13 @@ bool PointsHandler::sampleCandidates(){
         int row_coord = row*region_height;
         int col_coord = col*region_width;
 
-        cv::Mat cropped_image (img->image_, cv::Rect(col_coord,row_coord,factor,factor));
+        cv::Mat cropped_image_magn (img_magn->image_, cv::Rect(col_coord,row_coord,factor,factor));
+        cv::Mat cropped_image_magn2 (img_magn2->image_, cv::Rect(col_coord,row_coord,factor,factor));
 
         cv::Point2i* maxLoc = new cv::Point2i;
         double* maxVal = new double;
 
-        cv::minMaxLoc( cropped_image,nullptr,maxVal,nullptr,maxLoc );
+        cv::minMaxLoc( cropped_image_magn,nullptr,maxVal,nullptr,maxLoc );
 
         maxLoc->x+=col_coord;
         maxLoc->y+=row_coord;
@@ -64,12 +66,16 @@ bool PointsHandler::sampleCandidates(){
 
         pxl pixel = cvpoint2pxl(*maxLoc);
 
-        float mean = cv::mean(cropped_image)[0];
+        float mean_magn = cv::mean(cropped_image_magn)[0];
+        float mean_magn2 = cv::mean(cropped_image_magn2)[0];
+
+
         Candidate* cand = new Candidate(dso_->frame_current_, pixel, candidate_level);
-        cand->cost_threshold_=mean+g_th;
+        cand->cost_threshold_ba_= intensity_coeff_ba*(mean_magn*g_th)+gradient_coeff_ba*(mean_magn2*g_th);
+        cand->cost_threshold_= intensity_coeff*(mean_magn*g_th)+gradient_coeff*(mean_magn2*g_th);
 
         dso_->frame_current_->points_container_->candidates_.push_back(cand);
-        img->setPixel(pixel,0);
+        img_magn->setPixel(pixel,0);
 
         delete maxLoc;
         delete maxVal;

@@ -55,6 +55,7 @@ class Candidate : public Point{
   pixelIntensity phase_cd_;
 
   float cost_threshold_;
+  float cost_threshold_ba_;
   // CameraForMapping* cam_;
   // int level_;
   // pxl pixel_;
@@ -110,7 +111,7 @@ public:
   pixelIntensity magn_cd_;
   int p_idx_;
   bool new_;
-  float cost_threshold_;
+  float cost_threshold_ba_;
 
   // current guess
   // invdepth_(cand->invdepth_),
@@ -127,7 +128,7 @@ public:
   ,magn_cd_(cand->magn_cd_)
   ,p_idx_(-1)
   ,new_(true)
-  ,cost_threshold_(cand->cost_threshold_)
+  ,cost_threshold_ba_(cand->cost_threshold_ba_)
   {
     updateInvdepthVarAndP(cand->invdepth_, cand->invdepth_var_);
   }

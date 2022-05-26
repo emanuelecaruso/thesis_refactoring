@@ -14,6 +14,7 @@
 #include "spectator.h"
 
 class CameraForMapping;
+class PoseNormError;
 
 class Dso{
   public:
@@ -73,11 +74,12 @@ class Dso{
 
   protected:
     void updateCamerasFromEnvironment(); // load camera objects at fps rate
-    void loadFrameCurrent();
+    bool loadFrameCurrent();
     void setFirstKeyframe();
     void initialize();
     bool doDso();
     void saveJsonForBlender();
+    PoseNormError getTotalPosesNormError();
 
   private:
 
