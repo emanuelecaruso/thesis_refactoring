@@ -258,3 +258,40 @@ bool LinSysBlocks::visualizeH(){
   delete img_H;
 
 }
+
+
+
+bool LinSysBlocks::visualizeB(){
+  Image<colorRGB>* img_B = new Image<colorRGB>("B");
+  int size = c_size_+p_size_;
+  if (size == 0)
+    return false;
+  // img_H->initImage(c_size_,c_size_);
+  img_B->initImage(size,1);
+  img_B->setAllPixels( white);
+
+  // pose segment
+  for(int i=0; i<c_size_; i++){
+    float val;
+    val=b_c_(i);
+
+    if (val!=0){
+      img_B->setPixel(i,0, red);
+    }
+    else{
+      img_B->setPixel(i,0, white);
+    }
+
+  }
+  // point point block
+  for(int i=0; i<p_size_; i++){
+    if (b_p_(i)!=0){
+      img_B->setPixel(i+c_size_,0, blue);
+    }
+    else{
+      img_B->setPixel(i+c_size_,0, white);
+
+    }
+
+  }
+}

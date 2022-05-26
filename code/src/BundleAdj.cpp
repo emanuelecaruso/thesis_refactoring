@@ -306,56 +306,6 @@ void BundleAdj::marginalize(){
 
 }
 
-void BundleAdj::integrateMargTerms(LinSysBA& lin_sys_ba){
-
-  // // std::cout << "porcoddioooo\n" << marginalization_handler_->H_tilde_ << "\n\n" << marginalization_handler_->b_tilde_ << std::endl;
-  // lin_sys_ba.H_cc_.setZero();
-  // lin_sys_ba.H_cp_.setZero();
-  // lin_sys_ba.H_pp_.setZero();
-  // lin_sys_ba.b_c_.setZero();
-  // lin_sys_ba.b_p_.setZero();
-
-  // iterate through keyframes with priors
-  for( int i=0; i<marginalization_handler_->keyframes_with_priors_.size(); i++ ){
-    CameraForMapping* cam_r = marginalization_handler_->keyframes_with_priors_[i];
-    bool no_r = cam_r->fixed_ || cam_r->marginalized_;
-    if(no_r)
-      continue;
-
-    int c_marg_idx_r = cam_r->cam_data_for_ba_->c_marg_idx_*6;
-    int c_idx_r = cam_r->cam_data_for_ba_->c_idx_*6;
-    lin_sys_ba.H_cc_.block<6,6>(c_idx_r,c_idx_r).triangularView<Eigen::Upper>() += marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_r,c_marg_idx_r);
-    lin_sys_ba.b_c_.segment<6>(c_idx_r) += marginalization_handler_->b_tilde_.segment<6>(c_marg_idx_r);
-
-    // off diagonal terms
-    for( int j=i+1; j<marginalization_handler_->keyframes_with_priors_.size(); j++ ){
-      CameraForMapping* cam_m = marginalization_handler_->keyframes_with_priors_[j];
-      bool no_m = cam_m->fixed_ || cam_m->marginalized_;
-      if(no_m)
-        continue;
-
-      int c_idx_m = cam_m->cam_data_for_ba_->c_idx_*6;
-      int c_marg_idx_m = cam_m->cam_data_for_ba_->c_marg_idx_*6;
-
-      assert(c_idx_r>=0 && c_idx_r<lin_sys_ba.H_cc_.rows() || no_r);
-      assert(c_idx_m>=0 && c_idx_m<lin_sys_ba.H_cc_.rows() || no_m);
-      assert(c_marg_idx_r>=0 && c_marg_idx_r<marginalization_handler_->H_tilde_.rows() );
-      assert(c_marg_idx_m>=0 && c_marg_idx_m<marginalization_handler_->H_tilde_.rows() );
-
-      // m-r
-      if(!no_r && !no_m){
-        if(c_idx_m<c_idx_r){
-          lin_sys_ba.H_cc_.block<6,6>(c_idx_m,c_idx_r) += marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_m,c_marg_idx_r);
-        }
-        else{
-          lin_sys_ba.H_cc_.block<6,6>(c_idx_r,c_idx_m) += marginalization_handler_->H_tilde_.block<6,6>(c_marg_idx_r,c_marg_idx_m);
-        }
-      }
-
-    }
-  }
-
-}
 
 void BundleAdj::updateBMarg(LinSysBA& lin_sys_ba){
   Eigen::VectorXf dx_c = lin_sys_ba.dx_c;
@@ -387,10 +337,6 @@ void BundleAdj::updateBMarg(LinSysBA& lin_sys_ba){
 }
 
 void BundleAdj::updateState(LinSysBA& lin_sys_ba, bool only_pts){
-
-  if(do_marginalization){
-    integrateMargTerms(lin_sys_ba);
-  }
 
   // lin_sys_ba.visualizeH();
 
@@ -625,7 +571,7 @@ void BundleAdj::optimize(bool only_pts){
     assert(num_points>0);
     lin_sys_ba.reinitWithNewPoints(num_points);
 
-    lin_sys_ba.buildLinearSystem(measurement_vec_vec);
+    lin_sys_ba.buildLinearSystem(measurement_vec_vec, marginalization_handler_);
     updateState(lin_sys_ba, only_pts);
 
 

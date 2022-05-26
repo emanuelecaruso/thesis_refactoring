@@ -76,7 +76,6 @@ class BundleAdj{
   protected:
     void marginalizePointsAndKeyframes();
     void updateState(LinSysBA& lin_sys_ba, bool only_pts=false);
-    void integrateMargTerms(LinSysBA& lin_sys_ba);
     void updateBMarg(LinSysBA& lin_sys_ba);
 };
 

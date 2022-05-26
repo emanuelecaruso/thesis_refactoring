@@ -4,7 +4,7 @@
 #include "PointsContainer.h"
 
 class Dso;
-
+class MarginalizationHandler;
 
 class MeasBA : public Meas {
   public:
@@ -45,11 +45,12 @@ class LinSysBA : public LinSysBlocks{
 
     void init();
     void reinitWithNewPoints(int n_points);
-    void buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement_vec_vec );
+    void buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement_vec_vec, MarginalizationHandler* marginalization_handler );
     void updateCameras();
     void updatePoints();
   protected:
     float addMeasurement(MeasBA* measurement, int p_idx);
+    void integrateMargPriors(MarginalizationHandler* marginalization_handler);
 
 };
 
