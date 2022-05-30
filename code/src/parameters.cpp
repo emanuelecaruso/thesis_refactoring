@@ -2,10 +2,10 @@
 #include "parameters.h"
 
 // debug parameters
-bool debug_initialization=false;
+bool debug_initialization=true;
 bool debug_mapping=false;
-bool debug_tracking=false;
-bool debug_optimization= false;
+bool debug_tracking=true;
+bool debug_optimization= true;
 bool debug_gt_error= false;
 int debug_start_frame = 0;
 bool use_spectator= true;
@@ -57,7 +57,7 @@ float damp_cam= 0;
 float damp_point_invdepth= 1000;
 // float damp_point_invdepth= 10e3;
 // float damp_point_invdepth= FLT_MAX;
-float damp_exposure= 0.000;
+float damp_exposure= 1.000;
 float lambda_a= 0;
 float lambda_b= 0;
 
@@ -109,6 +109,7 @@ float err_threshold= 5;
 int size_window= 21;
 float confidence= 0.999;
 float ransacReprojThreshold= 1;
+float world_scale_default = 0.005;
 
 
 // spectator parameters
@@ -117,6 +118,6 @@ int spec_resolution_y= 768;
 float spec_width= 0.024;
 float spec_lens= 0.035;
 float spec_min_depth= 0.01;
-float spec_max_depth= 20;
-float spec_distance= 3;
+float spec_max_depth= 1000;
+float spec_distance= 5;
 float rendered_cams_size= 0.01;

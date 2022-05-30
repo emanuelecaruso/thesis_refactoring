@@ -9,8 +9,15 @@
 
 void Tracker::trackCam(bool groundtruth){
   if(groundtruth){
-    dso_->frame_current_->setGrountruthPose();
-    sharedCoutDebug("   - Frame tracked (groundtruth)");
+    if(dso_->frame_current_->grountruth_camera_->frame_camera_wrt_world_!=nullptr){
+      dso_->frame_current_->setGrountruthPose();
+      sharedCoutDebug("   - Frame tracked (groundtruth)");
+    }
+    else{
+      dso_->frame_current_->setPoseToWorldReferenceFrame();
+      sharedCoutDebug("   - Frame set in world reference frame");
+    }
+
   }
   else{
     trackCam();

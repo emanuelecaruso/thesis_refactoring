@@ -95,6 +95,8 @@ extern float err_threshold;
 extern int size_window;
 extern float confidence;
 extern float ransacReprojThreshold;
+extern float world_scale_default;
+
 
 // spectator parameters
 extern int spec_resolution_x;

@@ -47,8 +47,8 @@ class Camera{
            K_(compute_K()),
            Kinv_( new Eigen::Matrix3f(K_->inverse()) ),
            image_intensity_( nullptr ),
-           frame_camera_wrt_world_(new Eigen::Isometry3f),
-           frame_world_wrt_camera_(new Eigen::Isometry3f),
+           frame_camera_wrt_world_(nullptr),
+           frame_world_wrt_camera_(nullptr),
            exposure_time_(exposure_time),
            a_exposure_(0),
            b_exposure_(0)

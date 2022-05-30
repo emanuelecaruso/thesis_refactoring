@@ -95,28 +95,33 @@ void Dso::initialize(){
       if(debug_initialization){
         initializer_->showCornersTrackCurr();
       }
+
+      keyframe_handler_->addKeyframe(true);  // add fixed keyframe
+      if(use_spectator){
+        spectator_->renderState();
+        spectator_->showSpectator(0);
+      }
+      points_handler_->trackCandidates(take_gt_points); // track existing candidates
+
+      // project candidates and active points on last frame
+      candidates_activator_->activateCandidates();
+      points_handler_->sampleCandidates(); // sample candidates as high gradient points
+
+      bundle_adj_->optimize(true);
+
+      if(debug_mapping){
+
+        // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
+        // points_handler_->sampleCandidates();
+        // points_handler_->showCandidates();
+        // points_handler_->projectActivePointsOnLastFrame();
+
+        points_handler_->showProjectedCandidates();
+        points_handler_->showProjectedActivePoints();
+      }
+      to_initialize_=false;
     }
   }
-  keyframe_handler_->addKeyframe(true);  // add fixed keyframe
-  points_handler_->trackCandidates(take_gt_points); // track existing candidates
-
-  // project candidates and active points on last frame
-  candidates_activator_->activateCandidates();
-  points_handler_->sampleCandidates(); // sample candidates as high gradient points
-
-  bundle_adj_->optimize(true);
-
-  if(debug_mapping){
-
-    // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
-    // points_handler_->sampleCandidates();
-    // points_handler_->showCandidates();
-    // points_handler_->projectActivePointsOnLastFrame();
-
-    points_handler_->showProjectedCandidates();
-    points_handler_->showProjectedActivePoints();
-  }
-  to_initialize_=false;
 }
 
 

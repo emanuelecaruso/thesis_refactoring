@@ -180,39 +180,65 @@ typedef std::vector<IntPair > IntPairVector;
 #define EPS 0.00000000001
 
 struct CamParameters{
-  const int resolution_x;
-  const int resolution_y;
-  const float aspect;
-  const float width;
-  const float height;
-  const float fx;
-  const float fy;
-  const float min_depth;
-  const float max_depth;
-  const float pixel_width;
-  const float pixel_meter_ratio;
+  int resolution_x;
+  int resolution_y;
+  float aspect;
+  float width;
+  float height;
+  float fx;
+  float fy;
+  float min_depth;
+  float max_depth;
+  float pixel_width;
+  float pixel_meter_ratio;
 
-  CamParameters(int resolution_x_, int resolution_y_,
-  float width_,float lens_,float min_depth_,float max_depth_):
-  resolution_x(resolution_x_), resolution_y(resolution_y_), aspect((float)resolution_x_/(float)resolution_y_),
-  width(width_), height(width_/aspect), fx(lens_), fy(lens_), min_depth(min_depth_), max_depth(max_depth_),
-  pixel_width(width/(float)resolution_x), pixel_meter_ratio((float)resolution_x/width)
-  { };
-
+  // constructor for blender dataset
   CamParameters(int resolution_x_, int resolution_y_,
   float width_,float fx_,float fy_,float min_depth_,float max_depth_):
-  resolution_x(resolution_x_), resolution_y(resolution_y_), aspect((float)resolution_x_/(float)resolution_y_),
-  width(width_), height(width_/aspect), fx(fx_), fy(fy_), min_depth(min_depth_), max_depth(max_depth_),
-  pixel_width(width/(float)resolution_x), pixel_meter_ratio((float)resolution_x/width)
+  resolution_x(resolution_x_)
+  ,resolution_y(resolution_y_)
+  ,aspect((float)resolution_x_/(float)resolution_y_)
+  ,width(width_)
+  ,height(width_/aspect)
+  ,fx(fx_)
+  ,fy(fy_)
+  ,min_depth(min_depth_)
+  ,max_depth(max_depth_)
+  ,pixel_width(width/(float)resolution_x)
+  ,pixel_meter_ratio((float)resolution_x/width)
   { };
+
+
+  // constructor for TUM dataset
+  CamParameters(int resolution_x_, int resolution_y_, float fx_,float fy_, float cx_, float cy_, 
+  float pxlmtrratio_, float min_depth_,float max_depth_):
+    resolution_x(resolution_x_)
+    ,resolution_y(resolution_y_)
+    ,aspect((float)resolution_x_/(float)resolution_y_)
+    ,width((float)resolution_x_/pxlmtrratio_)
+    ,height(width/aspect)
+    ,fx(fx_)
+    ,fy(fy_)
+    ,min_depth(min_depth_)
+    ,max_depth(max_depth_)
+    ,pixel_width(width/(float)resolution_x)
+    ,pixel_meter_ratio(pxlmtrratio_)
+    { };
 
   // clone
   CamParameters(const CamParameters* cam_parameters):
-  resolution_x(cam_parameters->resolution_x), resolution_y(cam_parameters->resolution_y), aspect((float)resolution_x/(float)resolution_y),
-  width(cam_parameters->width), height(width/aspect), fx(cam_parameters->fx), fy(cam_parameters->fy),
-  min_depth(cam_parameters->min_depth), max_depth(cam_parameters->max_depth),
-  pixel_width(width/(float)resolution_x), pixel_meter_ratio((float)resolution_x/width)
-  { };
+    resolution_x(cam_parameters->resolution_x),
+    resolution_y(cam_parameters->resolution_y),
+    aspect((float)resolution_x/(float)resolution_y),
+    width(cam_parameters->width),
+    height(width/aspect),
+    fx(cam_parameters->fx),
+    fy(cam_parameters->fy),
+    min_depth(cam_parameters->min_depth),
+    max_depth(cam_parameters->max_depth),
+    pixel_width(width/(float)resolution_x),
+    pixel_meter_ratio((float)resolution_x/width)
+    { };
 
   inline void printMembers() const {
     std::cout << "fx: " << fx << std::endl;

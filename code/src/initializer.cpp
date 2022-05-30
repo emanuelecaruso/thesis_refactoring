@@ -211,6 +211,8 @@ Eigen::Isometry3f Initializer::computeRelativePoseGt(){
   Eigen::Isometry3f r_T_w = *(ref_frame_->frame_world_wrt_camera_);
   Eigen::Isometry3f r_T_m = r_T_w*w_T_m;
 
+
+
   return r_T_m;
 }
 
@@ -256,11 +258,19 @@ Eigen::Isometry3f Initializer::computeRelativePoseGt(){
 //
 //
 Eigen::Isometry3f Initializer::essential2pose(cv::Mat& E){
+  float t_magnitude;
+  if (dso_->frame_current_->grountruth_camera_->frame_camera_wrt_world_!=nullptr){
+    // get grountruth of the pose to predict
+    Eigen::Isometry3f T_gt = computeRelativePoseGt();
+    // get groundtruth of scale
+    t_magnitude = T_gt.translation().norm();
+    sharedCoutDebug("World scale set to groundtruth");
+  }
+  else{
+    t_magnitude = world_scale_default;
 
-  // get grountruth of the pose to predict
-  Eigen::Isometry3f T_gt = computeRelativePoseGt();
-   // get groundtruth of scale
-  float t_magnitude = T_gt.translation().norm();
+  }
+
 
   // compute relative pose with opencv
   cv::Mat R, t;

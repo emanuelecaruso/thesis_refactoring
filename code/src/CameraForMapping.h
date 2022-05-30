@@ -90,7 +90,7 @@ class CameraForMapping : public Camera{
 
     // ********** methods **********
     void setGrountruthPose();
-
+    void setPoseToWorldReferenceFrame();
 
     inline PoseNormError getPoseNormError(){
       // get relative transformation matrix wrt groundtruth

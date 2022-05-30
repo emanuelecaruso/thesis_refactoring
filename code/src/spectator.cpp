@@ -7,12 +7,14 @@
 CamParameters* Spectator::initCamParams(){
   CamParameters* spectator_params (new CamParameters(
   spec_resolution_x, spec_resolution_y, spec_width,
-  spec_lens, spec_min_depth, spec_max_depth));
+  spec_lens, spec_lens, spec_min_depth, spec_max_depth));
   return spectator_params;
 }
 
 Camera* Spectator::initCam(){
   Camera* spectator_cam (new Camera("Spectator", spectator_params_));
+  spectator_cam->frame_camera_wrt_world_ = new Eigen::Isometry3f;
+  spectator_cam->frame_world_wrt_camera_ = new Eigen::Isometry3f;
   return spectator_cam;
 }
 
@@ -98,8 +100,12 @@ void Spectator::renderCamsAndKFs(){
   for ( int i = 0; i<num_kfs; i++){
     CameraForMapping* cam = dso_->cameras_container_->frames_[i];
 
-    plotCam(cam->grountruth_camera_, orange);
+    if (cam->grountruth_camera_->frame_camera_wrt_world_!=nullptr){
+      plotCam(cam->grountruth_camera_, orange);
+    }
+
     if (cam->keyframe_){
+      std::cout << cam->name_ << " " << cam->frame_camera_wrt_world_->translation() << std::endl;
       std::vector<CameraForMapping*>& v = dso_->cameras_container_->keyframes_active_;
 
       if (std::count(v.begin(), v.end(), cam)) {

@@ -116,6 +116,8 @@ std::vector<Camera*>* Environment::loadCameraVectorTUM(const std::string& path_n
     std::fstream newfile;
     newfile.open(times_path);  // open a file to perform write operation using file object
     if (newfile.is_open()){ //checking whether the file is open
+      camera_vector = new std::vector<Camera*>;
+
       std::string line;
       while(getline(newfile, line)){ //read data from file object and put it into string.
         if (count>end_frame)
@@ -123,9 +125,9 @@ std::vector<Camera*>* Environment::loadCameraVectorTUM(const std::string& path_n
         std::vector <std::string> tokens; // store the string in vector
         split_str (line, ' ', tokens); // call function to split the string
         std::string cam_name = tokens.front();
-        std::string time = tokens.back();
+        float time = std::stof(tokens.back());
 
-        Camera* camera = new Camera(cam_name,cam_parameters_, images_path+"/"+cam_name+".jpg" );
+        Camera* camera = new Camera(cam_name,cam_parameters_, images_path+"/"+cam_name+".jpg",time );
         camera_vector->push_back(camera);
         sharedCoutDebug(camera->name_ + " added in env");
         count++;
@@ -197,7 +199,7 @@ CamParameters* Environment::loadCamParametersBlender(const std::string& path_nam
 
       cam_parameters_out = new CamParameters(
         resolution_x, resolution_y, width,
-        lens, min_depth, max_depth);
+        lens, lens, min_depth, max_depth);
 
     } catch (std::exception& e) {
       std::string error = ": missing values in json file for environment";
@@ -211,10 +213,12 @@ CamParameters* Environment::loadCamParametersBlender(const std::string& path_nam
 
 CamParameters* Environment::loadCamParametersTUM(const std::string& path_name, const std::string& dataset_name){
 
+  CamParameters* cam_parameters_out = nullptr;
+
   std::vector<std::string> data_tokens{
-    "res_x", "res_y", "fx", "fy", "cx", "cy", "pxlmtrratio"
+    "res_x", "res_y", "fx", "fy", "cx", "cy", "pxlmtrratio", "mindepth", "maxdepth"
   };
-  std::vector<float> cam_data(7);
+  std::vector<float> cam_data(9);
   int count = 0;
 
   std::string data_path = path_name+"/data.txt";
@@ -229,14 +233,24 @@ CamParameters* Environment::loadCamParametersTUM(const std::string& path_name, c
       split_str (line, ' ', tokens); // call function to split the string
       assert(tokens.front()==data_tokens[count]);
       cam_data[count]=std::stof(tokens.back());
-
-      std::cout << cam_data[count] << std::endl;
       count++;
     }
   }
+  cam_parameters_out = new CamParameters(
+    cam_data[0],
+    cam_data[1],
+    cam_data[2],
+    cam_data[3],
+    cam_data[4],
+    cam_data[5],
+    cam_data[6],
+    cam_data[7],
+    cam_data[8]
+    );
 
 
-  return nullptr;
+
+  return cam_parameters_out;
 
 }
 
