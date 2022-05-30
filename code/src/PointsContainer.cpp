@@ -5,7 +5,7 @@
 
 
 void Candidate::showCandidate(){
-  cam_->pyramid_->getC(level_)->showImgWithColoredPixel( pixel_, pow(2,level_), cam_->name_+", cand");
+  cam_->pyramid_->getC(level_)->showImgWithColoredPixel( pixel_, pow(2,level_)+1, cam_->name_+", cand");
 }
 
 void Candidate::setInvdepthGroundtruth(){

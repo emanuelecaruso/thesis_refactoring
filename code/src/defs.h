@@ -210,15 +210,15 @@ struct CamParameters{
 
 
   // constructor for TUM dataset
-  CamParameters(int resolution_x_, int resolution_y_, float fx_,float fy_, float cx_, float cy_, 
+  CamParameters(int resolution_x_, int resolution_y_, float fx_,float fy_, float cx_, float cy_,
   float pxlmtrratio_, float min_depth_,float max_depth_):
     resolution_x(resolution_x_)
     ,resolution_y(resolution_y_)
     ,aspect((float)resolution_x_/(float)resolution_y_)
     ,width((float)resolution_x_/pxlmtrratio_)
     ,height(width/aspect)
-    ,fx(fx_)
-    ,fy(fy_)
+    ,fx(fx_/pxlmtrratio_)
+    ,fy(fy_/pxlmtrratio_)
     ,min_depth(min_depth_)
     ,max_depth(max_depth_)
     ,pixel_width(width/(float)resolution_x)
@@ -229,15 +229,15 @@ struct CamParameters{
   CamParameters(const CamParameters* cam_parameters):
     resolution_x(cam_parameters->resolution_x),
     resolution_y(cam_parameters->resolution_y),
-    aspect((float)resolution_x/(float)resolution_y),
+    aspect(cam_parameters->aspect),
     width(cam_parameters->width),
-    height(width/aspect),
+    height(cam_parameters->height),
     fx(cam_parameters->fx),
     fy(cam_parameters->fy),
     min_depth(cam_parameters->min_depth),
     max_depth(cam_parameters->max_depth),
-    pixel_width(width/(float)resolution_x),
-    pixel_meter_ratio((float)resolution_x/width)
+    pixel_width(cam_parameters->pixel_width),
+    pixel_meter_ratio(cam_parameters->pixel_meter_ratio)
     { };
 
   inline void printMembers() const {
@@ -643,8 +643,12 @@ inline float randZeroMeanNoise(float range){
   return out;
 }
 
-inline float getEuclideanDistance(Eigen::Vector2f& uv1, Eigen::Vector2f& uv2){
+
+inline float getEuclideanDistance(pxl& uv1, pxl& uv2){
   return (uv2-uv1).norm();
+}
+inline float getEuclideanDistance(cv::Point2f& pxl1, cv::Point2f& pxl2){
+  return cv::norm(pxl2-pxl1);
 }
 
 

@@ -5,9 +5,12 @@
 #include <mutex>
 
 CamParameters* Spectator::initCamParams(){
-  CamParameters* spectator_params (new CamParameters(
-  spec_resolution_x, spec_resolution_y, spec_width,
-  spec_lens, spec_lens, spec_min_depth, spec_max_depth));
+  CamParameters* spectator_params (new CamParameters(dso_->cam_parameters_));
+  spectator_params->resolution_x*=spec_upscaling;
+  spectator_params->resolution_y*=spec_upscaling;
+  spectator_params->pixel_width/=spec_upscaling;
+  spectator_params->pixel_meter_ratio*spec_upscaling;
+
   return spectator_params;
 }
 
@@ -20,7 +23,7 @@ Camera* Spectator::initCam(){
 
 Image<colorRGB>* Spectator::initImage(){
   Image<colorRGB>* spectator_image( new Image<colorRGB> ("Spectator"));
-  spectator_image->initImage(spec_resolution_y, spec_resolution_x);
+  spectator_image->initImage(spectator_params_->resolution_y, spectator_params_->resolution_x);
   spectator_image->setAllPixels(background_color_);
   return spectator_image;
 }
@@ -105,7 +108,6 @@ void Spectator::renderCamsAndKFs(){
     }
 
     if (cam->keyframe_){
-      std::cout << cam->name_ << " " << cam->frame_camera_wrt_world_->translation() << std::endl;
       std::vector<CameraForMapping*>& v = dso_->cameras_container_->keyframes_active_;
 
       if (std::count(v.begin(), v.end(), cam)) {
@@ -115,7 +117,7 @@ void Spectator::renderCamsAndKFs(){
         plotCam(cam, green);
       }
     }
-    else{
+    else if (!cam->discarded_during_initialization){
       plotCam(cam, blue);
     }
 

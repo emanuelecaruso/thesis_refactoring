@@ -2,16 +2,17 @@
 #include "parameters.h"
 
 // debug parameters
-bool debug_initialization=true;
+bool debug_initialization=false;
 bool debug_mapping=false;
-bool debug_tracking=true;
-bool debug_optimization= true;
+bool debug_tracking=false;
+bool debug_optimization= false;
 bool debug_gt_error= false;
 int debug_start_frame = 0;
 bool use_spectator= true;
 
 
 // code parameters
+bool environment_preload = true;
 bool do_marginalization = true;
 bool first_2_active_kfs_fixed = false;
 bool marg_pts_in_marg_kf = false;
@@ -19,8 +20,8 @@ bool first_est_jac = false;
 bool take_gt_poses=false;
 bool take_gt_points=false;
 bool take_gt_initialization=false;
-// int guess_type=POSE_CONSTANT;
-int guess_type=VELOCITY_CONSTANT;
+int guess_type=POSE_CONSTANT;
+// int guess_type=VELOCITY_CONSTANT;
 int opt_norm=HUBER;
 // int opt_norm=QUADRATIC;
 // int image_id=INTENSITY_ID;
@@ -41,7 +42,7 @@ int num_candidates=2000;
 
 // keyframe selection
 int num_active_keyframes=7;
-float flow_dist_threshold=0.00001;
+float flow_dist_threshold=5;
 // float flow_dist_threshold=0.0005;
 float percentage_marg_pts_threshold= 0.01;
 // float percentage_marg_pts_threshold= 0.5;
@@ -57,9 +58,9 @@ float damp_cam= 0;
 float damp_point_invdepth= 1000;
 // float damp_point_invdepth= 10e3;
 // float damp_point_invdepth= FLT_MAX;
-float damp_exposure= 1.000;
-float lambda_a= 0;
-float lambda_b= 0;
+float damp_exposure= 1;
+float lambda_a= 100;
+float lambda_b= 100;
 
 float huber_threshold=coeff_sum_ba*0.05;
 // float sat_threshold=0.04;
@@ -97,7 +98,7 @@ float conv_threshold= 0.01;
 
 
 //  video streaming
-int end_frame=120;
+int end_frame=200;
 int fps=30;
 
 
@@ -109,15 +110,11 @@ float err_threshold= 5;
 int size_window= 21;
 float confidence= 0.999;
 float ransacReprojThreshold= 1;
-float world_scale_default = 0.005;
+float world_scale_default = 0.1;
+float flow_dist_threshold_init = 5;
 
 
 // spectator parameters
-int spec_resolution_x= 1366;
-int spec_resolution_y= 768;
-float spec_width= 0.024;
-float spec_lens= 0.035;
-float spec_min_depth= 0.01;
-float spec_max_depth= 1000;
-float spec_distance= 5;
+float spec_upscaling = 2;
+float spec_distance= 2;
 float rendered_cams_size= 0.01;

@@ -17,9 +17,8 @@ int main (int argc, char * argv[]) {
 
   // initialization
 
-  Environment* environment = new Environment(path_name, dataset_name);
 
-  Dso* dso = new Dso( environment ); // dense mapper and tracker
+  Dso* dso = new Dso( path_name, dataset_name ); // dense mapper and tracker
 
   dso->startSequential();
   // dtam->test_dso();

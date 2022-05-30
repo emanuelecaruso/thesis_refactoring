@@ -10,19 +10,17 @@ class Initializer{
 
   public:
     Initializer(Dso* dso):
-    dso_(dso),
-    corners_vec_(new std::vector<std::vector<cv::Point2f>*>),
-    errors_vec_(new std::vector<std::vector<float>*>),
-    status_vec_(new std::vector<std::vector<uchar>*>),
-    inliers_vec_(new std::vector<std::vector<uchar>*>)
+    dso_(dso)
     {};
 
     void compute_cv_K();
     void extractCorners();
     // void showCornersRef();
     void trackCornersLK();
+    float getOpticalFlowDist();
     // void showCornersTrackSequence();
     void showCornersTrackCurr();
+    void showCornersTrackRef();
     bool findPose();
     // void corners2activePoints();
 
@@ -32,11 +30,12 @@ class Initializer{
     //
     CameraForMapping* ref_frame_;
     int ref_frame_idx_;
+    std::vector<cv::Point2f> corners_vec_ref;
+    std::vector<cv::Point2f> corners_vec_curr;
+    std::vector<float> errors_vec;
+    std::vector<uchar> status_vec;
+    std::vector<uchar> inliers_vec;
 
-    std::vector<std::vector<cv::Point2f>*>* corners_vec_;
-    std::vector<std::vector<uchar>*>* status_vec_;
-    std::vector<std::vector<float>*>* errors_vec_;
-    std::vector<std::vector<uchar>*>* inliers_vec_;
     cv::Mat cv_K;
 
     std::vector<colorRGB> colors;
@@ -53,7 +52,6 @@ class Initializer{
     // Eigen::Isometry3f homography2pose(cv::Mat& H);
     Eigen::Isometry3f computeRelativePoseGt();
 
-    void showCornersTrackCurr(int i);
     void initializeColors();
 
 };

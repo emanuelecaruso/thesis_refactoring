@@ -144,10 +144,13 @@ bool KeyframeHandler::getFlowDist(float& flow_dist){
     for (ActivePoint* active_pt : keyframe->points_container_->active_points_){
 
       Eigen::Vector2f uv_curr, uv_last;
+      pxl pxl_curr, pxl_last;
       cam_couple_curr_frame->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_curr.x(),uv_curr.y() );
       cam_couple_last_kf->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_last.x(),uv_last.y() );
+      pxl_curr = curr_frame->uv2pixelCoords(uv_curr, active_pt->level_);
+      pxl_last = curr_frame->uv2pixelCoords(uv_last, active_pt->level_);
 
-      float dist = getEuclideanDistance(uv_curr, uv_last);
+      float dist = getEuclideanDistance(pxl_curr, pxl_last);
       sum_dist+=dist;
       num_dists++;
     }

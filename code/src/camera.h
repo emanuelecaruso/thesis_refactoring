@@ -79,6 +79,15 @@ class Camera{
       loadDepthMap(path_depth);
     };
 
+    ~Camera(){
+      delete K_;
+      delete Kinv_;
+      delete image_intensity_;
+      delete invdepth_map_;
+      delete frame_camera_wrt_world_;
+      delete frame_world_wrt_camera_;
+    }
+
 
     inline Eigen::Isometry3f access_frame_camera_wrt_world(){
       std::lock_guard<std::mutex> locker(mu_access_pose);

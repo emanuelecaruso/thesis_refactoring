@@ -68,6 +68,7 @@ class CameraForMapping : public Camera{
     bool keyframe_;
     bool marginalized_;
     bool has_active_pts_;
+    bool discarded_during_initialization;
 
     // ********** constructor **********
 
@@ -82,10 +83,14 @@ class CameraForMapping : public Camera{
       ,keyframe_(false)
       ,marginalized_(false)
       ,has_active_pts_(false)
+      ,discarded_during_initialization(false)
       { };
 
     ~CameraForMapping(){
       delete pyramid_;
+      delete grountruth_camera_;
+      delete points_container_;
+      delete cam_data_for_ba_;
     }
 
     // ********** methods **********

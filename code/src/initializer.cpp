@@ -42,20 +42,14 @@ void Initializer::compute_cv_K(){
 
 void Initializer::extractCorners(){
 
-  corners_vec_->clear();
-  errors_vec_->clear();
-  status_vec_->clear();
-  inliers_vec_->clear();
+  corners_vec_ref.clear();
   compute_cv_K();
 
   ref_frame_=dso_->frame_current_;
   ref_frame_idx_=dso_->frame_current_idx_;
-  corners_vec_->push_back(new std::vector<cv::Point2f>);
-  errors_vec_->push_back(new std::vector<float>);
-  status_vec_->push_back(new std::vector<uchar>);
-  inliers_vec_->push_back(new std::vector<uchar>);
-  cv::goodFeaturesToTrack(ref_frame_->image_intensity_->image_,*(corners_vec_->at(0)),n_corners,quality_level,min_distance);
 
+  cv::goodFeaturesToTrack(ref_frame_->image_intensity_->image_,corners_vec_ref,n_corners,quality_level,min_distance);
+  initializeColors();
 
 }
 
@@ -74,50 +68,38 @@ void Initializer::extractCorners(){
 // }
 
 void Initializer::trackCornersLK(){
-  const Image<float>* img_prev = ref_frame_->image_intensity_;
-  const Image<float>* img_next = dso_->frame_current_->image_intensity_;
-  cv::Mat_<uchar> img_prev_uchar;
-  cv::Mat_<uchar> img_next_uchar;
-
-  int n = dso_->frame_current_idx_-ref_frame_idx_;
+  const Image<float>* img_ref = ref_frame_->image_intensity_;
+  const Image<float>* img_curr = dso_->frame_current_->image_intensity_;
+  cv::Mat_<uchar> img_ref_uchar;
+  cv::Mat_<uchar> img_curr_uchar;
+  corners_vec_curr.clear();
+  status_vec.clear();
+  errors_vec.clear();
 
   // calculate optical flow
   cv::Size size_win = cv::Size(size_window,size_window);
 
-  corners_vec_->push_back(new std::vector<cv::Point2f>);
-  errors_vec_->push_back(new std::vector<float>);
-  status_vec_->push_back(new std::vector<uchar>);
-  inliers_vec_->push_back(new std::vector<uchar>);
-
-  img_prev->image_.convertTo(img_prev_uchar, CV_8UC1, 255);
-  img_next->image_.convertTo(img_next_uchar, CV_8UC1, 255);
+  img_ref->image_.convertTo(img_ref_uchar, CV_8UC1, 255);
+  img_curr->image_.convertTo(img_curr_uchar, CV_8UC1, 255);
 
 
   // TermCriteria criteria = TermCriteria((TermCriteria::COUNT) + (TermCriteria::EPS), 10, 0.03);
-  calcOpticalFlowPyrLK(img_prev_uchar, img_next_uchar, *(corners_vec_->at(n-1)), *(corners_vec_->at(n)), *(status_vec_->at(n)), *(errors_vec_->at(n)), size_win);
-
-  // filter corners
-  for (int i=status_vec_->at(n)->size()-1; i>=0; i--){
-    // if(errors_vec_->at(n)->at(i)<10 || !(status_vec_->at(n)->at(i)) ){
-    if(errors_vec_->at(n)->at(i)>err_threshold ){
-      for (int j=0; j<=n; j++){
-        removeFromVecByIdx(*(corners_vec_->at(j)), i );
-        if(j>0){
-          removeFromVecByIdx(*(status_vec_->at(j)), i );
-          removeFromVecByIdx(*(errors_vec_->at(j)), i );
-        }
-      }
-    }
-
-  }
+  calcOpticalFlowPyrLK(img_ref_uchar, img_curr_uchar, corners_vec_ref, corners_vec_curr, status_vec, errors_vec, size_win);
 
 
-
-
-  // for (int i=0; i<status_vec_->at(n)->size(); i++){
-  //   status_vec_->at(n)->at(i)=errors_vec_->at(n)->at(i)<10;
-  // }
 }
+
+float Initializer::getOpticalFlowDist(){
+  float dist = 0;
+  int count = 0;
+  for (int i=0; i<corners_vec_ref.size(); i++){
+    count ++;
+    dist += getEuclideanDistance(corners_vec_ref[i],corners_vec_curr[i]);
+  }
+  dist/= count;
+  return dist;
+}
+
 
 bool Initializer::findPose(){
 
@@ -125,6 +107,13 @@ bool Initializer::findPose(){
 
 
   trackCornersLK(); // track corners in subsequent image
+
+  float flow_dist = getOpticalFlowDist();
+  if (flow_dist<flow_dist_threshold_init){
+    sharedCoutDebug("   - Pose NOT found (not enough optical flow distance)");
+    dso_->frame_current_->discarded_during_initialization=true;
+    return false;
+  }
 
   // estimate homography
   // cv::Mat H = findHomography();
@@ -160,52 +149,8 @@ bool Initializer::findPose(){
   return false;
 
 }
-//
-// void Initializer::corners2activePoints(){
-//
-//   // CameraForMapping* cam_r =dso_->camera_vector_->at(ref_frame_idx_);
-//   // CameraForMapping* cam_m =dso_->camera_vector_->at(ref_frame_idx_+1);
-//   // std::cout << "cam r m " << cam_r->name_ << " " << cam_m->name_ << std::endl;
-//   //
-//   // // cam couple
-//   // CamCouple cam_couple(cam_r,cam_m);
-//   //
-//   // // iterate through all corners
-//   // for (int i=0; i<corners_vec_->at(1)->size(); i++) {
-//   //
-//   //   if(inliers_vec_->at(1)->at(i)){
-//   //
-//   //     cv::Point2f& corner_r = corners_vec_->at(0)->at(i);
-//   //     cv::Point2f& corner_m = corners_vec_->at(1)->at(i);
-//   //
-//   //     pxl pixel_r(corner_r.x/2,corner_r.y/2);
-//   //     pxl pixel_m(corner_m.x/2,corner_m.y/2);
-//   //     Eigen::Vector2f uv_r;
-//   //     Eigen::Vector2f uv_m;
-//   //     cam_r->pixelCoords2uv(pixel_r,uv_r,0);
-//   //     cam_m->pixelCoords2uv(pixel_m,uv_m,0);
-//   //
-//   //     float d1;
-//   //
-//   //     cam_couple.getD1(uv_r.x(),uv_r.y(),d1,uv_m.x(),uv_m.y());
-//   //
-//   //     pixelIntensity c = cam_r->wavelet_dec_->getWavLevel(0)->c->evalPixel( pixel_r.y(), pixel_r.x() );
-//   //     pixelIntensity magn_cd = cam_r->wavelet_dec_->getWavLevel(0)->magn_cd->evalPixel( pixel_r.y(), pixel_r.x() );
-//   //     pixelIntensity phase_cd = cam_r->wavelet_dec_->getWavLevel(0)->phase_cd->evalPixel( pixel_r.y(), pixel_r.x() );
-//   //
-//   //     // create active point from corner
-//   //     ActivePoint* active_point = new ActivePoint(pixel_r, uv_r, cam_r, 0, 0, 0, 1.0/d1, 0.001);
-//   //     // push active point
-//   //     active_point->cam_->active_points_->push_back(active_point);
-//   //
-//   //     dso_->bundle_adj_->num_active_points_++;
-//   //
-//   //   }
-//   //   dso_->bundle_adj_->collectCoarseActivePoints();
-//   //   }
-//
-// }
-//
+
+
 Eigen::Isometry3f Initializer::computeRelativePoseGt(){
   Eigen::Isometry3f w_T_m = *(dso_->frame_current_->grountruth_camera_->frame_camera_wrt_world_);
   Eigen::Isometry3f r_T_w = *(ref_frame_->frame_world_wrt_camera_);
@@ -274,16 +219,16 @@ Eigen::Isometry3f Initializer::essential2pose(cv::Mat& E){
 
   // compute relative pose with opencv
   cv::Mat R, t;
-  cv::recoverPose	(	E, *(corners_vec_->at(0)), *(corners_vec_->back()),
-                    cv_K, R, t, *(inliers_vec_->back()) );
+  cv::recoverPose	(	E, corners_vec_ref, corners_vec_curr,
+                    cv_K, R, t, inliers_vec );
 
   int i =0;
-  for (uchar inlier : *(inliers_vec_->back())) {
+  for (uchar inlier : inliers_vec) {
     if (inlier){
       i++;
     }
   }
-  // std::cout << "Inliers: " << i << " out of " << inliers_vec_->back()->size() << std::endl;
+  // std::cout << "Inliers: " << i << " out of " << inliers_vec->back()->size() << std::endl;
 
   Eigen::Isometry3f r_T_m;
   Eigen::Matrix3f R_;
@@ -317,6 +262,7 @@ cv::Mat Initializer::findEssentialMatrix(){
   int method = cv::RANSAC;
   double prob = confidence;
   double threshold = ransacReprojThreshold;
+  inliers_vec.clear();
 
   // Eigen::Matrix3f K_ = *(dso_->camera_vector_->at(dso_->frame_current_)->K_);
   // cv::Mat K;
@@ -324,16 +270,16 @@ cv::Mat Initializer::findEssentialMatrix(){
 
 
 
-  cv::Mat E = cv::findEssentialMat ( *(corners_vec_->at(ref_frame_idx_)), *(corners_vec_->back()),
-                                      cv_K, method, prob, threshold, *(inliers_vec_->back() ) );
+  cv::Mat E = cv::findEssentialMat ( corners_vec_ref, corners_vec_curr,
+                                      cv_K, method, prob, threshold, inliers_vec );
 
   int i =0;
-  for (uchar inlier : *(inliers_vec_->back())) {
+  for (uchar inlier : inliers_vec) {
     if (inlier){
       i++;
     }
   }
-  // std::cout << "Inliers: " << i << " out of " << inliers_vec_->back()->size() << std::endl;
+  // std::cout << "Inliers: " << i << " out of " << inliers_vec->back()->size() << std::endl;
 
   return E;
 }
@@ -344,15 +290,15 @@ cv::Mat Initializer::findEssentialMatrix(){
 //   double 	confidence = parameters_->confidence;
 //
 //   cv::Mat F = cv::findFundamentalMat	(	*(corners_vec_->at(0)), *(corners_vec_->back()),
-//                                         method, ransacReprojThreshold, confidence, *(inliers_vec_->back()) );
+//                                         method, ransacReprojThreshold, confidence, *(inliers_vec->back()) );
 //
 //   int i =0;
-//   for (uchar inlier : *(inliers_vec_->back())) {
+//   for (uchar inlier : *(inliers_vec->back())) {
 //     if (inlier){
 //       i++;
 //     }
 //   }
-//   // std::cout << "Inliers: " << i << " out of " << inliers_vec_->back()->size() << std::endl;
+//   // std::cout << "Inliers: " << i << " out of " << inliers_vec->back()->size() << std::endl;
 //   // cv::Mat F = cv::findFundamentalMat	(	*(corners_vec_->at(0)), *(corners_vec_->back()) );
 //
 //   return F;
@@ -373,7 +319,7 @@ cv::Mat Initializer::findEssentialMatrix(){
 // }
 //
 void Initializer::initializeColors(){
-  for (int i=0; i<corners_vec_->at(0)->size(); i++){
+  for (int i=0; i<corners_vec_ref.size(); i++){
     float r = ((float)rand()/RAND_MAX);
     float g = ((float)rand()/RAND_MAX);
     float b = ((float)rand()/RAND_MAX);
@@ -382,19 +328,15 @@ void Initializer::initializeColors(){
   }
 }
 
-void Initializer::showCornersTrackCurr(int i){
+void Initializer::showCornersTrackRef(){
 
     // for(int i=0; i<corners_vec_->size(); i++){
 
-  if (i==0)
-    initializeColors();
-
   CameraForMapping* cam_r =ref_frame_;
-  CameraForMapping* cam_m =dso_->frame_current_;
-  Image<colorRGB>* show_image(cam_m->image_intensity_->returnColoredImgFromIntensityImg("corners tracking"));
+  Image<colorRGB>* show_image(cam_r->image_intensity_->returnColoredImgFromIntensityImg("corners tracking ref"));
 
-  for (int j=0; j<corners_vec_->at(i)->size(); j++){
-    cv::Point2f corner = corners_vec_->at(i)->at(j);
+  for (int j=0; j<corners_vec_ref.size(); j++){
+    cv::Point2f corner = corners_vec_ref[j];
 
     show_image->drawCircle(colors[j], corner);
   }
@@ -405,7 +347,7 @@ void Initializer::showCornersTrackCurr(int i){
   //     float v= (corners_vec_->at(ref_frame_idx_)->at(j).y/dso_->camera_vector_->at(ref_frame_idx_)->cam_parameters_->resolution_y)*dso_->camera_vector_->at(ref_frame_idx_)->cam_parameters_->height;
   //
   //     EpipolarLine* ep_line = cam_couple->getEpSegmentDefaultBounds(u,v);
-  //     if ( inliers_vec_->at(i)->at(j) )
+  //     if ( inliers_vec->at(i)->at(j) )
   //     ep_line->drawEpipolar(show_image, colors[j] );
   //   }
   // }
@@ -416,15 +358,31 @@ void Initializer::showCornersTrackCurr(int i){
 }
 
 void Initializer::showCornersTrackCurr(){
-  showCornersTrackCurr(corners_vec_->size()-1);
-}
 
-// void Initializer::showCornersTrackSequence(){
-//
-//   while(true){
-//     for(int i=0; i<corners_vec_->size(); i++){
-//       showCornersTrackCurr(i);
-//     }
-//
-//   }
-// }
+    // for(int i=0; i<corners_vec_->size(); i++){
+
+  CameraForMapping* cam_r =ref_frame_;
+  CameraForMapping* cam_m =dso_->frame_current_;
+  Image<colorRGB>* show_image(cam_m->image_intensity_->returnColoredImgFromIntensityImg("corners tracking"));
+
+  for (int j=0; j<corners_vec_curr.size(); j++){
+    cv::Point2f corner = corners_vec_curr[j];
+
+    show_image->drawCircle(colors[j], corner);
+  }
+  // if (i>0){
+  //   CamCouple* cam_couple = new CamCouple(cam_r,cam_m);
+  //   for (int j=0; j<corners_vec_->at(i)->size(); j++){
+  //     float u= (corners_vec_->at(ref_frame_idx_)->at(j).x/dso_->camera_vector_->at(ref_frame_idx_)->cam_parameters_->resolution_x)*dso_->camera_vector_->at(ref_frame_idx_)->cam_parameters_->width;
+  //     float v= (corners_vec_->at(ref_frame_idx_)->at(j).y/dso_->camera_vector_->at(ref_frame_idx_)->cam_parameters_->resolution_y)*dso_->camera_vector_->at(ref_frame_idx_)->cam_parameters_->height;
+  //
+  //     EpipolarLine* ep_line = cam_couple->getEpSegmentDefaultBounds(u,v);
+  //     if ( inliers_vec->at(i)->at(j) )
+  //     ep_line->drawEpipolar(show_image, colors[j] );
+  //   }
+  // }
+  show_image->show(2);
+  waitkey(0);
+  // delete show_image;
+
+}

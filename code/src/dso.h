@@ -50,8 +50,8 @@ class Dso{
 
 
     // ********** constructor **********
-    Dso(Environment* environment):
-      environment_(environment)
+    Dso(const std::string& path_name, const std::string& dataset_name):
+      environment_( new Environment(path_name, dataset_name))
       ,cam_parameters_(new CamParameters(environment_->cam_parameters_))
       ,cameras_container_( new CamerasContainer(this) )
       ,bundle_adj_( new BundleAdj(this))

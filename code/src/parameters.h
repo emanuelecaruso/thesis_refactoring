@@ -20,6 +20,7 @@ extern int debug_start_frame;
 extern bool use_spectator;
 
 // code parameters
+extern bool environment_preload;
 extern bool do_marginalization;
 extern bool first_2_active_kfs_fixed;
 extern bool marg_pts_in_marg_kf;
@@ -96,14 +97,10 @@ extern int size_window;
 extern float confidence;
 extern float ransacReprojThreshold;
 extern float world_scale_default;
+extern float flow_dist_threshold_init;
 
 
 // spectator parameters
-extern int spec_resolution_x;
-extern int spec_resolution_y;
-extern float spec_width;
-extern float spec_lens;
-extern float spec_min_depth;
-extern float spec_max_depth;
+extern float spec_upscaling;
 extern float spec_distance;
 extern float rendered_cams_size;

@@ -9,6 +9,7 @@ class Environment{
     const int coarsest_level_;
     const CamParameters* cam_parameters_;
     const std::vector<Camera*>* camera_vector_; // vector containing pointers to camera objects
+    // int num_current_frames_;
 
 
     Environment(const std::string& path_name, const std::string& dataset_name):
@@ -17,6 +18,7 @@ class Environment{
     coarsest_level_(coarsest_level),
     cam_parameters_(loadCamParameters( path_name, dataset_name)),
     camera_vector_(loadCameraVector( path_name, dataset_name, end_frame))
+    // num_current_frames_(0)
     { };
 
     void debugAllCameras(bool show_imgs=false) const;

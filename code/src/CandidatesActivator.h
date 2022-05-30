@@ -221,6 +221,7 @@ class CandidatesActivator{
     ,regvec_mat_(this)
     {};
 
+
     // ********** methods **********
     void clearAll();
     void rebuild();
