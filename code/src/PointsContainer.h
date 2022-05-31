@@ -112,6 +112,8 @@ public:
   int p_idx_;
   bool new_;
   float cost_threshold_ba_;
+  std::vector<pixelIntensity> c_level_vec_;
+  std::vector<pixelIntensity> magn_cd_level_vec_;
 
   // current guess
   // invdepth_(cand->invdepth_),
@@ -131,6 +133,24 @@ public:
   ,cost_threshold_ba_(cand->cost_threshold_ba_)
   {
     updateInvdepthVarAndP(cand->invdepth_, cand->invdepth_var_);
+
+    c_level_vec_.resize(coarsest_level);
+    magn_cd_level_vec_.resize(coarsest_level);
+
+
+    for (int level=0; level<coarsest_level; level++){
+      if(level==0){
+        c_level_vec_[0] = cand->c_;
+        magn_cd_level_vec_[0] = cand->magn_cd_;
+      }
+      else{
+        pxl pixel_coarse;
+        cam_->uv2pixelCoords( uv_, pixel_coarse, level);
+        c_level_vec_[level] = cand->cam_->pyramid_->getC(level)->evalPixelBilinear(pixel_coarse);
+        magn_cd_level_vec_[level] = cand->cam_->pyramid_->getMagn(level)->evalPixelBilinear(pixel_coarse);
+      }
+    }
+
   }
 
   // ********** methods **********

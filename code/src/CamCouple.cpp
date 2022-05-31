@@ -288,7 +288,9 @@ Eigen::Matrix<float,2,6> CamCouple::getJr_(ActivePoint* active_pt ){
   Jr *= (pixels_meter_ratio/pow(2,active_pt->level_));
   Jr *= exposure_coefficient0;
 
-  assert(Jr.allFinite());
+  if(!Jr.allFinite())
+    Jr.setZero();
+
   return Jr;
 }
 
@@ -320,6 +322,9 @@ Eigen::Matrix<float,2,6> CamCouple::getJm_(ActivePoint* active_pt ){
   float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
   Jm *= (pixels_meter_ratio/pow(2,active_pt->level_));
 
+  if(!Jm.allFinite())
+    Jm.setZero();
+
   return Jm;
 }
 
@@ -330,7 +335,7 @@ Eigen::Matrix<float,2,6> CamCouple::getJm_old_(ActivePoint* active_pt ){
   CameraForMapping* cam_m = cam_m_;
 
   float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
-  Eigen::Matrix3f K = *(cam_m->K_);
+  Eigen::Matrix3f K = cam_m->cam_parameters_->K;
   float coeff = pixels_meter_ratio/pow(2,active_pt->level_);
 
   // variables
@@ -441,7 +446,7 @@ bool CamCouple::getD1(float u1, float v1, float& d1, float coord, bool u_or_v){
   else{
     d1=((-H_bv)*coord + D_bv)/(E_bv*coord*u1 + F_bv*coord*v1 + G_bv*coord + (-A_bv)*u1 + (-B_bv)*v1 - C_bv);
   }
-  assert(std::isfinite(d1));
+  // assert(std::isfinite(d1));
   if (std::isnan(d1) || std::isinf(d1) ){
     return false;
   }

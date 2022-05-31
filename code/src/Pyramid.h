@@ -22,7 +22,16 @@ class PyramidLevel{
     PyramidLevel(Image<pixelIntensity>* img){
       init(img);
     }
-    ~PyramidLevel(){}
+    ~PyramidLevel(){
+      delete c_;
+      delete c_dx_;
+      delete c_dy_;
+      delete magn_cd_;
+      delete magn_cd_dx_;
+      delete magn_cd_dy_;
+      delete magn_cdd_;
+      delete phase_cd_;
+    }
 
   protected:
     // ********** methods **********
@@ -43,7 +52,10 @@ class Pyramid{
       init(levels, cam->image_intensity_);
     }
 
-    ~Pyramid(){}
+    ~Pyramid(){
+      for (PyramidLevel* pyr_lvl : pyramid_levels_)
+        delete pyr_lvl;
+    }
 
     // ********** methods **********
     void init(const int levels, const Image<pixelIntensity>* image_intensity);

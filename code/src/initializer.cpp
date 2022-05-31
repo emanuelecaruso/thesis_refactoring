@@ -209,7 +209,7 @@ Eigen::Isometry3f Initializer::essential2pose(cv::Mat& E){
     Eigen::Isometry3f T_gt = computeRelativePoseGt();
     // get groundtruth of scale
     t_magnitude = T_gt.translation().norm();
-    sharedCoutDebug("World scale set to groundtruth");
+    sharedCoutDebug("   - World scale set to groundtruth");
   }
   else{
     t_magnitude = world_scale_default;

@@ -114,6 +114,7 @@ void PointsContainer::showProjectedActivePoints(const std::string& name, int wtk
 
   show_img->show(pow(1,candidate_level));
   cv::waitKey(wtk);
+  delete show_img;
 
 }
 

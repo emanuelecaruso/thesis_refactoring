@@ -21,15 +21,8 @@ int main (int argc, char * argv[]) {
   Dso* dso = new Dso( path_name, dataset_name ); // dense mapper and tracker
 
   dso->startSequential();
-  // dtam->test_dso();
-  // dtam->test_dso_sequential();
-  // dtam->test_optimization_pose();
-  // dtam->test_optimization_points();
-  // dtam->test_mapping();
-  // dtam->test_tracking();
-
-  // dtam->testFeatures();
-  // cv::waitKey(0);
+  // dso->startParallel();
+  // dso->startParallelFull();
 
   cout << "\nPress Enter to exit"<< endl;
   cin.ignore();

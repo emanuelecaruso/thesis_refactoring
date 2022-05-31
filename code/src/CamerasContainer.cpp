@@ -2,6 +2,7 @@
 #include "CameraForMapping.h"
 #include "dso.h"
 
+
 // frame management functions
 void CamerasContainer::addFrame(Camera* frame){
   // create CameraForMapping

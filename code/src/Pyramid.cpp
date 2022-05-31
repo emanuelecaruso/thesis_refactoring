@@ -46,6 +46,7 @@ void Pyramid::init(const int levels, const Image<pixelIntensity>* image_intensit
 
 Image<pixelIntensity>* Pyramid::getC(int level){
   assert(level>=0 && level<pyramid_levels_.size());
+  assert(pyramid_levels_[level]);
   return pyramid_levels_[level]->c_;
 }
 

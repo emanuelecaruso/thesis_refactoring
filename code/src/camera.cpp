@@ -4,8 +4,6 @@ void Camera::printMembers() const {
 
   std::cout << "name: " << name_ << std::endl;
   cam_parameters_->printMembers();
-  std::cout << "K: " << *K_ << std::endl;
-  std::cout << "Kinv: " << *Kinv_ << std::endl;
   std::cout << "frame_world_wrt_camera LINEAR:\n" << (*frame_world_wrt_camera_).linear() << std::endl;
   std::cout << "frame_world_wrt_camera TRANSL:\n" << (*frame_world_wrt_camera_).translation() << std::endl;
   std::cout << "frame_camera_wrt_world LINEAR:\n" << (*frame_camera_wrt_world_).linear() << std::endl;
@@ -55,26 +53,6 @@ void Camera::clearImgs(){
   invdepth_map_->setAllPixels(1.0);
 }
 
-Eigen::Matrix3f* Camera::compute_K(){
-
-  float fx = cam_parameters_->fx;
-  float fy = cam_parameters_->fy;
-  float width = cam_parameters_->width;
-  float height = cam_parameters_->height;
-
-  assert(fx>0);
-  assert(fy>0);
-  assert(width>0);
-  assert(height>0);
-
-  Eigen::Matrix3f* K = new Eigen::Matrix3f;
-  *K <<
-      fx   ,  0   , width/2,
-      0    ,  fy  , height/2,
-      0    ,  0   ,       1 ;
-
-  return K;
-}
 
 void Camera::pixelCoords2uv(const pxl& pixel_coords, Eigen::Vector2f& uv, int level) const {
   assert(level>=0);
@@ -136,7 +114,7 @@ void Camera::pointAtDepthInCamFrame(const Eigen::Vector2f& uv, float depth, Eige
   p_K_dot_incamframe.x() = product.x();
   p_K_dot_incamframe.y() = product.y();
   p_K_dot_incamframe.z() = depth;
-  p_incamframe = (*Kinv_)*p_K_dot_incamframe;
+  p_incamframe = (cam_parameters_->Kinv)*p_K_dot_incamframe;
 
 }
 
@@ -164,7 +142,7 @@ bool Camera::projectPoint(const Eigen::Vector3f& p, Eigen::Vector2f& uv, float& 
   // save value of z
   p_cam_z=p_cam.z();
 
-  Eigen::Vector3f p_proj = (*K_)*p_cam;
+  Eigen::Vector3f p_proj = (cam_parameters_->K)*p_cam;
 
   uv = p_proj.head<2>()*(1./p_proj.z());
 
@@ -179,7 +157,7 @@ bool Camera::projectPoint(const Eigen::Vector3f& p, Eigen::Vector2f& uv ) const 
 
   Eigen::Vector3f p_cam = *frame_world_wrt_camera_*p;
 
-  Eigen::Vector3f p_proj = (*K_)*p_cam;
+  Eigen::Vector3f p_proj = (cam_parameters_->K)*p_cam;
 
   uv = p_proj.head<2>()*(1./p_proj.z());
 
@@ -192,7 +170,7 @@ bool Camera::projectPoint(const Eigen::Vector3f& p, Eigen::Vector2f& uv ) const 
 
 bool Camera::projectPointInCamFrame(const Eigen::Vector3f& p_incamframe, Eigen::Vector2f& uv ) const {
 
-  Eigen::Vector3f p_proj = (*K_)*p_incamframe;
+  Eigen::Vector3f p_proj = (cam_parameters_->K)*p_incamframe;
 
   uv = p_proj.head<2>()*(1./p_proj.z());
 

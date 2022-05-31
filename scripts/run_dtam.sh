@@ -2,12 +2,12 @@
 cd code
 
 # Blender datasets
-# dataset_name='bunny_scene_cycles'
+dataset_name='bunny_scene_cycles'
 # dataset_name='bunny_scene'
 # dataset_name='cube_scene'
 
 # TUM datasets
-dataset_name='sequence_01'
+# dataset_name='sequence_01'
 
 # run
 ./build/executables/test_dso ${dataset_name}

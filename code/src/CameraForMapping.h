@@ -87,15 +87,13 @@ class CameraForMapping : public Camera{
       { };
 
     ~CameraForMapping(){
-      delete pyramid_;
-      delete grountruth_camera_;
-      delete points_container_;
-      delete cam_data_for_ba_;
+      destructor();
     }
 
     // ********** methods **********
     void setGrountruthPose();
     void setPoseToWorldReferenceFrame();
+    void cam_free_mem();
 
     inline PoseNormError getPoseNormError(){
       // get relative transformation matrix wrt groundtruth
@@ -118,5 +116,6 @@ class CameraForMapping : public Camera{
   protected:
     PointsContainer* initializePointsContainer();
     CamDataForBA* initializeDataForBA();
+    void destructor();
 
 };

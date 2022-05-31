@@ -19,6 +19,40 @@ PoseNormError Dso::getTotalPosesNormError(){
 }
 
 void Dso::startSequential(){
+
+  // double t_start=getTime();
+  float fps=environment_->fps_;
+  int counter=0;
+  while(counter< environment_->camera_vector_->size()){
+
+    Camera* cam = environment_->camera_vector_->at(counter);
+    cameras_container_->addFrame(cam);
+    if(!loadFrameCurrent())
+      break;
+
+    sharedCoutDebug("\nAdd Frame "+std::to_string(counter));
+
+    if(first_frame_to_set_){
+      setFirstKeyframe();
+    }
+    else if(to_initialize_){
+      initialize();
+    }
+    else{
+      doDso();
+    }
+
+    counter++;
+    // double t_end=getTime();
+    // double deltaTime=(t_end-t_start);
+    // int frame_delay= (float)((deltaTime/1000)*fps)-counter;
+    // sharedCoutDebug("\nFrame "+std::to_string(frame_current_idx_)+" ("+frame_current_->name_+") , frame delay: "+std::to_string(frame_delay));
+
+  }
+}
+
+
+void Dso::startParallel(){
   std::thread update_cameras_thread_(&Dso::updateCamerasFromEnvironment, this);
   update_cameras_thread_.detach();
 
@@ -162,6 +196,8 @@ bool Dso::doDso(){
     }
   }
 
+
+
   if (cameras_container_->keyframes_active_.size()>2){
 
     // marginalize points not in last camera
@@ -180,10 +216,13 @@ bool Dso::doDso(){
     //   points_handler_->showProjectedActivePoints("last kf "+std::to_string(i),0);
     // }
 
-    points_handler_->showProjectedActivePoints("last kf ",1);
+    // points_handler_->showProjectedActivePoints("last kf ",1);
     spectator_->renderState();
     spectator_->showSpectator(1);
   }
+
+  if(!kf_added)
+    frame_current_->cam_free_mem();
 
   return true;
 

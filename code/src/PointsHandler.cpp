@@ -346,7 +346,7 @@ bool CandTracker::updateCand(){
 
   // update depth / invdepth
   float depth;
-  cam_couple_->getD1( cand_->uv_.x(), cand_->uv_.y(), depth, coord, ep_segment_.u_or_v );
+  bool valid_d = cam_couple_->getD1( cand_->uv_.x(), cand_->uv_.y(), depth, coord, ep_segment_.u_or_v );
   cand_->invdepth_=1./depth;
 
   // get standard deviation
@@ -357,8 +357,11 @@ bool CandTracker::updateCand(){
   int sign = pow(-1,(ep_segment_.start>ep_segment_.end));
   float coord_min = coord-sign*standard_deviation;
   float coord_max = coord+sign*standard_deviation;
-  cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), cand_->depth_min_, coord_min, ep_segment_.u_or_v);
-  cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), cand_->depth_max_, coord_max, ep_segment_.u_or_v);
+  bool valid_min = cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), cand_->depth_min_, coord_min, ep_segment_.u_or_v);
+  bool valid_max = cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), cand_->depth_max_, coord_max, ep_segment_.u_or_v);
+
+  if(!valid_d || !valid_min || !valid_max)
+    return false;
 
   cand_->invdepth_var_= pow(((1./cand_->depth_min_)-(1./cand_->depth_max_))*0.5,2);
 
@@ -459,7 +462,9 @@ bool CandTracker::getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, fl
   else
     coord = uv_m.y();
 
-  cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), d1, coord, ep_segment_.u_or_v);
+  bool valid = cam_couple_->getD1(cand_->uv_.x(), cand_->uv_.y(), d1, coord, ep_segment_.u_or_v);
+  if (!valid)
+    return false;
 
   Eigen::Vector2f tip_m, direction_m;
 

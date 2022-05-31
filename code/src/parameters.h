@@ -20,7 +20,7 @@ extern int debug_start_frame;
 extern bool use_spectator;
 
 // code parameters
-extern bool environment_preload;
+extern bool free_mem;
 extern bool do_marginalization;
 extern bool first_2_active_kfs_fixed;
 extern bool marg_pts_in_marg_kf;

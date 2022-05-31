@@ -38,19 +38,14 @@ float Meas::getErrorGradient(float z, float z_hat, ActivePoint* active_pt){
 
 
 float Meas::getError( ActivePoint* active_point, int image_type){
-  float z, z_hat;
-  // pxl pixel_r = active_point->pixel_/(pow(2,level_));
+
   pxl pixel_r;
   active_point->cam_->uv2pixelCoords( active_point->uv_, pixel_r, level_);
 
   if(image_type==INTENSITY_ID){
-    if(level_==0){
-      z = active_point->c_;
-    }
-    else{
-      z = cam_couple_->cam_r_->pyramid_->getC(level_)->evalPixelBilinear(pixel_r);
-    }
-    z_hat = cam_couple_->cam_m_->pyramid_->getC(level_)->evalPixelBilinear(pixel_);
+
+    float z = active_point->c_level_vec_[level_];
+    float z_hat = cam_couple_->cam_m_->pyramid_->getC(level_)->evalPixelBilinear(pixel_);
 
     float error = getErrorIntensity( z, z_hat, active_point);
     return error;
@@ -58,13 +53,8 @@ float Meas::getError( ActivePoint* active_point, int image_type){
 
   }
   else if(image_type==GRADIENT_ID){
-    if(level_==0){
-      z = active_point->magn_cd_;
-    }
-    else{
-      z = cam_couple_->cam_r_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_r);
-    }
-    z_hat = cam_couple_->cam_m_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_);
+    float z = active_point->magn_cd_level_vec_[level_];
+    float z_hat = cam_couple_->cam_m_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_);
 
     float error = getErrorGradient(z, z_hat, active_point);
     return error;
@@ -72,6 +62,42 @@ float Meas::getError( ActivePoint* active_point, int image_type){
   }
 
 }
+
+// float Meas::getError( ActivePoint* active_point, int image_type){
+//   float z, z_hat;
+//   // pxl pixel_r = active_point->pixel_/(pow(2,level_));
+//   pxl pixel_r;
+//   active_point->cam_->uv2pixelCoords( active_point->uv_, pixel_r, level_);
+//
+//   if(image_type==INTENSITY_ID){
+//     if(level_==0){
+//       z = active_point->c_;
+//     }
+//     else{
+//       z = cam_couple_->cam_r_->pyramid_->getC(level_)->evalPixelBilinear(pixel_r);
+//     }
+//     z_hat = cam_couple_->cam_m_->pyramid_->getC(level_)->evalPixelBilinear(pixel_);
+//
+//     float error = getErrorIntensity( z, z_hat, active_point);
+//     return error;
+//
+//
+//   }
+//   else if(image_type==GRADIENT_ID){
+//     if(level_==0){
+//       z = active_point->magn_cd_;
+//     }
+//     else{
+//       z = cam_couple_->cam_r_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_r);
+//     }
+//     z_hat = cam_couple_->cam_m_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_);
+//
+//     float error = getErrorGradient(z, z_hat, active_point);
+//     return error;
+//
+//   }
+//
+// }
 
 Eigen::Matrix<float,1,2> Meas::getImageJacobian( int image_type){
 

@@ -191,6 +191,8 @@ struct CamParameters{
   float max_depth;
   float pixel_width;
   float pixel_meter_ratio;
+  Eigen::Matrix3f K;
+  Eigen::Matrix3f Kinv;
 
   // constructor for blender dataset
   CamParameters(int resolution_x_, int resolution_y_,
@@ -206,7 +208,9 @@ struct CamParameters{
   ,max_depth(max_depth_)
   ,pixel_width(width/(float)resolution_x)
   ,pixel_meter_ratio((float)resolution_x/width)
-  { };
+  {
+    setK();
+  };
 
 
   // constructor for TUM dataset
@@ -223,7 +227,9 @@ struct CamParameters{
     ,max_depth(max_depth_)
     ,pixel_width(width/(float)resolution_x)
     ,pixel_meter_ratio(pxlmtrratio_)
-    { };
+    {
+      setK();
+    };
 
   // clone
   CamParameters(const CamParameters* cam_parameters):
@@ -238,7 +244,18 @@ struct CamParameters{
     max_depth(cam_parameters->max_depth),
     pixel_width(cam_parameters->pixel_width),
     pixel_meter_ratio(cam_parameters->pixel_meter_ratio)
-    { };
+    {
+      K=cam_parameters->K;
+      Kinv=cam_parameters->Kinv;
+    };
+
+    inline void setK(){
+      K <<  fx   ,  0   , width/2,
+            0    ,  fy  , height/2,
+            0    ,  0   ,       1 ;
+      Kinv = K.inverse();
+      std::cout << K << std::endl;
+    }
 
   inline void printMembers() const {
     std::cout << "fx: " << fx << std::endl;

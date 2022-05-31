@@ -203,11 +203,9 @@ void BundleAdj::marginalizeKeyframe(CameraForMapping* keyframe){
   if(keyframe->cam_data_for_ba_->has_prior_){
 
     marginalization_handler_->removeKeyframeWithPriors(keyframe);
-    #ifndef NDEBUG
-      keyframe->cam_data_for_ba_->c_marg_idx_=-1;
-    #endif
 
   }
+  keyframe->cam_free_mem();
 
 }
 

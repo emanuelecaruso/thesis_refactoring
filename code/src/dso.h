@@ -68,6 +68,8 @@ class Dso{
 
     // ********** methods **********
     void startSequential();
+    void startParallel();
+    void startParallelFull();
 
     // thread synchronization
     void waitForNewFrame();

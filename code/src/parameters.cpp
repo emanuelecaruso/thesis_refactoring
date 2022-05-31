@@ -12,7 +12,7 @@ bool use_spectator= true;
 
 
 // code parameters
-bool environment_preload = true;
+bool free_mem = true;
 bool do_marginalization = true;
 bool first_2_active_kfs_fixed = false;
 bool marg_pts_in_marg_kf = false;
@@ -42,8 +42,7 @@ int num_candidates=2000;
 
 // keyframe selection
 int num_active_keyframes=7;
-float flow_dist_threshold=5;
-// float flow_dist_threshold=0.0005;
+float flow_dist_threshold=6;
 float percentage_marg_pts_threshold= 0.01;
 // float percentage_marg_pts_threshold= 0.5;
 
@@ -98,7 +97,7 @@ float conv_threshold= 0.01;
 
 
 //  video streaming
-int end_frame=200;
+int end_frame=250;
 int fps=30;
 
 
@@ -111,7 +110,7 @@ int size_window= 21;
 float confidence= 0.999;
 float ransacReprojThreshold= 1;
 float world_scale_default = 0.1;
-float flow_dist_threshold_init = 5;
+float flow_dist_threshold_init = 6;
 
 
 // spectator parameters

@@ -10,8 +10,6 @@ class Camera{
 
     const std::string name_;
     const CamParameters* cam_parameters_;
-    const Eigen::Matrix3f* K_;
-    const Eigen::Matrix3f* Kinv_;
     const Image<pixelIntensity>* image_intensity_;
     Image<float>* invdepth_map_;
     Eigen::Isometry3f* frame_camera_wrt_world_;
@@ -25,8 +23,6 @@ class Camera{
     Camera(Camera* cam, bool copy_pose):
       name_(cam->name_),
       cam_parameters_(cam->cam_parameters_),
-      K_(cam->K_),
-      Kinv_(cam->Kinv_),
       image_intensity_(cam->image_intensity_),
       invdepth_map_(cam->invdepth_map_ ),
       frame_camera_wrt_world_(new Eigen::Isometry3f ),
@@ -44,9 +40,8 @@ class Camera{
     Camera(const std::string& name, const CamParameters* cam_parameters, float exposure_time=1):
            name_(name),
            cam_parameters_(cam_parameters),
-           K_(compute_K()),
-           Kinv_( new Eigen::Matrix3f(K_->inverse()) ),
            image_intensity_( nullptr ),
+           invdepth_map_(nullptr),
            frame_camera_wrt_world_(nullptr),
            frame_world_wrt_camera_(nullptr),
            exposure_time_(exposure_time),
@@ -80,8 +75,6 @@ class Camera{
     };
 
     ~Camera(){
-      delete K_;
-      delete Kinv_;
       delete image_intensity_;
       delete invdepth_map_;
       delete frame_camera_wrt_world_;
@@ -144,7 +137,6 @@ class Camera{
 
 
   protected:
-    Eigen::Matrix3f* compute_K();
     Image<pixelIntensity>* returnIntensityImgFromPath(const std::string& path_rgb);
     void loadWhiteDepth();
     void loadDepthMap(const std::string& path);
