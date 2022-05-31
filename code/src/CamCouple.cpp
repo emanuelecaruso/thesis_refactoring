@@ -44,23 +44,25 @@ void CamCouple::getTLin(){
   r0=T0.linear();
   t0=T0.translation();
 
-  A0_bu=2*fy*(2*fx*r0(0,0) + r0(2,0)*w);
-  B0_bu=4*r0(0,1)*fx2 + 2*r0(1,2)*w*fx;
-  C0_bu=4*fx2*fy*r0(0,2) - fy*r0(2,0)*w2 - 2*fx2*h*r0(0,1) - 2*fx*fy*r0(0,0)*w + 2*fx*fy*r0(2,2)*w - fx*h*r0(1,2)*w;
-  D0_bu=2*fx*fy*(2*fx*t0(0) + t0(2)*w);
-  E0_bu=4*fy*r0(2,0);
-  F0_bu=4*fx*r0(1,2);
-  G0_bu=4*fx*fy*r0(2,2) - 2*fx*h*r0(1,2) - 2*fy*r0(2,0)*w;
-  H0_bu=4*fx*fy*t0(2);
+  A0_bu=fy*(cx*r0(2,0) + fx*r0(0,0));
+  B0_bu=r0(0,1)*fx2 + cx*r0(1,2)*fx;
+  C0_bu=fx2*fy*r0(0,2) - cx2*fy*r0(2,0) - cy*fx2*r0(0,1) - cx*fx*fy*r0(0,0) + cx*fx*fy*r0(2,2) - cx*cy*fx*r0(1,2);
+  D0_bu=fx*fy*(cx*t0(2) + fx*t0(0));
+  E0_bu=fy*r0(2,0);
+  F0_bu=fx*r0(1,2);
+  G0_bu=fx*fy*r0(2,2) - cx*fy*r0(2,0) - cy*fx*r0(1,2);
+  H0_bu=fx*fy*t0(2);
 
-  A0_bv=4*r0(1,0)*fy2 + 2*h*r0(2,0)*fy;
-  B0_bv=2*fx*(2*fy*r0(1,1) + h*r0(1,2));
-  C0_bv=4*fx*fy2*r0(1,2) - 2*fy2*r0(1,0)*w - fx*h2*r0(1,2) - 2*fx*fy*h*r0(1,1) + 2*fx*fy*h*r0(2,2) - fy*h*r0(2,0)*w;
-  D0_bv=2*fx*fy*(2*fy*t0(1) + h*t0(2));
-  E0_bv=4*fy*r0(2,0);
-  F0_bv=4*fx*r0(1,2);
-  G0_bv=4*fx*fy*r0(2,2) - 2*fx*h*r0(1,2) - 2*fy*r0(2,0)*w;
-  H0_bv=4*fx*fy*t0(2);
+  A0_bv=r0(1,0)*fy2 + cy*r0(2,0)*fy;
+  B0_bv=fx*(cy*r0(1,2) + fy*r0(1,1));
+  C0_bv=fx*fy2*r0(1,2) - cy2*fx*r0(1,2) - cx*fy2*r0(1,0) - cy*fx*fy*r0(1,1) + cy*fx*fy*r0(2,2) - cx*cy*fy*r0(2,0);
+  D0_bv=fx*fy*(cy*t0(2) + fy*t0(1));
+  E0_bv=fy*r0(2,0);
+  F0_bv=fx*r0(1,2);
+  G0_bv=fx*fy*r0(2,2) - cx*fy*r0(2,0) - cy*fx*r0(1,2);
+  H0_bv=fx*fy*t0(2);
+
+
 }
 
 void CamCouple::update(){
@@ -69,10 +71,10 @@ void CamCouple::update(){
   fx2=fx*fx;
   fy=cam_r_->cam_parameters_->fy;
   fy2=fy*fy;
-  w=cam_r_->cam_parameters_->width;
-  w2=w*w;
-  h=cam_r_->cam_parameters_->height;
-  h2=h*h;
+  cx=cam_r_->cam_parameters_->cx;
+  cx2=cx*cx;
+  cy=cam_r_->cam_parameters_->cy;
+  cy2=cy*cy;
   r=T.linear();
   t=T.translation();
   exposure_coefficient = (cam_m_->exposure_time_*exp(cam_m_->a_exposure_-cam_r_->a_exposure_))/cam_r_->exposure_time_;
@@ -86,64 +88,45 @@ void CamCouple::update(){
 
 void CamCouple::getSlopeParameters(){
 
-  A_s=2*fy2*(r(1,0)*t(2) - r(2,0)*t(1));
-  B_s=2*fx*fy*(r(1,1)*t(2) - r(1,2)*t(1));
-  C_s=2*fx*fy2*r(1,2)*t(2) - 2*fx*fy2*r(2,2)*t(1) - fy2*r(1,0)*t(2)*w + fy2*r(2,0)*t(1)*w - fx*fy*h*r(1,1)*t(2) + fx*fy*h*r(1,2)*t(1);
-  D_s=2*fx*fy*(r(0,0)*t(2) - r(2,0)*t(0));
-  E_s=2*fx2*(r(0,1)*t(2) - r(1,2)*t(0));
-  F_s=2*fx2*fy*r(0,2)*t(2) - 2*fx2*fy*r(2,2)*t(0) - fx2*h*r(0,1)*t(2) + fx2*h*r(1,2)*t(0) - fx*fy*r(0,0)*t(2)*w + fx*fy*r(2,0)*t(0)*w;
+
+  A_s=fy2*(r(1,0)*t(2) - r(2,0)*t(1))   ;
+  B_s=fx*fy*(r(1,1)*t(2) - r(1,2)*t(1))   ;
+  C_s=cx*fy2*r(2,0)*t(1) - cx*fy2*r(1,0)*t(2) + fx*fy2*r(1,2)*t(2) - fx*fy2*r(2,2)*t(1) - cy*fx*fy*r(1,1)*t(2) + cy*fx*fy*r(1,2)*t(1)   ;
+  D_s=fx*fy*(r(0,0)*t(2) - r(2,0)*t(0))   ;
+  E_s=fx2*(r(0,1)*t(2) - r(1,2)*t(0))   ;
+  F_s=cy*fx2*r(1,2)*t(0) - cy*fx2*r(0,1)*t(2) + fx2*fy*r(0,2)*t(2) - fx2*fy*r(2,2)*t(0) - cx*fx*fy*r(0,0)*t(2) + cx*fx*fy*r(2,0)*t(0);
+
+
+  // A_s=2*fy2*(r(1,0)*t(2) - r(2,0)*t(1));
+  // B_s=2*fx*fy*(r(1,1)*t(2) - r(1,2)*t(1));
+  // C_s=2*fx*fy2*r(1,2)*t(2) - 2*fx*fy2*r(2,2)*t(1) - fy2*r(1,0)*t(2)*w + fy2*r(2,0)*t(1)*w - fx*fy*h*r(1,1)*t(2) + fx*fy*h*r(1,2)*t(1);
+  // D_s=2*fx*fy*(r(0,0)*t(2) - r(2,0)*t(0));
+  // E_s=2*fx2*(r(0,1)*t(2) - r(1,2)*t(0));
+  // F_s=2*fx2*fy*r(0,2)*t(2) - 2*fx2*fy*r(2,2)*t(0) - fx2*h*r(0,1)*t(2) + fx2*h*r(1,2)*t(0) - fx*fy*r(0,0)*t(2)*w + fx*fy*r(2,0)*t(0)*w;
 }
 
 void CamCouple::getBoundsParameters(){
 
-  A_bu=2*fy*(2*fx*r(0,0) + r(2,0)*w);
-  B_bu=4*r(0,1)*fx2 + 2*r(1,2)*w*fx;
-  C_bu=4*fx2*fy*r(0,2) - fy*r(2,0)*w2 - 2*fx2*h*r(0,1) - 2*fx*fy*r(0,0)*w + 2*fx*fy*r(2,2)*w - fx*h*r(1,2)*w;
-  D_bu=2*fx*fy*(2*fx*t(0) + t(2)*w);
-  E_bu=4*fy*r(2,0);
-  F_bu=4*fx*r(1,2);
-  G_bu=4*fx*fy*r(2,2) - 2*fx*h*r(1,2) - 2*fy*r(2,0)*w;
-  H_bu=4*fx*fy*t(2);
+ A_bu=fy*(cx*r(2,0) + fx*r(0,0));
+ B_bu=r(0,1)*fx2 + cx*r(1,2)*fx;
+ C_bu=fx2*fy*r(0,2) - cx2*fy*r(2,0) - cy*fx2*r(0,1) - cx*fx*fy*r(0,0) + cx*fx*fy*r(2,2) - cx*cy*fx*r(1,2);
+ D_bu=fx*fy*(cx*t(2) + fx*t(0));
+ E_bu=fy*r(2,0);
+ F_bu=fx*r(1,2);
+ G_bu=fx*fy*r(2,2) - cx*fy*r(2,0) - cy*fx*r(1,2);
+ H_bu=fx*fy*t(2);
 
-  A_bv=4*r(1,0)*fy2 + 2*h*r(2,0)*fy;
-  B_bv=2*fx*(2*fy*r(1,1) + h*r(1,2));
-  C_bv=4*fx*fy2*r(1,2) - 2*fy2*r(1,0)*w - fx*h2*r(1,2) - 2*fx*fy*h*r(1,1) + 2*fx*fy*h*r(2,2) - fy*h*r(2,0)*w;
-  D_bv=2*fx*fy*(2*fy*t(1) + h*t(2));
-  E_bv=4*fy*r(2,0);
-  F_bv=4*fx*r(1,2);
-  G_bv=4*fx*fy*r(2,2) - 2*fx*h*r(1,2) - 2*fy*r(2,0)*w;
-  H_bv=4*fx*fy*t(2);
+ A_bv=r(1,0)*fy2 + cy*r(2,0)*fy;
+ B_bv=fx*(cy*r(1,2) + fy*r(1,1));
+ C_bv=fx*fy2*r(1,2) - cy2*fx*r(1,2) - cx*fy2*r(1,0) - cy*fx*fy*r(1,1) + cy*fx*fy*r(2,2) - cx*cy*fy*r(2,0);
+ D_bv=fx*fy*(cy*t(2) + fy*t(1));
+ E_bv=fy*r(2,0);
+ F_bv=fx*r(1,2);
+ G_bv=fx*fy*r(2,2) - cx*fy*r(2,0) - cy*fx*r(1,2);
+ H_bv=fx*fy*t(2);
 
 }
 
-
-// void CamCouple::getJrParameters(){
-//   C1 = f*r(0,0)*r(1,2);
-//   C2 = f*r(2,0)*t(0);
-//   C3 = f*r(0,0)*t(2);
-//   C4 = f*r(0,2)*r(2,0);
-//   C5 = f*r(0,0)*r(2,2);
-//   C6 = f*r(0,1)*r(2,0);
-//   C7 = f*r(1,2)*t(0);
-//   C8 = f*r(0,1)*t(2);
-//   C9 = f*r(0,2)*r(1,2);
-//   C10 = f*r(0,1)*r(2,2);
-//   C11 = f*r(2,2)*t(0);
-//   C12 = f*r(0,2)*t(2);
-//
-//   D1 = f*r(1,1)*r(2,0);
-//   D2 = f*r(1,0)*r(1,2);
-//   D3 = f*r(1,2)*r(2,0);
-//   D4 = f*r(1,0)*r(2,2);
-//   D5 = f*r(2,0)*t(1);
-//   D6 = f*r(1,0)*t(2);
-//   D7 = f*r(1,2)*r(1,2);
-//   D8 = f*r(1,1)*r(2,2);
-//   D9 = f*r(1,2)*t(1);
-//   D10 = f*r(1,1)*t(2);
-//   D11 = f*r(2,2)*t(1);
-//   D12 = f*r(1,2)*t(2);
-// }
 
 Eigen::Matrix<float,2,1> CamCouple::getJd_(ActivePoint* active_pt ){
   float u1 = active_pt->uv_.x();
@@ -391,7 +374,7 @@ void CamCouple::getDepthParameters(){
 
   A_d=r(2,0)/fx;
   B_d=r(1,2)/fy;
-  C_d=(fx*r(2,2) - (r(2,0)*w)/2)/fx - (h*r(1,2))/(2*fy);
+  C_d=- (cy*r(2,0) - fx*r(2,2))/fx - (cy*r(1,2))/fy;
   D_d=t(2);
 }
 

@@ -52,7 +52,7 @@ class CamCouple{
     Eigen::Vector3f t;
     Eigen::Matrix3f r0;
     Eigen::Vector3f t0;
-    float fx, fy, fx2, fy2, w, h, w2, h2;
+    float fx, fy, fx2, fy2, cx, cy, cx2, cy2;
 
 
     Eigen::Vector2f cam_r_projected_in_cam_m;
