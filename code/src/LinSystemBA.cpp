@@ -241,7 +241,9 @@ void LinSysBA::buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement
     for(MeasBA* measurement : *v){
       count++;
       chi += addMeasurement(measurement, i);
+      delete measurement;
     }
+    delete v;
   }
 
   assert(measurement_vec_vec.size()>0);

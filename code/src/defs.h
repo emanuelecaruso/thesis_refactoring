@@ -187,6 +187,8 @@ struct CamParameters{
   float height;
   float fx;
   float fy;
+  float cx;
+  float cy;
   float min_depth;
   float max_depth;
   float pixel_width;
@@ -204,6 +206,8 @@ struct CamParameters{
   ,height(width_/aspect)
   ,fx(fx_)
   ,fy(fy_)
+  ,cx(width/2)
+  ,cy(height/2)
   ,min_depth(min_depth_)
   ,max_depth(max_depth_)
   ,pixel_width(width/(float)resolution_x)
@@ -223,6 +227,8 @@ struct CamParameters{
     ,height(width/aspect)
     ,fx(fx_/pxlmtrratio_)
     ,fy(fy_/pxlmtrratio_)
+    ,cx(cx_)
+    ,cy(cy_)
     ,min_depth(min_depth_)
     ,max_depth(max_depth_)
     ,pixel_width(width/(float)resolution_x)
@@ -240,6 +246,8 @@ struct CamParameters{
     height(cam_parameters->height),
     fx(cam_parameters->fx),
     fy(cam_parameters->fy),
+    cx(cam_parameters->cx),
+    cy(cam_parameters->cy),
     min_depth(cam_parameters->min_depth),
     max_depth(cam_parameters->max_depth),
     pixel_width(cam_parameters->pixel_width),
@@ -250,8 +258,8 @@ struct CamParameters{
     };
 
     inline void setK(){
-      K <<  fx   ,  0   , width/2,
-            0    ,  fy  , height/2,
+      K <<  fx   ,  0   , cx,
+            0    ,  fy  , cy,
             0    ,  0   ,       1 ;
       Kinv = K.inverse();
       std::cout << K << std::endl;
@@ -788,4 +796,11 @@ inline void split_str( std::string const &str, const char delim, std::vector <st
   {
       out.push_back(s2); // store the string in s2
   }
+}
+
+template <class T>
+inline void deletePointersVec( std::vector<T*> vec ){
+  for (T* item : vec)
+    delete item;
+  vec.clear();
 }

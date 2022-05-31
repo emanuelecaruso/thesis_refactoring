@@ -1,11 +1,11 @@
 clear
 clc
 
-syms f fx fy d1 d2 w h u1 v1 u2 v2 r00 r01 r02 r10 r11 r12 r20 r21 r22 t0 t0 t1 t2
+syms f fx fy d1 d2 cx cy u1 v1 u2 v2 r00 r01 r02 r10 r11 r12 r20 r21 r22 t0 t0 t1 t2
 syms slope1 slope2 vh
 
-k=[fx  0 w/2 ;
-   0  fy h/2;
+k=[fx  0 cx ;
+   0  fy cy;
    0  0 1       ];
 
 kinv = inv(k);

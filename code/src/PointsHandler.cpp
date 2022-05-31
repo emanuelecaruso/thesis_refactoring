@@ -100,6 +100,9 @@ bool PointsHandler::sampleCandidates(){
 
   }
 
+  delete img_magn;
+  delete img_magn2;
+
   double t_end=getTime();
   int deltaTime=(t_end-t_start);
   sharedCoutDebug("   - Candidates sampled: "+ std::to_string(count) + ", " + std::to_string(deltaTime)+" ms");
@@ -129,6 +132,9 @@ void PointsHandler::showProjectedActivePoints(const std::string& name, int i){
 
 void PointsHandler::projectCandidatesOnLastFrame(){
 
+  for (CandidateProjected* cand_proj : dso_->frame_current_->points_container_->candidates_projected_ )
+    delete cand_proj;
+
   dso_->frame_current_->points_container_->candidates_projected_.clear();
 
   // iterate through keyframes (except last)
@@ -139,6 +145,9 @@ void PointsHandler::projectCandidatesOnLastFrame(){
 }
 
 void PointsHandler::projectActivePointsOnLastFrame(){
+
+  for (ActivePointProjected* active_pt_proj : dso_->frame_current_->points_container_->active_points_projected_ )
+    delete active_pt_proj;
 
   dso_->frame_current_->points_container_->active_points_projected_.clear();
 
@@ -172,7 +181,7 @@ void PointsHandler::projectActivePoints(CameraForMapping* cam_r, CameraForMappin
   for(ActivePoint* active_pt : (cam_r->points_container_->active_points_)){
     if(active_pt->invdepth_==-1)
       continue;
-    ActivePointProjected* active_pt_proj(new ActivePointProjected(active_pt, cam_couple ));
+    ActivePointProjected* active_pt_proj = (new ActivePointProjected(active_pt, cam_couple ));
     if( cam_m->image_intensity_->pixelInRange(active_pt_proj->pixel_) ){
       cam_m->points_container_->active_points_projected_.push_back(active_pt_proj);
     }

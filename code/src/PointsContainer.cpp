@@ -118,6 +118,20 @@ void PointsContainer::showProjectedActivePoints(const std::string& name, int wtk
 
 }
 
+void PointsContainer::clearProjections(){
+  for( CandidateProjected* cand_proj : candidates_projected_ )
+    delete cand_proj;
+  for( ActivePointProjected* active_pt_proj : active_points_projected_ )
+    delete active_pt_proj;
+  for( MarginalizedPointProjected* marg_pt_proj : marginalized_points_projected_ )
+    delete marg_pt_proj;
+  candidates_projected_.clear();
+  active_points_projected_.clear();
+  marginalized_points_projected_.clear();
+}
+
+
+
 // void CandidateProjected::init(Candidate* cand, std::shared_ptr<CamCouple> cam_couple_){
 //   float d2;
 //   cam_couple_->reprojection(cand->uv_,1./cand->invdepth_,uv_,d2);

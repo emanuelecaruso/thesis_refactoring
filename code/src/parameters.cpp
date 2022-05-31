@@ -13,8 +13,8 @@ bool use_spectator= true;
 
 // code parameters
 bool free_mem = true;
-bool do_marginalization = true;
-bool first_2_active_kfs_fixed = false;
+bool do_marginalization = false;
+bool first_2_active_kfs_fixed = true;
 bool marg_pts_in_marg_kf = false;
 bool first_est_jac = false;
 bool take_gt_poses=false;
@@ -35,8 +35,8 @@ bool get_current_frame=false;
 // candidate selection
 int candidate_level= 0;
 int reg_level=candidate_level+5;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
-// float grad_threshold=0.1;
-float grad_threshold=0.05;
+float grad_threshold=0.1;
+// float grad_threshold=0.05;
 int num_candidates=2000;
 
 
@@ -57,9 +57,9 @@ float damp_cam= 0;
 float damp_point_invdepth= 1000;
 // float damp_point_invdepth= 10e3;
 // float damp_point_invdepth= FLT_MAX;
-float damp_exposure= 1;
-float lambda_a= 100;
-float lambda_b= 100;
+float damp_exposure= 0;
+float lambda_a= 0;
+float lambda_b= 0;
 
 float huber_threshold=coeff_sum_ba*0.05;
 // float sat_threshold=0.04;
@@ -97,7 +97,7 @@ float conv_threshold= 0.01;
 
 
 //  video streaming
-int end_frame=250;
+int end_frame=1000;
 int fps=30;
 
 

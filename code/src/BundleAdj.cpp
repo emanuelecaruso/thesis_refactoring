@@ -234,13 +234,15 @@ bool BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* 
   // remove active point from vector
   removeFromVecByElement(active_point->cam_->points_container_->active_points_, active_point);
 
+
+  if(!do_marginalization){
+    delete active_point;
+    return true;
+  }
+
   // create and push marginalized point
   MarginalizedPoint* marg_pt = new MarginalizedPoint(active_point);
   active_point->cam_->points_container_->marginalized_points_.push_back(marg_pt);
-
-  if(!do_marginalization){
-    return true;
-  }
 
 
   bool valid = false;
@@ -282,7 +284,7 @@ bool BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* 
   }
 
 
-  // delete active point
+  delete active_point;
 
   return valid;
 
@@ -432,6 +434,7 @@ void BundleAdj::marginalizePointsAndKeyframes(){
     //   continue;
     // }
 
+    delete cam_couple_container_;
     cam_couple_container_ = new CamCoupleContainer(dso_,cam_r);
 
 
@@ -454,6 +457,8 @@ void BundleAdj::marginalizePointsAndKeyframes(){
           marginalizePoint(active_pt, cam_couple_container_);
         }
       }
+      deletePointersVec(*measurement_vector);
+      delete measurement_vector;
     }
   }
 
@@ -513,6 +518,9 @@ void BundleAdj::marginalizePointsAndKeyframes(){
     CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
     if(cam_r->points_container_->active_points_.empty()){
       dso_->cameras_container_->removeFrameWithActPts(cam_r);
+      cam_r->cam_free_mem();
+      delete cam_r->points_container_;
+
       continue;
     }
   }
@@ -549,6 +557,7 @@ void BundleAdj::optimize(bool only_pts){
       //   continue;
       // }
 
+      delete cam_couple_container_;
       cam_couple_container_ = new CamCoupleContainer(dso_,cam_r, true);
 
 
@@ -577,6 +586,7 @@ void BundleAdj::optimize(bool only_pts){
     lin_sys_ba.buildLinearSystem(measurement_vec_vec, marginalization_handler_);
     updateState(lin_sys_ba, only_pts);
 
+    // deletePointersVec(measurement_vec_vec);
 
     // if(debug_optimization){
     //   dso_->points_handler_->projectActivePointsOnLastFrame();

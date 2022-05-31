@@ -255,6 +255,23 @@ class PointsContainer{
     {};
 
 
+    ~PointsContainer(){
+      for( Candidate* cand : candidates_ )
+        delete cand;
+      for( CandidateProjected* cand_proj : candidates_projected_ )
+        delete cand_proj;
+      for( ActivePoint* active_pt : active_points_ )
+        delete active_pt;
+      for( ActivePointProjected* active_pt_proj : active_points_projected_ )
+        delete active_pt_proj;
+      for( MarginalizedPoint* marg_pt : marginalized_points_ )
+        delete marg_pt;
+      for( MarginalizedPointProjected* marg_pt_proj : marginalized_points_projected_ )
+        delete marg_pt_proj;
+
+    }
+
+
     // ********** methods **********
     void drawPoint(Point* point, Image<colorRGB>* show_img, bool circle=true);
     std::vector<ActivePoint*>& getActivePoints();
@@ -265,6 +282,7 @@ class PointsContainer{
     void showActivePoints();
     void showProjectedActivePoints( int wtk=0);
     void showProjectedActivePoints( const std::string& name, int wtk=0 );
+    void clearProjections();
 
   protected:
 };

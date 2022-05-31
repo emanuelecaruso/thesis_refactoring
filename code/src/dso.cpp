@@ -175,7 +175,7 @@ bool Dso::doDso(){
     // track existing candidates
     points_handler_->trackCandidates(take_gt_points);
 
-    points_handler_->projectCandidatesOnLastFrame();
+    // points_handler_->projectCandidatesOnLastFrame();
     // points_handler_->showProjectedCandidates( "cands proj 0/1");
 
     // activate points
@@ -216,13 +216,16 @@ bool Dso::doDso(){
     //   points_handler_->showProjectedActivePoints("last kf "+std::to_string(i),0);
     // }
 
-    // points_handler_->showProjectedActivePoints("last kf ",1);
+    points_handler_->showProjectedActivePoints("last kf ",1);
     spectator_->renderState();
     spectator_->showSpectator(1);
   }
 
-  if(!kf_added)
+  if(!kf_added){
     frame_current_->cam_free_mem();
+    delete frame_current_->points_container_;
+
+  }
 
   return true;
 

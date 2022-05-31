@@ -4,10 +4,12 @@
 
 void CameraForMapping::cam_free_mem(){
   delete pyramid_;
+
+  for( Candidate* cand : points_container_->candidates_ )
+    delete cand;
   points_container_->candidates_.clear();
-  points_container_->candidates_projected_.clear();
-  points_container_->active_points_projected_.clear();
-  points_container_->marginalized_points_projected_.clear();
+
+  points_container_->clearProjections();
   delete cam_data_for_ba_;
   if(image_intensity_!=nullptr)
     delete image_intensity_;
