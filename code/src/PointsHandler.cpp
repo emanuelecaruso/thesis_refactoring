@@ -24,12 +24,21 @@ bool PointsHandler::sampleCandidates(){
   reg_level=std::max(reg_level,1);
 
   // get image
+  Image<pixelIntensity>* img_magn_coarse  = new Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn(candidate_level));
+  Image<pixelIntensity>* img_magn2_coarse  = new Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn2(candidate_level));
   Image<pixelIntensity>* img_magn  = new Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn(candidate_level));
-  Image<pixelIntensity>* img_magn2  = new Image<pixelIntensity>(dso_->frame_current_->pyramid_->getMagn2(candidate_level));
+
+  float factor_coarse =1.0/(float)pow(2,coarsest_lev_magn-1);
+  int factor = pow(2,reg_level-candidate_level);
+
+  // cv::resize(img_magn_coarse->image_, img_magn_coarse->image_, cv::Size(), factor_coarse, factor_coarse, cv::INTER_LINEAR );
+  // cv::resize(img_magn2_coarse->image_, img_magn2_coarse->image_, cv::Size(), factor_coarse, factor_coarse, cv::INTER_LINEAR );
+
+  // img_magn2_coarse->show(3);
+  // cv::waitKey(0);
 
   while(true){
 
-    int factor = pow(2,reg_level-candidate_level);
 
     assert(!(img_magn->image_.rows%factor));
     assert(!(img_magn->image_.cols%factor));
@@ -49,7 +58,7 @@ bool PointsHandler::sampleCandidates(){
         int col_coord = col*region_width;
 
         cv::Mat cropped_image_magn (img_magn->image_, cv::Rect(col_coord,row_coord,factor,factor));
-        cv::Mat cropped_image_magn2 (img_magn2->image_, cv::Rect(col_coord,row_coord,factor,factor));
+
 
         cv::Point2i* maxLoc = new cv::Point2i;
         double* maxVal = new double;
@@ -66,13 +75,44 @@ bool PointsHandler::sampleCandidates(){
 
         pxl pixel = cvpoint2pxl(*maxLoc);
 
-        float mean_magn = cv::mean(cropped_image_magn)[0];
+        Candidate* cand = new Candidate(dso_->frame_current_, pixel, candidate_level);
+
+        // pxl pixel_coarse =pixel*factor_coarse;
+        // float mean_magn = img_magn_coarse->evalPixelBilinear(pixel_coarse);
+        // float mean_magn2 = img_magn2_coarse->evalPixelBilinear(pixel_coarse);
+
+
+
+        cv::Mat cropped_image_magn1 (img_magn_coarse->image_, cv::Rect(col_coord,row_coord,factor,factor));
+        cv::Mat cropped_image_magn2 (img_magn2_coarse->image_, cv::Rect(col_coord,row_coord,factor,factor));
+        float mean_magn = cv::mean(cropped_image_magn1)[0];
         float mean_magn2 = cv::mean(cropped_image_magn2)[0];
 
 
-        Candidate* cand = new Candidate(dso_->frame_current_, pixel, candidate_level);
-        cand->cost_threshold_ba_= intensity_coeff_ba*(mean_magn*g_th)+gradient_coeff_ba*(mean_magn2*g_th);
-        cand->cost_threshold_= intensity_coeff*(mean_magn*g_th)+gradient_coeff*(mean_magn2*g_th);
+        if(adaptive_thresh){
+          if(magn_mean){
+            cand->cost_threshold_mapping_=
+            intensity_coeff_mapping*(mean_magn*mean_magn_coeff_mapping + g_th_intensity_mapping ) +
+            gradient_coeff_mapping*(mean_magn2*mean_magn_coeff_mapping + g_th_gradient_mapping );
+
+            cand->cost_threshold_ba_=
+            intensity_coeff_ba*(mean_magn*mean_magn_coeff_ba + g_th_intensity_ba ) +
+            gradient_coeff_ba*(mean_magn2*mean_magn_coeff_ba + g_th_gradient_ba );          }
+          else{
+            cand->cost_threshold_mapping_=
+            intensity_coeff_mapping*((cand->magn_cd_)*mean_magn_coeff_mapping + g_th_intensity_mapping ) +
+            gradient_coeff_mapping*((cand->magn_cd2_)*mean_magn_coeff_mapping + g_th_gradient_mapping );
+
+            cand->cost_threshold_ba_=
+            intensity_coeff_ba*((cand->magn_cd_)*mean_magn_coeff_ba + g_th_intensity_ba ) +
+            gradient_coeff_ba*((cand->magn_cd2_)*mean_magn_coeff_ba + g_th_gradient_ba );            // cand->cost_threshold_mapping_=( intensity_coeff*(cand->c_) +
+            // gradient_coeff*(cand->magn_cd_) )*mean_magn_coeff;
+          }
+        }
+        else{
+          cand->cost_threshold_mapping_=(intensity_coeff_mapping+gradient_coeff_mapping)*fixed_thresh;
+          cand->cost_threshold_ba_=(intensity_coeff_ba+gradient_coeff_ba)*fixed_thresh;
+        }
 
         dso_->frame_current_->points_container_->candidates_.push_back(cand);
         img_magn->setPixel(pixel,0);
@@ -99,6 +139,8 @@ bool PointsHandler::sampleCandidates(){
     // std::cout << "reg_level " << reg_level << std::endl;
 
   }
+
+  delete img_magn;
 
   double t_end=getTime();
   int deltaTime=(t_end-t_start);
@@ -129,6 +171,9 @@ void PointsHandler::showProjectedActivePoints(const std::string& name, int i){
 
 void PointsHandler::projectCandidatesOnLastFrame(){
 
+  for (CandidateProjected* cand_proj : dso_->frame_current_->points_container_->candidates_projected_ )
+    delete cand_proj;
+
   dso_->frame_current_->points_container_->candidates_projected_.clear();
 
   // iterate through keyframes (except last)
@@ -139,6 +184,9 @@ void PointsHandler::projectCandidatesOnLastFrame(){
 }
 
 void PointsHandler::projectActivePointsOnLastFrame(){
+
+  for (ActivePointProjected* active_pt_proj : dso_->frame_current_->points_container_->active_points_projected_ )
+    delete active_pt_proj;
 
   dso_->frame_current_->points_container_->active_points_projected_.clear();
 
@@ -172,7 +220,7 @@ void PointsHandler::projectActivePoints(CameraForMapping* cam_r, CameraForMappin
   for(ActivePoint* active_pt : (cam_r->points_container_->active_points_)){
     if(active_pt->invdepth_==-1)
       continue;
-    ActivePointProjected* active_pt_proj(new ActivePointProjected(active_pt, cam_couple ));
+    ActivePointProjected* active_pt_proj = (new ActivePointProjected(active_pt, cam_couple ));
     if( cam_m->image_intensity_->pixelInRange(active_pt_proj->pixel_) ){
       cam_m->points_container_->active_points_projected_.push_back(active_pt_proj);
     }
@@ -211,6 +259,8 @@ void PointsHandler::trackCandidates(bool groundtruth){
       sharedCoutDebug("           - tracked: " + std::to_string(n_cands_tracked_));
       sharedCoutDebug("           - removed: " + std::to_string(n_cands_removed_));
       sharedCoutDebug("               - repetitive: " + std::to_string(n_cands_repeptitive_));
+      sharedCoutDebug("               - ep segment too short: " + std::to_string(n_cands_ep_too_short_));
+      sharedCoutDebug("               - no clear min: " + std::to_string(n_cands_no_clear_min_));
       sharedCoutDebug("               - var too high: " + std::to_string(n_cands_var_too_high_));
       sharedCoutDebug("               - no min: " + std::to_string(n_cands_no_min_));
     }
@@ -268,6 +318,11 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
   // create epipolar line
   EpipolarLine ep_segment( cam_couple->cam_m_, uv_min, uv_max, cand->level_) ;
 
+  // if epipolar segment is too short
+  if (ep_segment.uvs.size()<=3){
+    n_cands_ep_too_short_++;
+    return false;
+  }
 
   // search pixel in epipolar line
   CandTracker CandTracker(ep_segment, cand, cam_couple );
@@ -289,10 +344,13 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
       return false;
     }
     case 2:{
-      cand->cost_threshold_;
       // cand->cost_threshold_*1.1;
       n_cands_no_min_++;
       return false;
+    }
+    case 3:{
+      n_cands_no_clear_min_++;
+      return true;
     }
   }
 }
@@ -375,6 +433,7 @@ int CandTracker::searchMin( ){
   bool min_segment_reached = false;
   bool min_segment_leaved = false;
   float cost_min = FLT_MAX;
+  int n_pxls_inliers = 0;
 
   // iterate through uvs
   for(int i=0; i<ep_segment_.uvs.size(); i++){
@@ -394,7 +453,7 @@ int CandTracker::searchMin( ){
     float cost=cost_magn+cost_phase;
     // float cost=cost_magn;
 
-    if(cost>cand_->cost_threshold_){
+    if(cost>cand_->cost_threshold_mapping_){
     // if(cost>cost_threshold){
       if(min_segment_reached){
         min_segment_leaved=true;
@@ -407,6 +466,11 @@ int CandTracker::searchMin( ){
       if(min_segment_leaved){
         return 1;
       }
+
+      n_pxls_inliers++;
+      if (n_pxls_inliers>max_pxls_inliers)
+        return 3;
+
       min_segment_reached=true;
 
 
@@ -423,28 +487,41 @@ int CandTracker::searchMin( ){
   if(!min_segment_reached)
     return 2;
 
-  // cand_->showCandidate();
-  // ep_segment_.showEpipolarWithMin(pixel_, red, cand_->level_, 2);
+  if (debug_mapping_match){
+    cand_->showCandidate();
+    ep_segment_.showEpipolarWithMin(pixel_, red, cand_->level_, 2);
+  }
 
   return 0;
 }
 
 float CandTracker::getCostMagn(pxl& pixel){
 
-  pixelIntensity c_m = cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->evalPixelBilinear(pixel);
-  magn_m = cam_couple_->cam_m_->pyramid_->getMagn(cand_->level_)->evalPixelBilinear(pixel);
+  float cost_c = getCostIntensity(pixel);
+  float cost_magn_cd = getCostGradient(pixel);
 
-  pixelIntensity c_r = cand_->c_;
-  pixelIntensity magn_cd_r = cand_->magn_cd_;
-
-  float cost_c = abs(c_m-c_r);
-  float cost_magn_cd = abs(magn_m-magn_cd_r);
-
-  // thresh_= 0.03 ;
-  // std::cout << "c_m " << c_m << " c_r " << c_r << " magn_m " << magn_m << " magn_cd_r " << magn_cd_r << "\n";
-  // return cost_magn_cd;
-  return intensity_coeff*cost_c+gradient_coeff*cost_magn_cd;
+  return intensity_coeff_mapping*cost_c+gradient_coeff_mapping*cost_magn_cd;
 }
+
+float CandTracker::getCostIntensity(pxl& pixel_m){
+  pixelIntensity c_m = cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->evalPixelBilinear(pixel_m);
+  pixelIntensity c_r = cand_->c_;
+  // return abs(c_r-c_m);
+
+  float error = cam_couple_->getErrorIntensity(c_r, c_m);
+  return abs(error);
+}
+
+float CandTracker::getCostGradient(pxl& pixel_m){
+  magn_m = cam_couple_->cam_m_->pyramid_->getMagn(cand_->level_)->evalPixelBilinear(pixel_m);
+  pixelIntensity magn_cd_r = cand_->magn_cd_;
+  // return abs(magn_cd_r-magn_m);
+
+  float error = cam_couple_->getErrorGradient(magn_cd_r, magn_m);
+  return abs(error);
+
+}
+
 
 bool CandTracker::getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, float& phase_cost){
 

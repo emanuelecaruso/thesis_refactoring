@@ -77,6 +77,7 @@ class BundleAdj{
     void marginalizePointsAndKeyframes();
     void updateState(LinSysBA& lin_sys_ba, bool only_pts=false);
     void updateBMarg(LinSysBA& lin_sys_ba);
+    bool marginalizeOcclusionsInLastKeyframe();
 };
 
 class CamHkuCouple{
@@ -109,6 +110,10 @@ class PtDataForBA{
     b_u_(0)
     {}
 
+    ~PtDataForBA(){
+      for (CamHkuCouple* a : cam_Hku_couples_)
+        delete a;
+    }
 };
 
 class CamDataForBA{
@@ -125,7 +130,7 @@ class CamDataForBA{
     Eigen::Isometry3f frame_world_wrt_camera_0_;
     float a_exposure_0_;
     float b_exposure_0_;
-    
+
     // ********** constructor **********
     CamDataForBA():
     c_idx_(-1),

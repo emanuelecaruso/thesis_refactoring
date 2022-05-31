@@ -28,8 +28,8 @@ void Initializer::compute_cv_K(){
   // express focal length (lens) and principal point in pixels
   float fx_in_pixels = dso_->cam_parameters_->fx*pixel_meter_ratio;
   float fy_in_pixels = dso_->cam_parameters_->fy*pixel_meter_ratio;
-  float pp_x = dso_->cam_parameters_->resolution_x/2;
-  float pp_y = dso_->cam_parameters_->resolution_y/2;
+  float pp_x = dso_->cam_parameters_->cx*pixel_meter_ratio;
+  float pp_y = dso_->cam_parameters_->cy*pixel_meter_ratio;
 
   // compute camera matrix K for opencv
   Eigen::Matrix3f K;
@@ -73,8 +73,13 @@ void Initializer::trackCornersLK(){
   cv::Mat_<uchar> img_ref_uchar;
   cv::Mat_<uchar> img_curr_uchar;
   corners_vec_curr.clear();
+  corners_vec_reproj.clear();
   status_vec.clear();
   errors_vec.clear();
+  errors_vec_reproj.clear();
+  status_vec_reproj.clear();
+
+  corners_vec_ref_copy = corners_vec_ref;
 
   // calculate optical flow
   cv::Size size_win = cv::Size(size_window,size_window);
@@ -82,19 +87,41 @@ void Initializer::trackCornersLK(){
   img_ref->image_.convertTo(img_ref_uchar, CV_8UC1, 255);
   img_curr->image_.convertTo(img_curr_uchar, CV_8UC1, 255);
 
-
   // TermCriteria criteria = TermCriteria((TermCriteria::COUNT) + (TermCriteria::EPS), 10, 0.03);
-  calcOpticalFlowPyrLK(img_ref_uchar, img_curr_uchar, corners_vec_ref, corners_vec_curr, status_vec, errors_vec, size_win);
+  calcOpticalFlowPyrLK(img_ref_uchar, img_curr_uchar, corners_vec_ref_copy, corners_vec_curr, status_vec, errors_vec, size_win);
+  // reproject
+  calcOpticalFlowPyrLK(img_curr_uchar, img_ref_uchar, corners_vec_curr, corners_vec_reproj, status_vec_reproj, errors_vec_reproj, size_win);
 
+  int num_removed = 0;
+  for( int i=corners_vec_ref_copy.size()-1; i>=0; i-- ){
+    float dist = getEuclideanDistance(corners_vec_ref_copy[i],corners_vec_reproj[i]);
+    // if (dist>reproj_lk_threshold || !status_vec[i] || !status_vec_reproj[i]){
+    if (dist>reproj_lk_threshold && (status_vec[i] && status_vec_reproj[i]) ){
+    // if ( !status_vec[i] || !status_vec_reproj[i]){
+
+      removeFromVecByIdx(corners_vec_curr,i);
+      removeFromVecByIdx(corners_vec_ref_copy,i);
+      removeFromVecByIdx(corners_vec_reproj,i);
+      removeFromVecByIdx(status_vec,i);
+      removeFromVecByIdx(status_vec_reproj,i);
+      removeFromVecByIdx(errors_vec,i);
+      removeFromVecByIdx(errors_vec_reproj,i);
+      num_removed++;
+    }
+  }
+  assert(corners_vec_ref_copy.size()==corners_vec_reproj.size() && corners_vec_ref_copy.size()==corners_vec_curr.size());
+  std::cout << " n corners removed: " << num_removed << std::endl;
 
 }
 
 float Initializer::getOpticalFlowDist(){
   float dist = 0;
   int count = 0;
-  for (int i=0; i<corners_vec_ref.size(); i++){
-    count ++;
-    dist += getEuclideanDistance(corners_vec_ref[i],corners_vec_curr[i]);
+  for (int i=0; i<corners_vec_ref_copy.size(); i++){
+    if (status_vec[i]){
+      count ++;
+      dist += getEuclideanDistance(corners_vec_ref_copy[i],corners_vec_curr[i]);
+    }
   }
   dist/= count;
   return dist;
@@ -116,37 +143,40 @@ bool Initializer::findPose(){
   }
 
   // estimate homography
-  // cv::Mat H = findHomography();
 
   // estimate essential matrix
   cv::Mat E = findEssentialMatrix();
+
   // cv::Mat F = findFundamentalMatrix();
   // cv::Mat E = fundamental2Essential(F);
 
-  // eval models
-
-  // if the model is good enough
-  if(true){
-    // find pose
-    Eigen::Isometry3f T = essential2pose( E );
-    // Eigen::Isometry3f T = homography2pose( H );
-
-    // assign pose
-    CameraForMapping* cam = dso_->frame_current_;
-
-    cam->assignPose(T);
-    // cam->assignPose0(T);
+  // // eval models
+  // cv::Mat H = findHomography();
 
 
-    double t_end=getTime();
-    int deltaTime = (t_end-t_start);
-    sharedCoutDebug("   - Pose found, "+ std::to_string(deltaTime) + " ms");
+  // find pose
+  Eigen::Isometry3f T;
 
-    // dso_->camera_vector_->at(dso_->frame_current_)->assignPose(*(dso_->environment_->camera_vector_->at(dso_->frame_current_)->frame_camera_wrt_world_));  //gt
-    return true;
-  }
+  // homography2pose( H, T );
+
+  bool valid = essential2pose( E , T);
+  if(!valid)
+    return false;
+
+  // assign pose
+  CameraForMapping* cam = dso_->frame_current_;
+
+  cam->assignPose(T);
+  // cam->assignPose0(T);
+
+
+  double t_end=getTime();
+  int deltaTime = (t_end-t_start);
+  sharedCoutDebug("   - Pose found, "+ std::to_string(deltaTime) + " ms");
+
+
   // otherwise return false
-  return false;
+  return true;
 
 }
 
@@ -155,8 +185,6 @@ Eigen::Isometry3f Initializer::computeRelativePoseGt(){
   Eigen::Isometry3f w_T_m = *(dso_->frame_current_->grountruth_camera_->frame_camera_wrt_world_);
   Eigen::Isometry3f r_T_w = *(ref_frame_->frame_world_wrt_camera_);
   Eigen::Isometry3f r_T_m = r_T_w*w_T_m;
-
-
 
   return r_T_m;
 }
@@ -178,31 +206,11 @@ Eigen::Isometry3f Initializer::computeRelativePoseGt(){
 //
 // }
 //
-// Eigen::Isometry3f Initializer::homography2pose(cv::Mat& H){
-//   // get grountruth of the pose to predict
-//   Eigen::Isometry3f T_gt = computeRelativePoseGt();
-//    // get groundtruth of scale
-//   float t_magnitude = T_gt.translation().norm();
-//
-//   Eigen::Matrix3f K_ = *(dso_->camera_vector_->at(dso_->frame_current_)->K_);
-//   cv::Mat K;
-//   eigen2cv(K_, K);
-//   std::vector<cv::Mat> Rs, Ts;
-//
-//   cv::decomposeHomographyMat(H, K, Rs, Ts, cv::noArray());
-//
-//   // std::cout << "\nCOMPARISON, frame " << dso_->frame_current_ << std::endl;
-//   // std::cout << "gt: "<< T_gt.translation() << std::endl;
-//   // std::cout << "pred: " << Ts[0] << std::endl;
-//
-//
-//   Eigen::Isometry3f T;
-//   // T.linear()=R;
-//   return T;
-// }
-//
-//
-Eigen::Isometry3f Initializer::essential2pose(cv::Mat& E){
+
+
+
+
+float Initializer::getWorldScale(){
   float t_magnitude;
   if (dso_->frame_current_->grountruth_camera_->frame_camera_wrt_world_!=nullptr){
     // get grountruth of the pose to predict
@@ -213,14 +221,12 @@ Eigen::Isometry3f Initializer::essential2pose(cv::Mat& E){
   }
   else{
     t_magnitude = world_scale_default;
-
   }
+  return t_magnitude;
+}
 
 
-  // compute relative pose with opencv
-  cv::Mat R, t;
-  cv::recoverPose	(	E, corners_vec_ref, corners_vec_curr,
-                    cv_K, R, t, inliers_vec );
+bool Initializer::checkInliersRatio(){
 
   int i =0;
   for (uchar inlier : inliers_vec) {
@@ -228,8 +234,17 @@ Eigen::Isometry3f Initializer::essential2pose(cv::Mat& E){
       i++;
     }
   }
-  // std::cout << "Inliers: " << i << " out of " << inliers_vec->back()->size() << std::endl;
 
+  float inliers_ratio_ = (float)i/inliers_vec.size();
+  std::cout << "Inliers: " << i << " out of " << inliers_vec.size() << ", inliers ratio: " << inliers_ratio_ << std::endl;
+  if (inliers_ratio_<inliers_ratio){
+    exit(1);
+    return false;
+  }
+  return true;
+}
+
+void Initializer::updateT( cv::Mat& R, cv::Mat& t, Eigen::Isometry3f& T ){
   Eigen::Isometry3f r_T_m;
   Eigen::Matrix3f R_;
   Eigen::Vector3f t_;
@@ -238,22 +253,51 @@ Eigen::Isometry3f Initializer::essential2pose(cv::Mat& E){
   r_T_m.linear() = R_;
   r_T_m.translation()=t_;
   // solution given by opencv: world wrt the camera -> need inversion
-  r_T_m.translation()*=t_magnitude;
+  r_T_m.translation()*=getWorldScale();
   r_T_m=r_T_m.inverse();
-
-
-  // std::cout << "ref: " << ref_frame_idx_ << ", last: " << corners_vec_->size()-1 << std::endl;
-  // std::cout << "gt: "<< T_gt.translation() << std::endl;
-  // std::cout << "pred: " << r_T_m.translation() << std::endl;
-  // std::cout << "gt normalized: "<< T_gt.translation().normalized() << std::endl;
-  // std::cout << "pred normalized cv: " << r_T_m.translation().normalized() << std::endl;
-
-  // relative pose to camera pose
   Eigen::Isometry3f w_T_r = *(ref_frame_->frame_camera_wrt_world_);
-  Eigen::Isometry3f frame_camera_wrt_world = w_T_r*r_T_m;
+  T = w_T_r*r_T_m;
+}
+
+Eigen::Isometry3f Initializer::homography2pose(cv::Mat& H, Eigen::Isometry3f& T){
+
+  Eigen::Isometry3f T_gt = computeRelativePoseGt();
+
+  std::vector<cv::Mat> Rs, Ts;
+
+  cv::decomposeHomographyMat(H, cv_K, Rs, Ts, cv::noArray());
+
+  std::cout << "\nCOMPARISON PORCODIO" << std::endl;
+  std::cout << "\ngt:\n "<< T_gt.translation().normalized() << std::endl;
+  cv::normalize(Ts[0],Ts[0]);
+  cv::normalize(Ts[1],Ts[1]);
+  cv::normalize(Ts[2],Ts[2]);
+  cv::normalize(Ts[3],Ts[3]);
+  std::cout << "\npred1:\n " << Ts[0] << std::endl;
+  std::cout << "\npred2:\n " << Ts[1] << std::endl;
+  std::cout << "\npred3:\n " << Ts[2] << std::endl;
+  std::cout << "\npred4:\n " << Ts[3] << std::endl;
+
+  // T.linear()=Rs[0];
+  // T.translation()=Ts[0];
+  return T;
+}
+
+
+bool Initializer::essential2pose(cv::Mat& E, Eigen::Isometry3f& T){
+
+  // compute relative pose with opencv
+  cv::Mat R, t;
+  cv::recoverPose	(	E, corners_vec_ref_copy, corners_vec_curr,
+                    cv_K, R, t, inliers_vec );
+
+  if(!checkInliersRatio())
+    return false;
+
+  updateT( R, t, T );
 
   // return the camera pose
-  return frame_camera_wrt_world;
+  return true;
 }
 
 
@@ -269,8 +313,7 @@ cv::Mat Initializer::findEssentialMatrix(){
   // eigen2cv(K_, K);
 
 
-
-  cv::Mat E = cv::findEssentialMat ( corners_vec_ref, corners_vec_curr,
+  cv::Mat E = cv::findEssentialMat ( corners_vec_ref_copy, corners_vec_curr,
                                       cv_K, method, prob, threshold, inliers_vec );
 
   int i =0;
@@ -304,19 +347,17 @@ cv::Mat Initializer::findEssentialMatrix(){
 //   return F;
 // }
 //
-// cv::Mat Initializer::findHomography(){
-//   int method = cv::RANSAC;
-//   double ransacReprojThreshold = parameters_->ransacReprojThreshold;
-//   const int maxIters = 2000;
-//   double 	confidence = parameters_->confidence;
-//
-//
-//   cv::Mat H = cv::findHomography	( *(corners_vec_->at(0)), *(corners_vec_->back()),
-//                           method, ransacReprojThreshold, cv::noArray(), maxIters, confidence );
-//
-//
-//   return H;
-// }
+cv::Mat Initializer::findHomography(){
+  int method = cv::RANSAC;
+  const int maxIters = 2000;
+
+
+  cv::Mat H = cv::findHomography	( corners_vec_ref_copy, corners_vec_curr,
+                          method, ransacReprojThreshold, cv::noArray(), maxIters, confidence );
+
+
+  return H;
+}
 //
 void Initializer::initializeColors(){
   for (int i=0; i<corners_vec_ref.size(); i++){

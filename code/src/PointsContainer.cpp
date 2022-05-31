@@ -118,6 +118,20 @@ void PointsContainer::showProjectedActivePoints(const std::string& name, int wtk
 
 }
 
+void PointsContainer::clearProjections(){
+  for( CandidateProjected* cand_proj : candidates_projected_ )
+    delete cand_proj;
+  for( ActivePointProjected* active_pt_proj : active_points_projected_ )
+    delete active_pt_proj;
+  for( MarginalizedPointProjected* marg_pt_proj : marginalized_points_projected_ )
+    delete marg_pt_proj;
+  candidates_projected_.clear();
+  active_points_projected_.clear();
+  marginalized_points_projected_.clear();
+}
+
+
+
 // void CandidateProjected::init(Candidate* cand, std::shared_ptr<CamCouple> cam_couple_){
 //   float d2;
 //   cam_couple_->reprojection(cand->uv_,1./cand->invdepth_,uv_,d2);
@@ -155,6 +169,17 @@ void ActivePointProjected::init(ActivePoint* active_pt, std::shared_ptr<CamCoupl
   cam_couple_->getD2(active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,depth);
   invdepth_=1./depth;
 }
+
+bool ActivePointProjected::checkOutlier(){
+  // float error_intensity = abs(active_pt_->c_ - c_);
+  // if ( error_intensity> occlusion_thres_intensity )
+  //   return false;
+  // float error_gradient = abs(active_pt_->magn_cd_ - magn_cd_);
+  // if ( error_gradient> occlusion_thres_gradient )
+  //   return false;
+  return true;
+}
+
 
 void ActivePoint::updateInvdepthVarAndP(float invdepth, float invdepth_var){
   invdepth_ = invdepth;

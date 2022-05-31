@@ -13,7 +13,7 @@ std::vector<Camera*>* Environment::loadCameraVector(const std::string& path_name
   std::string json_path = path_name+"/"+dataset_name+".json";
   std::string data_path = path_name+"/data.txt";
   std::string times_path = path_name+"/times.txt";
-  std::string images_path = path_name+"/images";
+  std::string images_path = path_name+"/calibrated";
 
   if(file_exists(json_path))
     return loadCameraVectorBlender(path_name, dataset_name, end_frame);
@@ -109,7 +109,7 @@ std::vector<Camera*>* Environment::loadCameraVectorTUM(const std::string& path_n
 
     std::string data_path = path_name+"/data.txt";
     std::string times_path = path_name+"/times.txt";
-    std::string images_path = path_name+"/images";
+    std::string images_path = path_name+"/calibrated";
 
     int count =0;
 
@@ -142,7 +142,7 @@ CamParameters* Environment::loadCamParameters(const std::string& path_name, cons
   std::string json_path = path_name+"/"+dataset_name+".json";
   std::string data_path = path_name+"/data.txt";
   std::string times_path = path_name+"/times.txt";
-  std::string images_path = path_name+"/images";
+  std::string images_path = path_name+"/calibrated";
 
   if(file_exists(json_path))
     return loadCamParametersBlender(path_name, dataset_name);

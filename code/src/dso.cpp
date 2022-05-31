@@ -20,6 +20,8 @@ PoseNormError Dso::getTotalPosesNormError(){
 
 void Dso::startSequential(){
 
+  sharedCoutDebug("\n Start dso Sequential ");
+
   // double t_start=getTime();
   float fps=environment_->fps_;
   int counter=0;
@@ -104,62 +106,61 @@ void Dso::setFirstKeyframe(){
   tracker_->trackCam(true); // fix first frame to groundtruth pose
   keyframe_handler_->addKeyframe(true);  // add fixed keyframe
   initializer_->extractCorners(); // extract corners from image
-  if(debug_initialization){
+  if(debug_initialization && frame_current_idx_>=debug_start_frame){
     initializer_->showCornersTrackRef();
   }
   points_handler_->sampleCandidates(); // sample candidates as high gradient points
-  if(debug_mapping){
+  if(debug_mapping && frame_current_idx_>=debug_start_frame){
     points_handler_->showCandidates();
   }
   first_frame_to_set_=false;
 }
 
-void Dso::initialize(){
+bool Dso::initialize(){
 
   if(take_gt_initialization){
     tracker_->trackCam(true); // fix first frame to groundtruth pose
   }
   else{
-
-    // initializer_->trackCornersLK(); // track corners in subsequent image
-
-    // if a good pose is found ...
-    if(initializer_->findPose()){
-
-      if(debug_initialization){
-        initializer_->showCornersTrackCurr();
-      }
-
-      keyframe_handler_->addKeyframe(true);  // add fixed keyframe
-      if(use_spectator){
-        spectator_->renderState();
-        spectator_->showSpectator(0);
-      }
-      points_handler_->trackCandidates(take_gt_points); // track existing candidates
-
-      // project candidates and active points on last frame
-      candidates_activator_->activateCandidates();
-      points_handler_->sampleCandidates(); // sample candidates as high gradient points
-
-      bundle_adj_->optimize(true);
-
-      to_initialize_=false;
-
-      if(debug_mapping){
-
-        // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
-        // points_handler_->sampleCandidates();
-        // points_handler_->showCandidates();
-        // points_handler_->projectActivePointsOnLastFrame();
-
-        points_handler_->projectCandidatesOnLastFrame();
-        points_handler_->projectActivePointsOnLastFrame();
-        points_handler_->showProjectedCandidates( "cands proj");
-        points_handler_->showProjectedActivePoints(" act pts proj");
-      }
-    }
-
+    // if a good pose is not found ...
+    if(!initializer_->findPose())
+      return false;
   }
+
+  if(debug_initialization){
+    initializer_->showCornersTrackCurr();
+  }
+
+  keyframe_handler_->addKeyframe(true);  // add fixed keyframe
+  if(use_spectator){
+    spectator_->renderState();
+    spectator_->showSpectator(0);
+  }
+  points_handler_->trackCandidates(take_gt_points); // track existing candidates
+
+  // project candidates and active points on last frame
+  candidates_activator_->activateCandidates();
+  points_handler_->sampleCandidates(); // sample candidates as high gradient points
+
+  bundle_adj_->optimize(true);
+
+  to_initialize_=false;
+
+  if(debug_mapping && frame_current_idx_>=debug_start_frame){
+
+    // cameras_container_->keyframes_active_[0]->points_container_->showCandidates();
+    // points_handler_->sampleCandidates();
+    // points_handler_->showCandidates();
+    // points_handler_->projectActivePointsOnLastFrame();
+
+    points_handler_->projectCandidatesOnLastFrame();
+    points_handler_->projectActivePointsOnLastFrame();
+    points_handler_->showProjectedCandidates( "cands proj");
+    points_handler_->showProjectedActivePoints(" act pts proj");
+  }
+
+  return true;
+
 }
 
 
@@ -175,7 +176,7 @@ bool Dso::doDso(){
     // track existing candidates
     points_handler_->trackCandidates(take_gt_points);
 
-    points_handler_->projectCandidatesOnLastFrame();
+    // points_handler_->projectCandidatesOnLastFrame();
     // points_handler_->showProjectedCandidates( "cands proj 0/1");
 
     // activate points
@@ -215,14 +216,20 @@ bool Dso::doDso(){
     //   points_handler_->projectActivePoints( keyframe , frame_current_ );
     //   points_handler_->showProjectedActivePoints("last kf "+std::to_string(i),0);
     // }
+    // std::cout << "a: " << frame_current_->a_exposure_ << ", b: " << frame_current_->b_exposure_ << std::endl;
 
-    // points_handler_->showProjectedActivePoints("last kf ",1);
+    points_handler_->projectActivePointsOnLastFrame();
+    points_handler_->showProjectedActivePoints("last kf ",1);
     spectator_->renderState();
     spectator_->showSpectator(1);
+    frame_current_->points_container_->clearProjections();
   }
 
-  if(!kf_added)
+  if(!kf_added){
     frame_current_->cam_free_mem();
+    delete frame_current_->points_container_;
+
+  }
 
   return true;
 

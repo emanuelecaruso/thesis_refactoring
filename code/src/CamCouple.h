@@ -44,15 +44,17 @@ class CamCouple{
     Eigen::Matrix<float,2,6> getJm_(ActivePoint* active_pt);
     Eigen::Matrix<float,2,6> getJm_old_(ActivePoint* active_pt);
     Eigen::Matrix<float,2,6> getJr_(ActivePoint* active_pt);
-    Eigen::Matrix<float,1,2> getJm_exposure_(ActivePoint* active_pt);
-    Eigen::Matrix<float,1,2> getJr_exposure_(ActivePoint* active_pt);
+    Eigen::Matrix<float,1,2> getJm_exposure_(ActivePoint* active_pt, int level);
+    Eigen::Matrix<float,1,2> getJr_exposure_(ActivePoint* active_pt, int level);
+    float getErrorIntensity(float z, float z_hat);
+    float getErrorGradient(float z, float z_hat);
 
   private:
     Eigen::Matrix3f r;
     Eigen::Vector3f t;
     Eigen::Matrix3f r0;
     Eigen::Vector3f t0;
-    float fx, fy, fx2, fy2, w, h, w2, h2;
+    float fx, fy, fx2, fy2, cx, cy, cx2, cy2;
 
 
     Eigen::Vector2f cam_r_projected_in_cam_m;
@@ -89,6 +91,8 @@ class CamCouple{
     void getDepthParameters();
 
     Eigen::Isometry3f getRelativeTransformation();
+
+
 };
 
 class CamCoupleContainer{
@@ -101,15 +105,13 @@ class CamCoupleContainer{
 
     // ********** constructor **********
     CamCoupleContainer(Dso* dso, int type):
-    dso_( dso ),
-    type_(type)
+    dso_( dso )
     {
-      init();
+      init(type);
     }
 
     CamCoupleContainer(Dso* dso, CameraForMapping* cam_r, bool get_jr = false):
-    dso_( dso ),
-    type_(KF_ON_ALL_KFS)
+    dso_( dso )
     {
       init(cam_r, get_jr);
     }
@@ -117,7 +119,7 @@ class CamCoupleContainer{
     // ********** methods **********
     void update();
     std::shared_ptr<CamCouple> get(int cam_r_idx, int cam_m_idx);
-    void init();
+    void init(int type);
     void init(CameraForMapping* cam_r, bool get_jr);
 
 

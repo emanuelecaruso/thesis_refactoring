@@ -20,7 +20,7 @@ class MeasBA : public Meas {
     // ********** constructor **********
     MeasBA(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple ):
     Meas(active_point, cam_couple, active_point->level_)
-    { }
+    {}
 
 
     // ********** methods **********

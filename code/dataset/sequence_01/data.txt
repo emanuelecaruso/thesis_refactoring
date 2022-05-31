@@ -1,9 +1,0 @@
-res_x 640
-res_y 480
-fx 256
-fy 254.4
-cx 319.5
-cy 239.5
-pxlmtrratio 26666.7
-mindepth 1
-maxdepth 1000

@@ -75,7 +75,7 @@ class CameraForMapping : public Camera{
     CameraForMapping(Camera* env_cam):
       Camera(env_cam,false)
       ,grountruth_camera_(env_cam)
-      ,pyramid_( new Pyramid(env_cam,coarsest_level) )
+      ,pyramid_( new Pyramid(env_cam,coarsest_level_pyr) )
       ,cam_data_for_ba_( initializeDataForBA() )
       // ,points_container_( new PointsContainer(this) )
       ,points_container_( initializePointsContainer() )

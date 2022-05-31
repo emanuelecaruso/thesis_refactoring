@@ -31,9 +31,13 @@ class Initializer{
     CameraForMapping* ref_frame_;
     int ref_frame_idx_;
     std::vector<cv::Point2f> corners_vec_ref;
+    std::vector<cv::Point2f> corners_vec_ref_copy;
     std::vector<cv::Point2f> corners_vec_curr;
+    std::vector<cv::Point2f> corners_vec_reproj;
     std::vector<float> errors_vec;
     std::vector<uchar> status_vec;
+    std::vector<float> errors_vec_reproj;
+    std::vector<uchar> status_vec_reproj;
     std::vector<uchar> inliers_vec;
 
     cv::Mat cv_K;
@@ -46,12 +50,14 @@ class Initializer{
 
     cv::Mat findEssentialMatrix();
     // cv::Mat findFundamentalMatrix();
-    // cv::Mat findHomography();
+    cv::Mat findHomography();
     // cv::Mat fundamental2Essential(cv::Mat& F);
-    Eigen::Isometry3f essential2pose(cv::Mat& E);
-    // Eigen::Isometry3f homography2pose(cv::Mat& H);
+    bool essential2pose(cv::Mat& E, Eigen::Isometry3f& T);
+    Eigen::Isometry3f homography2pose(cv::Mat& H, Eigen::Isometry3f& T);
     Eigen::Isometry3f computeRelativePoseGt();
-
+    float getWorldScale();
+    bool checkInliersRatio();
+    void updateT( cv::Mat& R_, cv::Mat& t_, Eigen::Isometry3f& T );
     void initializeColors();
 
 };

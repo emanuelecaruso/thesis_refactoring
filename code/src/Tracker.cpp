@@ -47,9 +47,10 @@ void Tracker::setInitialGuess(){
 
       dso_->frame_current_->assignPose( pose );
       break;}
-
-
-    }
+    case GT_GUESS:{
+      dso_->frame_current_->assignPose( *(dso_->frame_current_->grountruth_camera_->frame_camera_wrt_world_) );
+      break;}
+  }
 
   // if(==POSE_CONSTANT){
   //   dso_->frame_current_->assignPose( *(dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_) );
@@ -69,7 +70,9 @@ bool Tracker::checkConvergence(float chi, int level){
 
   bool out = false;
   if(chi_history_.size()>0){
-    if ( abs(chi_history_.back()-chi) < conv_threshold+(conv_threshold*level*10) ){
+    // if ( abs(chi_history_.back()-chi) < conv_threshold){
+    if ( abs(chi_history_.back()-chi) < conv_threshold*(1+level*level_error_multiplier_conv) ){
+    // if ( abs(chi) < conv_threshold*(1+level*level_error_multiplier_conv) ){
       out = true;
     }
   }
@@ -164,18 +167,26 @@ void Tracker::trackCam(){
             // get measurement
             MeasTracking measurement(MeasTracking(active_point, cam_couple, level ));
 
-            if(measurement.valid_){
+            if( measurement.valid_){
+            // if( level>0 && measurement.valid_){
             // if(measurement.valid_ && !measurement.occlusion_){
               // update linear system with that measurement
               measurement.loadJacobians(active_point);
               lin_sys_tracking.addMeasurement(measurement);
               n_meas++;
             }
+            // else if( level==0 && measurement.valid_ && !measurement.occlusion_){
+            //   measurement.loadJacobians(active_point);
+            //   lin_sys_tracking.addMeasurement(measurement);
+            //   n_meas++;
+            // }
 
           }
 
+
         }
 
+        lin_sys_tracking.chi /= (float)n_meas;
 
         // assert(n_meas>0);
         lin_sys_tracking.updateCameraPose();
@@ -187,7 +198,7 @@ void Tracker::trackCam(){
         if(debug_tracking  && dso_->frame_current_idx_>=debug_start_frame){
 
           // std::cout << "level " << level << std::endl;
-          // std::cout << "level " << level << ", chi " << lin_sys_tracking.chi << std::endl;
+          std::cout << "level " << level << ", chi (tracking) " << lin_sys_tracking.chi << "a: " << dso_->frame_current_->a_exposure_ << ", b: " << dso_->frame_current_->b_exposure_ << std::endl;
 
           dso_->points_handler_->projectActivePointsOnLastFrame();
           // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");

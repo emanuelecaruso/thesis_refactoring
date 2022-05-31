@@ -26,7 +26,7 @@ void MeasTracking::loadJacobians(ActivePoint* active_point){
     }
 
     if(J_SZ==8){
-      J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point);
+      J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point,level_);
     }
 
     J_m_transpose= J_m.transpose();
@@ -35,7 +35,7 @@ void MeasTracking::loadJacobians(ActivePoint* active_point){
 void LinSysTracking::addMeasurement( MeasTracking& measurement ){
 
   // get weight
-  float weight = measurement.getWeight();
+  float weight = measurement.weight_;
 
   // update H
   H.triangularView<Eigen::Upper>() += measurement.J_m_transpose*weight*measurement.J_m;
@@ -50,15 +50,25 @@ void LinSysTracking::addMeasurement( MeasTracking& measurement ){
 void LinSysTracking::updateCameraPose(){
 
   // exposure priors
-  H(6,6) += 2*lambda_a*abs(dso_->frame_current_->a_exposure_)+damp_exposure;
-  H(7,7) += 2*lambda_b*abs(dso_->frame_current_->b_exposure_)+damp_exposure;
-  // H(6,6) = FLT_MAX;
-  // H(7,7) = FLT_MAX;
+  if(J_SZ==8){
+    H(6,6) += 2*lambda_a*abs(dso_->frame_current_->a_exposure_)+damp_exposure;
+    H(7,7) += 2*lambda_b*abs(dso_->frame_current_->b_exposure_)+damp_exposure;
+    // H(6,6) = FLT_MAX;
+    // H(7,7) = FLT_MAX;
+  }
+
+  // damp
+  H(0,0) += damp_cam;
+  H(1,1) += damp_cam;
+  H(2,2) += damp_cam;
+  H(3,3) += damp_cam;
+  H(4,4) += damp_cam;
+  H(5,5) += damp_cam;
 
   // get dx
-  dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
-  // H = H.selfadjointView<Eigen::Upper>();
-  // dx = H.completeOrthogonalDecomposition().pseudoInverse()*(-b);
+  // dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
+  H = H.selfadjointView<Eigen::Upper>();
+  dx = H.completeOrthogonalDecomposition().pseudoInverse()*(-b);
   Vector6f dx_pose = dx.head<6>();
 
   // update pose

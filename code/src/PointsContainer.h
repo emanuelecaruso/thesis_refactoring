@@ -52,9 +52,10 @@ class Candidate : public Point{
 
   pixelIntensity c_;
   pixelIntensity magn_cd_;
+  pixelIntensity magn_cd2_;
   pixelIntensity phase_cd_;
 
-  float cost_threshold_;
+  float cost_threshold_mapping_;
   float cost_threshold_ba_;
   // CameraForMapping* cam_;
   // int level_;
@@ -70,7 +71,10 @@ class Candidate : public Point{
   ,c_(cam->pyramid_->getC(level)->evalPixel(pixel))
   ,magn_cd_(cam->pyramid_->getMagn(level)->evalPixel(pixel))
   ,phase_cd_(cam->pyramid_->getPhase(level)->evalPixel(pixel))
-  {}
+  {
+    if(!magn_mean)
+      magn_cd2_ = cam->pyramid_->getMagn2(level)->evalPixel(pixel);
+  }
 
   // ********** methods **********
   void showCandidate();
@@ -111,7 +115,8 @@ public:
   pixelIntensity magn_cd_;
   int p_idx_;
   bool new_;
-  float cost_threshold_ba_;
+  float sat_thresh_;
+  float huber_thresh_;
   std::vector<pixelIntensity> c_level_vec_;
   std::vector<pixelIntensity> magn_cd_level_vec_;
 
@@ -130,7 +135,6 @@ public:
   ,magn_cd_(cand->magn_cd_)
   ,p_idx_(-1)
   ,new_(true)
-  ,cost_threshold_ba_(cand->cost_threshold_ba_)
   {
     updateInvdepthVarAndP(cand->invdepth_, cand->invdepth_var_);
 
@@ -146,10 +150,16 @@ public:
       else{
         pxl pixel_coarse;
         cam_->uv2pixelCoords( uv_, pixel_coarse, level);
-        c_level_vec_[level] = cand->cam_->pyramid_->getC(level)->evalPixelBilinear(pixel_coarse);
-        magn_cd_level_vec_[level] = cand->cam_->pyramid_->getMagn(level)->evalPixelBilinear(pixel_coarse);
+        // c_level_vec_[level] = cand->cam_->pyramid_->getC(level)->evalPixelBilinear(pixel_coarse);
+        // magn_cd_level_vec_[level] = cand->cam_->pyramid_->getMagn(level)->evalPixelBilinear(pixel_coarse);
+        c_level_vec_[level] = cand->cam_->pyramid_->getC(level)->evalPixel(pixel_coarse);
+        magn_cd_level_vec_[level] = cand->cam_->pyramid_->getMagn(level)->evalPixel(pixel_coarse);
+
       }
     }
+
+    sat_thresh_= cand->cost_threshold_ba_*sat_coeff;
+    huber_thresh_= cand->cost_threshold_ba_*huber_coeff;
 
   }
 
@@ -230,7 +240,7 @@ public:
 
   // ********** methods **********
   void init(ActivePoint* active_pt, std::shared_ptr<CamCouple> cam_couple_);
-
+  bool checkOutlier();
 
 
 };
@@ -255,6 +265,23 @@ class PointsContainer{
     {};
 
 
+    ~PointsContainer(){
+      for( Candidate* cand : candidates_ )
+        delete cand;
+      for( CandidateProjected* cand_proj : candidates_projected_ )
+        delete cand_proj;
+      for( ActivePoint* active_pt : active_points_ )
+        delete active_pt;
+      for( ActivePointProjected* active_pt_proj : active_points_projected_ )
+        delete active_pt_proj;
+      for( MarginalizedPoint* marg_pt : marginalized_points_ )
+        delete marg_pt;
+      for( MarginalizedPointProjected* marg_pt_proj : marginalized_points_projected_ )
+        delete marg_pt_proj;
+
+    }
+
+
     // ********** methods **********
     void drawPoint(Point* point, Image<colorRGB>* show_img, bool circle=true);
     std::vector<ActivePoint*>& getActivePoints();
@@ -265,6 +292,7 @@ class PointsContainer{
     void showActivePoints();
     void showProjectedActivePoints( int wtk=0);
     void showProjectedActivePoints( const std::string& name, int wtk=0 );
+    void clearProjections();
 
   protected:
 };

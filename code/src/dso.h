@@ -78,7 +78,7 @@ class Dso{
     void updateCamerasFromEnvironment(); // load camera objects at fps rate
     bool loadFrameCurrent();
     void setFirstKeyframe();
-    void initialize();
+    bool initialize();
     bool doDso();
     void saveJsonForBlender();
     PoseNormError getTotalPosesNormError();

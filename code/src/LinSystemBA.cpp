@@ -35,8 +35,8 @@ void MeasBA::loadJacobians(ActivePoint* active_point){
     }
 
     if(J_SZ==8){
-      J_r.tail<2>() += cam_couple_->getJr_exposure_(active_point);
-      J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point);
+      J_r.tail<2>() += cam_couple_->getJr_exposure_(active_point,active_point->level_);
+      J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point,active_point->level_);
     }
 
     J_m_transpose= J_m.transpose();
@@ -84,7 +84,7 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
   assert(p_idx < p_size_);
 
   // get weight
-  float weight = measurement->getWeight();
+  float weight = measurement->weight_;
   assert(std::isfinite(weight));
   assert(measurement->J_m_transpose.allFinite());
   assert(measurement->J_m.allFinite());
@@ -159,7 +159,6 @@ float LinSysBA::addMeasurement(MeasBA* measurement, int p_idx){
   assert(std::isfinite(chi));
   return chi;
 }
-
 
 void LinSysBA::integrateMargPriors(MarginalizationHandler* marginalization_handler_){
 
@@ -241,7 +240,9 @@ void LinSysBA::buildLinearSystem(std::vector<std::vector<MeasBA*>*>& measurement
     for(MeasBA* measurement : *v){
       count++;
       chi += addMeasurement(measurement, i);
+      delete measurement;
     }
+    delete v;
   }
 
   assert(measurement_vec_vec.size()>0);
@@ -382,7 +383,7 @@ void PriorMeas::loadJacobians(ActivePoint* active_point, std::shared_ptr<CamCoup
   }
 
   if(J_SZ==8){
-    J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point);
+    J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point,active_point->level_);
   }
 
   J_m_transpose= J_m.transpose();

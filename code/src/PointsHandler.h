@@ -13,6 +13,8 @@ class PointsHandler{
     int n_cands_to_track_;
     int n_cands_removed_;
     int n_cands_repeptitive_;
+    int n_cands_no_clear_min_;
+    int n_cands_ep_too_short_;
     int n_cands_no_min_;
     int n_cands_tracked_;
     int n_cands_var_too_high_;
@@ -22,6 +24,8 @@ class PointsHandler{
     n_cands_to_track_(0),
     n_cands_removed_(0),
     n_cands_repeptitive_(0),
+    n_cands_no_clear_min_(0),
+    n_cands_ep_too_short_(0),
     n_cands_no_min_(0),
     n_cands_var_too_high_(0),
     n_cands_tracked_(0),
@@ -78,6 +82,8 @@ class CandTracker{
     // ********** methods **********
     int searchMin( );
     float getCostMagn(pxl& pixel_m);
+    float getCostIntensity(pxl& pixel_m);
+    float getCostGradient(pxl& pixel_m);
     bool getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, float& cost_phase);
     float getStandardDeviation( );
     bool updateCand( );

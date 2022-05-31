@@ -14,6 +14,7 @@ class Meas{
     pixelIntensity error;
     float var_;
     int level_;
+    float weight_;
 
     // ********** constructor **********
     Meas(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple , int level):
@@ -30,10 +31,10 @@ class Meas{
     Eigen::Matrix<float,1,2> getImageJacobian( int image_type);
     float getError( ActivePoint* active_point, int image_type);
     bool getPixelOfProjectedActivePoint(ActivePoint* active_point);
-    float getWeight();
+    float getWeight(ActivePoint* active_point);
   protected:
-    float getErrorIntensity(float z, float z_hat, ActivePoint* active_pt);
-    float getErrorGradient(float z, float z_hat, ActivePoint* active_pt);
+    float getErrorIntensity(float z, float z_hat );
+    float getErrorGradient(float z, float z_hat );
 
 };
 

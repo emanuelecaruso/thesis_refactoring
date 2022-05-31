@@ -1,13 +1,19 @@
-- check sequential version with parallel for
-- work on parallel version using more threads
 
+extend dataset and implement evaluator
 
-- vars - maybe not
-- var ordering
+experiments
+- marg or not active points in marg kfs
+- test marginalization or fixed bla bla
 
-- try to use dataset
+implement original dso
+
+make comparison
+
+FACOLTATIVO DOPO
+
+further experiments?
+- increase level of active pts
 
 performance
-- threads
-- symmetry
-- delete pointers
+
+try yo use real vieo

@@ -432,8 +432,6 @@ void CandidatesActivator::activateCandidates(){
   }
 
 
-
-
   // iterate through keyframes (except last)
   for( int i=0; i<dso_->cameras_container_->keyframes_active_.size() ; i++){
     CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
@@ -449,6 +447,7 @@ void CandidatesActivator::activateCandidates(){
   sharedCoutDebug("       - Candidates activated: "+ std::to_string(num_candidates_activated) );
   sharedCoutDebug("       - Current active points: " + std::to_string(dso_->frame_current_->points_container_->active_points_projected_.size()) );
 
+  dso_->frame_current_->points_container_->clearProjections();
 }
 void CandidatesActivator::printActPresenceMat(ActptpresenceMat* actptpresencemat){
 
