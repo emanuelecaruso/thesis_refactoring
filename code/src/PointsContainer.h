@@ -54,8 +54,10 @@ class Candidate : public Point{
   pixelIntensity magn_cd_;
   pixelIntensity phase_cd_;
 
-  float cost_threshold_;
-  float cost_threshold_ba_;
+  float cost_threshold_intensity_;
+  float cost_threshold_gradient_;
+  float cost_threshold_ba_intensity_;
+  float cost_threshold_ba_gradient_;
   // CameraForMapping* cam_;
   // int level_;
   // pxl pixel_;
@@ -111,7 +113,8 @@ public:
   pixelIntensity magn_cd_;
   int p_idx_;
   bool new_;
-  float cost_threshold_ba_;
+  float cost_threshold_ba_intensity_;
+  float cost_threshold_ba_gradient_;
   std::vector<pixelIntensity> c_level_vec_;
   std::vector<pixelIntensity> magn_cd_level_vec_;
 
@@ -130,7 +133,8 @@ public:
   ,magn_cd_(cand->magn_cd_)
   ,p_idx_(-1)
   ,new_(true)
-  ,cost_threshold_ba_(cand->cost_threshold_ba_)
+  ,cost_threshold_ba_intensity_(cand->cost_threshold_ba_intensity_)
+  ,cost_threshold_ba_gradient_(cand->cost_threshold_ba_gradient_)
   {
     updateInvdepthVarAndP(cand->invdepth_, cand->invdepth_var_);
 
@@ -230,7 +234,7 @@ public:
 
   // ********** methods **********
   void init(ActivePoint* active_pt, std::shared_ptr<CamCouple> cam_couple_);
-
+  bool checkOutlier();
 
 
 };

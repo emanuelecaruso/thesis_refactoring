@@ -3,18 +3,30 @@
 #include "PointsContainer.h"
 
 void CameraForMapping::cam_free_mem(){
-  delete pyramid_;
 
   for( Candidate* cand : points_container_->candidates_ )
     delete cand;
   points_container_->candidates_.clear();
 
   points_container_->clearProjections();
-  delete cam_data_for_ba_;
-  if(image_intensity_!=nullptr)
-    delete image_intensity_;
-  if(invdepth_map_!=nullptr)
-    delete invdepth_map_;
+
+  if (pyramid_!=nullptr){
+     delete pyramid_;
+     pyramid_=nullptr;
+  }
+  if (cam_data_for_ba_!=nullptr){
+     delete cam_data_for_ba_;
+     cam_data_for_ba_=nullptr;
+  }
+  if(image_intensity_!=nullptr){
+     delete image_intensity_;
+     image_intensity_=nullptr;
+  }
+  if(invdepth_map_!=nullptr){
+     delete invdepth_map_;
+     invdepth_map_=nullptr;
+   }
+
 }
 
 void CameraForMapping::destructor(){

@@ -216,9 +216,11 @@ bool Dso::doDso(){
     //   points_handler_->showProjectedActivePoints("last kf "+std::to_string(i),0);
     // }
 
+    points_handler_->projectActivePointsOnLastFrame();
     points_handler_->showProjectedActivePoints("last kf ",1);
     spectator_->renderState();
     spectator_->showSpectator(1);
+    frame_current_->points_container_->clearProjections();
   }
 
   if(!kf_added){

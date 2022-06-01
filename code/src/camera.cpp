@@ -136,7 +136,6 @@ void Camera::pointAtDepth(const Eigen::Vector2f& uv, float depth, Eigen::Vector3
 
 bool Camera::projectPoint(const Eigen::Vector3f& p, Eigen::Vector2f& uv, float& p_cam_z ) const {
 
-
   Eigen::Vector3f p_cam = *frame_world_wrt_camera_*p;
 
   // save value of z

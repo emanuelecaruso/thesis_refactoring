@@ -439,9 +439,6 @@ void CandidatesActivator::activateCandidates(){
       dso_->cameras_container_->addFrameWithActPts(keyframe);
   }
 
-  dso_->frame_current_->points_container_->clearProjections();
-
-
   double t_end=getTime();
   int deltaTime=(t_end-t_start);
   sharedCoutDebug("   - Candidates activation: " + std::to_string(deltaTime)+" ms");
@@ -450,6 +447,7 @@ void CandidatesActivator::activateCandidates(){
   sharedCoutDebug("       - Candidates activated: "+ std::to_string(num_candidates_activated) );
   sharedCoutDebug("       - Current active points: " + std::to_string(dso_->frame_current_->points_container_->active_points_projected_.size()) );
 
+  dso_->frame_current_->points_container_->clearProjections();
 }
 void CandidatesActivator::printActPresenceMat(ActptpresenceMat* actptpresencemat){
 

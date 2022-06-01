@@ -205,8 +205,6 @@ void BundleAdj::marginalizeKeyframe(CameraForMapping* keyframe){
     marginalization_handler_->removeKeyframeWithPriors(keyframe);
 
   }
-  keyframe->cam_free_mem();
-
 }
 
 bool BundleAdj::createPrior(ActivePoint* active_point, std::shared_ptr<CamCouple> cam_couple){
@@ -291,6 +289,8 @@ bool BundleAdj::marginalizePoint(ActivePoint* active_point, CamCoupleContainer* 
 }
 
 void BundleAdj::marginalize(){
+
+  dso_->points_handler_->projectActivePointsOnLastFrame();
 
   if(debug_optimization && dso_->frame_current_idx_>=debug_start_frame){
     // dso_->points_handler_->projectActivePointsOnLastFrame();
@@ -480,16 +480,17 @@ void BundleAdj::marginalizePointsAndKeyframes(){
 
       Eigen::Vector2f uv_curr;
       std::shared_ptr<CamCouple> cam_couple = cam_couple_container->get(0,dso_->cameras_container_->keyframes_active_.size()-1);
-      cam_couple->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_curr.x(),uv_curr.y() );
+      bool valid = cam_couple->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_curr.x(),uv_curr.y() );
+      if(!valid)
+        continue;
+
       bool uv_in_range = keyframe->uvInRange(uv_curr);
 
       MeasBA measurement(active_pt, cam_couple );
 
       assert(cam_couple->cam_m_==dso_->cameras_container_->keyframes_active_.back());
-      // if(!uv_in_range || measurement.occlusion_){
-      if(!uv_in_range || abs(measurement.error)> (active_pt->cost_threshold_ba_) ) {
-      // if(!uv_in_range || abs(measurement.error)> (active_pt->cost_threshold_ba_-(coeff_sum_ba*g_th*0.5)) ) {
-        // if points is an occlusion in the first keyframe, remove it
+      if(!uv_in_range || measurement.occlusion_){
+        if(measurement.occlusion_)
         if(active_pt->new_){
           active_pt->remove();
           n_points_removed_++;
@@ -519,8 +520,6 @@ void BundleAdj::marginalizePointsAndKeyframes(){
     if(cam_r->points_container_->active_points_.empty()){
       dso_->cameras_container_->removeFrameWithActPts(cam_r);
       cam_r->cam_free_mem();
-      delete cam_r->points_container_;
-
       continue;
     }
   }

@@ -81,7 +81,6 @@ void Spectator::renderPoints(){
   for ( int i = 0; i<num_kfs; i++){
     CameraForMapping* cam = dso_->cameras_container_->frames_[i];
     if (cam->keyframe_){
-
       // render active points
       std::vector<CameraForMapping*>& v = dso_->cameras_container_->keyframes_active_;
       if (std::count(v.begin(), v.end(), cam)) {

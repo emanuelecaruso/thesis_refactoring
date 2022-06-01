@@ -32,8 +32,8 @@ class Meas{
     bool getPixelOfProjectedActivePoint(ActivePoint* active_point);
     float getWeight();
   protected:
-    float getErrorIntensity(float z, float z_hat, ActivePoint* active_pt);
-    float getErrorGradient(float z, float z_hat, ActivePoint* active_pt);
+    float getErrorIntensity(float z, float z_hat );
+    float getErrorGradient(float z, float z_hat );
 
 };
 

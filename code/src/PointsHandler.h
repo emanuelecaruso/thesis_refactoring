@@ -78,6 +78,8 @@ class CandTracker{
     // ********** methods **********
     int searchMin( );
     float getCostMagn(pxl& pixel_m);
+    float getCostIntensity(pxl& pixel_m);
+    float getCostGradient(pxl& pixel_m);
     bool getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, float& cost_phase);
     float getStandardDeviation( );
     bool updateCand( );

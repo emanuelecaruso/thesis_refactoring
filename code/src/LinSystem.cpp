@@ -7,7 +7,10 @@
 bool Meas::getPixelOfProjectedActivePoint(ActivePoint* active_point){
   // project active point get pixel of projected active point
   Eigen::Vector2f uv;
-  cam_couple_->getUv( active_point->uv_.x(),active_point->uv_.y(),1./active_point->invdepth_,uv.x(),uv.y() );
+  bool valid = cam_couple_->getUv( active_point->uv_.x(),active_point->uv_.y(),1./active_point->invdepth_,uv.x(),uv.y() );
+  if( !valid )
+    return false;
+
   cam_couple_->cam_m_->uv2pixelCoords( uv, pixel_, level_ );
   bool pixel_in_range = cam_couple_->cam_m_->pyramid_->getC(level_)->pixelInRange(pixel_);
 
@@ -19,20 +22,12 @@ bool Meas::getPixelOfProjectedActivePoint(ActivePoint* active_point){
   return true;
 }
 
-float Meas::getErrorIntensity(float z, float z_hat, ActivePoint* active_pt){
-  float exp_coeff = cam_couple_->exposure_coefficient;
-  float b_m = cam_couple_->cam_m_->b_exposure_;
-  float b_r = cam_couple_->cam_r_->b_exposure_;
-  float error = intensity_coeff_ba*((z_hat-b_m)-exp_coeff*(z-b_r));
-  // float error = intensity_coeff_ba*(z_hat-z);
+float Meas::getErrorIntensity(float z, float z_hat ){
+  float error = intensity_coeff_ba*cam_couple_->getErrorIntensity(z,z_hat);
   return error;
 }
-float Meas::getErrorGradient(float z, float z_hat, ActivePoint* active_pt){
-  float exp_coeff = cam_couple_->exposure_coefficient;
-  float b_m = cam_couple_->cam_m_->b_exposure_;
-  float b_r = cam_couple_->cam_r_->b_exposure_;
-  float error = gradient_coeff_ba*(z_hat-(exp_coeff*z));
-  // float error = gradient_coeff_ba*(z_hat-z);
+float Meas::getErrorGradient(float z, float z_hat ){
+  float error = gradient_coeff_ba*cam_couple_->getErrorGradient(z, z_hat);
   return error;
 }
 
@@ -47,7 +42,7 @@ float Meas::getError( ActivePoint* active_point, int image_type){
     float z = active_point->c_level_vec_[level_];
     float z_hat = cam_couple_->cam_m_->pyramid_->getC(level_)->evalPixelBilinear(pixel_);
 
-    float error = getErrorIntensity( z, z_hat, active_point);
+    float error = getErrorIntensity( z, z_hat );
     return error;
 
 
@@ -56,7 +51,7 @@ float Meas::getError( ActivePoint* active_point, int image_type){
     float z = active_point->magn_cd_level_vec_[level_];
     float z_hat = cam_couple_->cam_m_->pyramid_->getMagn(level_)->evalPixelBilinear(pixel_);
 
-    float error = getErrorGradient(z, z_hat, active_point);
+    float error = getErrorGradient(z, z_hat );
     return error;
 
   }
@@ -127,18 +122,29 @@ bool Meas::init(ActivePoint* active_point){
   }
 
   error=0;  // initialize error
-  error += getError( active_point, INTENSITY_ID);
-
-  if(image_id==GRADIENT_ID){
-    error += getError( active_point, GRADIENT_ID);
-  }
-
-  // control on error
-  // if(abs(error)>chi_occlusion_threshold){
-  if(abs(error)>active_point->cost_threshold_ba_){
+  float error_intensity = getError( active_point, INTENSITY_ID);
+  if( abs(error_intensity) > active_point->cost_threshold_ba_intensity_*(1+(level_*6)) ){
+    // std::cout << abs(error_intensity) << " " << active_point->cost_threshold_ba_intensity_ << std::endl;
     occlusion_ = true;
     return false;
   }
+  error += error_intensity;
+
+  if(image_id==GRADIENT_ID){
+    float error_gradient = getError( active_point, GRADIENT_ID);
+    if( abs(error_gradient) > active_point->cost_threshold_ba_gradient_*(1+(level_*6)) ){
+      // std::cout << abs(error_gradient) << " " << active_point->cost_threshold_ba_gradient_ << std::endl;
+      occlusion_ = true;
+      return false;
+    }
+    error += error_gradient;
+  }
+
+  // if( abs(error) > (active_point->cost_threshold_ba_intensity_+active_point->cost_threshold_ba_gradient_)*(1+(level_*6)) ){
+  //   // std::cout << abs(error_intensity) << " " << active_point->cost_threshold_ba_intensity_ << std::endl;
+  //   occlusion_ = true;
+  //   return false;
+  // }
 
   return true;
 }

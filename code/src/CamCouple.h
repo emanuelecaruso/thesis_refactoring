@@ -46,6 +46,8 @@ class CamCouple{
     Eigen::Matrix<float,2,6> getJr_(ActivePoint* active_pt);
     Eigen::Matrix<float,1,2> getJm_exposure_(ActivePoint* active_pt);
     Eigen::Matrix<float,1,2> getJr_exposure_(ActivePoint* active_pt);
+    float getErrorIntensity(float z, float z_hat);
+    float getErrorGradient(float z, float z_hat);
 
   private:
     Eigen::Matrix3f r;
@@ -89,6 +91,8 @@ class CamCouple{
     void getDepthParameters();
 
     Eigen::Isometry3f getRelativeTransformation();
+
+
 };
 
 class CamCoupleContainer{

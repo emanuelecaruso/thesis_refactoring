@@ -56,9 +56,9 @@ void LinSysTracking::updateCameraPose(){
   // H(7,7) = FLT_MAX;
 
   // get dx
-  dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
-  // H = H.selfadjointView<Eigen::Upper>();
-  // dx = H.completeOrthogonalDecomposition().pseudoInverse()*(-b);
+  // dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);
+  H = H.selfadjointView<Eigen::Upper>();
+  dx = H.completeOrthogonalDecomposition().pseudoInverse()*(-b);
   Vector6f dx_pose = dx.head<6>();
 
   // update pose

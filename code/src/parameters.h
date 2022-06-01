@@ -47,10 +47,11 @@ extern float der_threshold;
 
 // mapping
 extern float cost_threshold;
-extern float g_th;
-extern float intensity_coeff;
-extern float gradient_coeff;
-extern float phase_coeff;
+extern float g_th_intensity_mapping;
+extern float g_th_gradient_mapping;
+extern float intensity_coeff_mapping;
+extern float gradient_coeff_mapping;
+extern float phase_coeff_mapping;
 extern float var_threshold;
 
 // keyframe selection
@@ -63,6 +64,8 @@ extern int max_iterations_ba;
 extern int max_num_active_points;
 extern float intensity_coeff_ba;
 extern float gradient_coeff_ba;
+extern float g_th_intensity_ba;
+extern float g_th_gradient_ba;
 extern float coeff_sum_ba;
 extern float damp_cam;
 extern float damp_point_invdepth;
@@ -71,7 +74,8 @@ extern float lambda_a;
 extern float lambda_b;
 extern float huber_threshold;
 extern float sat_threshold;
-extern float chi_occlusion_threshold;
+extern float occlusion_thres_intensity;
+extern float occlusion_thres_gradient;
 extern float total_error_thresh;
 extern float occlusion_valid_ratio_thresh;
 extern float valid_ratio_thresh;
@@ -82,7 +86,6 @@ extern float variance;
 extern int robustifier_dofs;
 extern float ratio_for_convergence;
 extern float conv_threshold;
-
 
 //  video streaming
 extern int end_frame;

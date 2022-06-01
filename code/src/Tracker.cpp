@@ -187,7 +187,7 @@ void Tracker::trackCam(){
         if(debug_tracking  && dso_->frame_current_idx_>=debug_start_frame){
 
           // std::cout << "level " << level << std::endl;
-          // std::cout << "level " << level << ", chi " << lin_sys_tracking.chi << std::endl;
+          std::cout << "level " << level << ", chi (tracking) " << lin_sys_tracking.chi << std::endl;
 
           dso_->points_handler_->projectActivePointsOnLastFrame();
           // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");

@@ -71,8 +71,10 @@ bool PointsHandler::sampleCandidates(){
 
 
         Candidate* cand = new Candidate(dso_->frame_current_, pixel, candidate_level);
-        cand->cost_threshold_ba_= intensity_coeff_ba*(mean_magn*g_th)+gradient_coeff_ba*(mean_magn2*g_th);
-        cand->cost_threshold_= intensity_coeff*(mean_magn*g_th)+gradient_coeff*(mean_magn2*g_th);
+        cand->cost_threshold_ba_intensity_= intensity_coeff_ba*(mean_magn*g_th_intensity_ba);
+        cand->cost_threshold_ba_gradient_= gradient_coeff_ba*(mean_magn2*g_th_gradient_ba);
+        cand->cost_threshold_intensity_= intensity_coeff_mapping*(mean_magn*g_th_intensity_mapping);
+        cand->cost_threshold_gradient_= gradient_coeff_mapping*(mean_magn2*g_th_gradient_mapping);
 
         dso_->frame_current_->points_container_->candidates_.push_back(cand);
         img_magn->setPixel(pixel,0);
@@ -298,7 +300,6 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
       return false;
     }
     case 2:{
-      cand->cost_threshold_;
       // cand->cost_threshold_*1.1;
       n_cands_no_min_++;
       return false;
@@ -403,7 +404,7 @@ int CandTracker::searchMin( ){
     float cost=cost_magn+cost_phase;
     // float cost=cost_magn;
 
-    if(cost>cand_->cost_threshold_){
+    if(cost>cand_->cost_threshold_intensity_+cand_->cost_threshold_gradient_){
     // if(cost>cost_threshold){
       if(min_segment_reached){
         min_segment_leaved=true;
@@ -440,20 +441,31 @@ int CandTracker::searchMin( ){
 
 float CandTracker::getCostMagn(pxl& pixel){
 
-  pixelIntensity c_m = cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->evalPixelBilinear(pixel);
-  magn_m = cam_couple_->cam_m_->pyramid_->getMagn(cand_->level_)->evalPixelBilinear(pixel);
+  float cost_c = getCostIntensity(pixel);
+  float cost_magn_cd = getCostGradient(pixel);
 
-  pixelIntensity c_r = cand_->c_;
-  pixelIntensity magn_cd_r = cand_->magn_cd_;
-
-  float cost_c = abs(c_m-c_r);
-  float cost_magn_cd = abs(magn_m-magn_cd_r);
-
-  // thresh_= 0.03 ;
-  // std::cout << "c_m " << c_m << " c_r " << c_r << " magn_m " << magn_m << " magn_cd_r " << magn_cd_r << "\n";
-  // return cost_magn_cd;
-  return intensity_coeff*cost_c+gradient_coeff*cost_magn_cd;
+  return intensity_coeff_mapping*cost_c+gradient_coeff_mapping*cost_magn_cd;
 }
+
+float CandTracker::getCostIntensity(pxl& pixel_m){
+  pixelIntensity c_m = cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->evalPixelBilinear(pixel_m);
+  pixelIntensity c_r = cand_->c_;
+  // return abs(c_r-c_m);
+
+  float error = cam_couple_->getErrorIntensity(c_r, c_m);
+  return abs(error);
+}
+
+float CandTracker::getCostGradient(pxl& pixel_m){
+  magn_m = cam_couple_->cam_m_->pyramid_->getMagn(cand_->level_)->evalPixelBilinear(pixel_m);
+  pixelIntensity magn_cd_r = cand_->magn_cd_;
+  // return abs(magn_cd_r-magn_m);
+
+  float error = cam_couple_->getErrorGradient(magn_cd_r, magn_m);
+  return abs(error);
+
+}
+
 
 bool CandTracker::getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, float& phase_cost){
 
@@ -501,6 +513,6 @@ bool CandTracker::getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, fl
   assert(abs(phase_m_hat)<10);
   assert(abs(phase_m)<10);
 
-  phase_cost= abs(radiansSub(phase_m_hat,phase_m))*phase_coeff;
+  phase_cost= abs(radiansSub(phase_m_hat,phase_m))*phase_coeff_mapping;
   return true;
 }

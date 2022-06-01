@@ -8,6 +8,21 @@ Eigen::Isometry3f CamCouple::getRelativeTransformation(){
   return relative_transf;
 }
 
+float CamCouple::getErrorIntensity(float z, float z_hat){
+  float exp_coeff = exposure_coefficient;
+  float b_m = cam_m_->b_exposure_;
+  float b_r = cam_r_->b_exposure_;
+  float error = ((z_hat-b_m)-exp_coeff*(z-b_r));
+  return error;
+}
+float CamCouple::getErrorGradient(float z, float z_hat){
+  float exp_coeff = exposure_coefficient;
+  float b_m = cam_m_->b_exposure_;
+  float b_r = cam_r_->b_exposure_;
+  float error = (z_hat-(exp_coeff*z));
+  return error;
+}
+
 void CamCouple::getTLin(){
   if(first_est_jac){
 
@@ -405,7 +420,6 @@ bool CamCouple::getCoord(float u1, float v1, float d1, float& coord, bool u_or_v
   else{
     coord=(A_bv*u1*d1+B_bv*v1*d1+C_bv*d1+D_bv)/(E_bv*u1*d1+F_bv*v1*d1+G_bv*d1+H_bv);
   }
-  assert(!std::isnan(coord));
   if (std::isnan(coord) || std::isinf(coord)){
     return false;
   }
@@ -469,54 +483,6 @@ bool CamCouple::reprojection(const Eigen::Vector2f& uv1, float d1, Eigen::Vector
   cam_r_->pointAtDepth(uv1, d1, p);
   cam_m_->projectPoint(p, uv2, d2 );
 }
-
-// //
-// // EpipolarLine* CamCouple::getEpSegment(Candidate* candidate, int bound_idx){
-// //
-// //   float u1=candidate->uv_.x();
-// //   float v1=candidate->uv_.y();
-// //
-// //   float min_depth=candidate->bounds_->at(bound_idx).first;
-// //   float max_depth=candidate->bounds_->at(bound_idx).second;
-// //
-// //   float slope_m, bound_up, bound_low;
-// //   getSlope(u1, v1, slope_m);
-// //   if (std::isnan(slope_m) || std::isinf(slope_m))
-// //     return nullptr;
-// //
-// //   bool u_or_v = (slope_m<1 && slope_m>-1);
-// //
-// //   bool boundsnotnan = getBounds(u1, v1, min_depth, max_depth, bound_low, bound_up, u_or_v);
-// //   if (!boundsnotnan)
-// //     return nullptr;
-// //
-// //   EpipolarLine* ep_seg = new EpipolarLine(  cam_m_, slope_m, bound_low, bound_up, cam_r_projected_in_cam_m, candidate->level_);
-// //
-// //
-// //   return ep_seg;
-// //
-// // }
-// //
-// //
-// //
-// // EpipolarLine* CamCouple::getEpSegmentDefaultBounds(float u1, float v1){
-// //
-// //   float min_depth=cam_r_->cam_parameters_->min_depth;
-// //   float max_depth=cam_r_->cam_parameters_->max_depth;
-// //
-// //   float slope_m, bound_up, bound_low;
-// //   getSlope(u1, v1, slope_m);
-// //
-// //   bool u_or_v = (slope_m<1 && slope_m>-1);
-// //
-// //   getBounds(u1, v1, min_depth, max_depth, bound_low, bound_up, u_or_v);
-// //
-// //   EpipolarLine* ep_seg = new EpipolarLine(  cam_m_, slope_m, bound_low, bound_up, cam_r_projected_in_cam_m );
-// //
-// //   return ep_seg;
-// //
-// // }
-
 
 
 void CamCoupleContainer::init(){

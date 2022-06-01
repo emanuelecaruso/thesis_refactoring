@@ -170,6 +170,17 @@ void ActivePointProjected::init(ActivePoint* active_pt, std::shared_ptr<CamCoupl
   invdepth_=1./depth;
 }
 
+bool ActivePointProjected::checkOutlier(){
+  // float error_intensity = abs(active_pt_->c_ - c_);
+  // if ( error_intensity> occlusion_thres_intensity )
+  //   return false;
+  // float error_gradient = abs(active_pt_->magn_cd_ - magn_cd_);
+  // if ( error_gradient> occlusion_thres_gradient )
+  //   return false;
+  return true;
+}
+
+
 void ActivePoint::updateInvdepthVarAndP(float invdepth, float invdepth_var){
   invdepth_ = invdepth;
   invdepth_var_ = invdepth_var;
