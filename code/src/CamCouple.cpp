@@ -17,9 +17,8 @@ float CamCouple::getErrorIntensity(float z, float z_hat){
 }
 float CamCouple::getErrorGradient(float z, float z_hat){
   float exp_coeff = exposure_coefficient;
-  float b_m = cam_m_->b_exposure_;
-  float b_r = cam_r_->b_exposure_;
   float error = (z_hat-(exp_coeff*z));
+
   return error;
 }
 
@@ -194,17 +193,19 @@ void CamCouple::getJrParameters(){
 }
 
 
-Eigen::Matrix<float,1,2> CamCouple::getJm_exposure_(ActivePoint* active_pt ){
+Eigen::Matrix<float,1,2> CamCouple::getJm_exposure_(ActivePoint* active_pt, int level ){
 
   Eigen::Matrix<float,1,2> Jm_exposure;
   // Jm_exposure.setZero();
+  float Jm1 = 0;
+  float Jm2 = 0;
 
-  float Jm1 = -intensity_coeff_ba*exposure_coefficient0*(active_pt->c_-cam_r_->cam_data_for_ba_->b_exposure_0_);
-  float Jm2 = -intensity_coeff_ba;
+  Jm1 += -intensity_coeff_ba*exposure_coefficient0*(active_pt->c_level_vec_[level]-cam_r_->cam_data_for_ba_->b_exposure_0_);
+  Jm2 += -intensity_coeff_ba;
 
   if(image_id==GRADIENT_ID){
-    Jm1 += (-gradient_coeff_ba*exposure_coefficient0*active_pt->magn_cd_);
-    Jm2 += (-gradient_coeff_ba);
+    Jm1 += (-gradient_coeff_ba*exposure_coefficient0*active_pt->magn_cd_level_vec_[level]);
+    Jm2 += 0;
   }
 
   Jm_exposure << Jm1, Jm2;
@@ -212,17 +213,17 @@ Eigen::Matrix<float,1,2> CamCouple::getJm_exposure_(ActivePoint* active_pt ){
   return Jm_exposure;
 }
 
-Eigen::Matrix<float,1,2> CamCouple::getJr_exposure_(ActivePoint* active_pt ){
+Eigen::Matrix<float,1,2> CamCouple::getJr_exposure_(ActivePoint* active_pt, int level ){
 
   Eigen::Matrix<float,1,2> Jr_exposure;
   // Jr_exposure.setZero();
 
-  float Jr1 = intensity_coeff_ba*exposure_coefficient0*(active_pt->c_-cam_r_->cam_data_for_ba_->b_exposure_0_);
+  float Jr1 = intensity_coeff_ba*exposure_coefficient0*(active_pt->c_level_vec_[level]-cam_r_->cam_data_for_ba_->b_exposure_0_);
   float Jr2 = intensity_coeff_ba*exposure_coefficient0;
 
   if(image_id==GRADIENT_ID){
-    Jr1 += (gradient_coeff_ba*exposure_coefficient0*active_pt->magn_cd_);
-    Jr2 += (gradient_coeff_ba*exposure_coefficient0);
+    Jr1 += (gradient_coeff_ba*exposure_coefficient0*active_pt->magn_cd_level_vec_[level]);
+    Jr2 += 0;
   }
 
   Jr_exposure << Jr1, Jr2;
@@ -292,7 +293,7 @@ Eigen::Matrix<float,2,6> CamCouple::getJr_(ActivePoint* active_pt ){
   return Jr;
 }
 
-Eigen::Matrix<float,2,6> CamCouple::getJm_(ActivePoint* active_pt ){
+Eigen::Matrix<float,2,6> CamCouple::getJm_(ActivePoint* active_pt, int level ){
   Eigen::Vector3f pb = T0*active_pt->p_incamframe_;
   float pbx2 = pb.x()*pb.x();
   float pby2 = pb.y()*pb.y();
@@ -317,8 +318,8 @@ Eigen::Matrix<float,2,6> CamCouple::getJm_(ActivePoint* active_pt ){
   Jm << Jmu1, Jmu2, Jmu3, Jmu4, Jmu5, Jmu6,
         Jmv1, Jmv2, Jmv3, Jmv4, Jmv5, Jmv6;
 
-  float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio;
-  Jm *= (pixels_meter_ratio/pow(2,active_pt->level_));
+  float pixels_meter_ratio = active_pt->cam_->cam_parameters_->pixel_meter_ratio/pow(2,level);
+  Jm *= pixels_meter_ratio;
 
   if(!Jm.allFinite())
     Jm.setZero();

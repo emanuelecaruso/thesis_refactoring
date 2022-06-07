@@ -1,5 +1,6 @@
 #pragma once
 #include "camera.h"
+#include "CamCouple.h"
 #include "PointsContainer.h"
 
 class Dso;

@@ -370,7 +370,7 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba, bool only_pts){
 
 
   // lin_sys_ba.dx_c.setZero();
-  // lin_sys_ba.dx_p.setZero();
+  lin_sys_ba.dx_p.setZero();
 
   if(debug_optimization && dso_->frame_current_idx_>=debug_start_frame){
     // dso_->points_handler_->projectActivePointsOnLastFrame();
@@ -378,6 +378,10 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba, bool only_pts){
     dso_->spectator_->renderState();
     dso_->spectator_->showSpectator();
     std::cout << "chi " << lin_sys_ba.chi << std::endl;
+    for ( CameraForMapping* cam : dso_->cameras_container_->keyframes_active_){
+      std::cout << cam->name_ << ", a " << cam->a_exposure_ << "; ";
+    }
+    std::cout << "" << std::endl;
     // std::cout << "dc " << lin_sys_ba.dx_c << std::endl;
     // std::cout << "dp " << lin_sys_ba.dx_p << std::endl;
   }
@@ -517,10 +521,9 @@ void BundleAdj::marginalizePointsAndKeyframes(){
   // remove frames without active points
   for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
     CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
-    if(cam_r->points_container_->active_points_.empty()){
+    if(cam_r->points_container_->active_points_.empty() && cam_r->marginalized_){
       dso_->cameras_container_->removeFrameWithActPts(cam_r);
       cam_r->cam_free_mem();
-      continue;
     }
   }
 }

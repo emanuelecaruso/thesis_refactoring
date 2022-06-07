@@ -35,8 +35,8 @@ void MeasBA::loadJacobians(ActivePoint* active_point){
     }
 
     if(J_SZ==8){
-      J_r.tail<2>() += cam_couple_->getJr_exposure_(active_point);
-      J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point);
+      J_r.tail<2>() += cam_couple_->getJr_exposure_(active_point,active_point->level_ );
+      J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point,active_point->level_ );
     }
 
     J_m_transpose= J_m.transpose();
@@ -384,7 +384,7 @@ void PriorMeas::loadJacobians(ActivePoint* active_point, std::shared_ptr<CamCoup
   }
 
   if(J_SZ==8){
-    J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point);
+    J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point,active_point->level_);
   }
 
   J_m_transpose= J_m.transpose();

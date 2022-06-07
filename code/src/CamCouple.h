@@ -41,11 +41,11 @@ class CamCouple{
 
     void getJrParameters();
     Eigen::Matrix<float,2,1> getJd_(ActivePoint* active_pt);
-    Eigen::Matrix<float,2,6> getJm_(ActivePoint* active_pt);
+    Eigen::Matrix<float,2,6> getJm_(ActivePoint* active_pt, int level=candidate_level);
     Eigen::Matrix<float,2,6> getJm_old_(ActivePoint* active_pt);
     Eigen::Matrix<float,2,6> getJr_(ActivePoint* active_pt);
-    Eigen::Matrix<float,1,2> getJm_exposure_(ActivePoint* active_pt);
-    Eigen::Matrix<float,1,2> getJr_exposure_(ActivePoint* active_pt);
+    Eigen::Matrix<float,1,2> getJm_exposure_(ActivePoint* active_pt, int level);
+    Eigen::Matrix<float,1,2> getJr_exposure_(ActivePoint* active_pt, int level);
     float getErrorIntensity(float z, float z_hat);
     float getErrorGradient(float z, float z_hat);
 

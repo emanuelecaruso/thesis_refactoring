@@ -10,8 +10,7 @@ void MeasTracking::loadJacobians(ActivePoint* active_point){
     J_m.setZero();  // initialize J_m
 
     // get Jm_
-    Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_(active_point);
-    Jm_/=pow(2,level_-active_point->level_);
+    Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_(active_point,level_);
     // Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_old_(active_point);
 
     // update J_m and error for intensity
@@ -26,7 +25,7 @@ void MeasTracking::loadJacobians(ActivePoint* active_point){
     }
 
     if(J_SZ==8){
-      J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point);
+      J_m.tail<2>() += cam_couple_->getJm_exposure_(active_point, level_);
     }
 
     J_m_transpose= J_m.transpose();
@@ -50,10 +49,13 @@ void LinSysTracking::addMeasurement( MeasTracking& measurement ){
 void LinSysTracking::updateCameraPose(){
 
   // exposure priors
-  H(6,6) += 2*lambda_a*abs(dso_->frame_current_->a_exposure_)+damp_exposure;
-  H(7,7) += 2*lambda_b*abs(dso_->frame_current_->b_exposure_)+damp_exposure;
-  // H(6,6) = FLT_MAX;
-  // H(7,7) = FLT_MAX;
+  if(J_SZ==8){
+    H(6,6) += 2*lambda_a*abs(dso_->frame_current_->a_exposure_)+damp_exposure;
+    H(7,7) += 2*lambda_b*abs(dso_->frame_current_->b_exposure_)+damp_exposure;
+    // H(6,6) = FLT_MAX;
+    // H(7,7) = FLT_MAX;
+  }
+
 
   // get dx
   // dx = H.selfadjointView<Eigen::Upper>().ldlt().solve(-b);

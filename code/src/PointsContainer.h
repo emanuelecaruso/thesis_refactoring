@@ -150,8 +150,8 @@ public:
       else{
         pxl pixel_coarse;
         cam_->uv2pixelCoords( uv_, pixel_coarse, level);
-        c_level_vec_[level] = cand->cam_->pyramid_->getC(level)->evalPixelBilinear(pixel_coarse);
-        magn_cd_level_vec_[level] = cand->cam_->pyramid_->getMagn(level)->evalPixelBilinear(pixel_coarse);
+        c_level_vec_[level] = cand->cam_->pyramid_->getC(level)->evalPixel(pixel_coarse);
+        magn_cd_level_vec_[level] = cand->cam_->pyramid_->getMagn(level)->evalPixel(pixel_coarse);
       }
     }
 

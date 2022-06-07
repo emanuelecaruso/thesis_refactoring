@@ -10,7 +10,6 @@ bool debug_gt_error= false;
 int debug_start_frame = 200;
 bool use_spectator= true;
 
-
 // code parameters
 bool free_mem = true;
 bool do_marginalization = true;
@@ -22,6 +21,7 @@ bool take_gt_points=false;
 bool take_gt_initialization=false;
 int guess_type=POSE_CONSTANT;
 // int guess_type=VELOCITY_CONSTANT;
+// int guess_type=IG_GROUNDTRUTH;
 int opt_norm=HUBER;
 // int opt_norm=QUADRATIC;
 // int image_id=INTENSITY_ID;
@@ -59,9 +59,9 @@ float damp_cam= 0;
 float damp_point_invdepth= 1000;
 // float damp_point_invdepth= 10e3;
 // float damp_point_invdepth= FLT_MAX;
-float damp_exposure= 10;
-float lambda_a= 10;
-float lambda_b= 10;
+float damp_exposure= 0;
+float lambda_a= 0;
+float lambda_b= 0;
 float huber_threshold=coeff_sum_ba*0.05;
 // float sat_threshold=0.04;
 float sat_threshold=coeff_sum_ba*111111;
@@ -83,7 +83,7 @@ float variance= 0.1;
 int robustifier_dofs=1;
 float ratio_for_convergence= 0.1;
 // float conv_threshold= 0.00001;
-float conv_threshold= coeff_sum_ba*0.01;
+float conv_threshold= coeff_sum_ba*0.001;
 
 
 // mapping
@@ -92,11 +92,15 @@ float conv_threshold= coeff_sum_ba*0.01;
 float var_threshold= 1;
 // float der_threshold=0.0001;
 float der_threshold=0;
-float intensity_coeff_mapping= 1;
-float gradient_coeff_mapping= 0.5;
+// float g_th_intensity_mapping= 2;
+// float g_th_gradient_mapping= 2;
+// float intensity_coeff_mapping= 1;
+// float gradient_coeff_mapping= 0.5;
+float g_th_intensity_mapping= g_th_intensity_ba;
+float g_th_gradient_mapping= g_th_gradient_ba;
+float intensity_coeff_mapping= intensity_coeff_ba;
+float gradient_coeff_mapping= gradient_coeff_ba;
 float phase_coeff_mapping= 1./(4.*PI);
-float g_th_intensity_mapping= 2;
-float g_th_gradient_mapping= 2;
 
 
 //  video streaming

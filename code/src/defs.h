@@ -496,6 +496,7 @@ inline Eigen::Isometry3f v2t_inv(Vector6f& t){
 
 #define POSE_CONSTANT 0
 #define VELOCITY_CONSTANT 1
+#define IG_GROUNDTRUTH 2
 
 #define HUBER 0
 #define QUADRATIC 1
@@ -515,7 +516,7 @@ inline Eigen::Isometry3f v2t_inv(Vector6f& t){
 #define ALL_KFS_ON_ALL_KFS 1
 #define KF_ON_ALL_KFS 2
 
-#define J_SZ 8
+#define J_SZ 6
 
 
 

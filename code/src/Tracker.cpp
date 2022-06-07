@@ -29,7 +29,10 @@ void Tracker::setInitialGuess(){
   switch (guess_type)
   {
     case POSE_CONSTANT:{
-      dso_->frame_current_->assignPose( *(dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_) );
+      CameraForMapping* previous_cam = dso_->cameras_container_->getSecondLastFrame();
+      dso_->frame_current_->assignPose( *(previous_cam->frame_camera_wrt_world_) );
+      dso_->frame_current_->a_exposure_=previous_cam->a_exposure_;
+      dso_->frame_current_->b_exposure_=previous_cam->b_exposure_;
       break;}
     case VELOCITY_CONSTANT:{
       Eigen::Isometry3f transf = (*dso_->cameras_container_->getThirdLastFrame()->frame_world_wrt_camera_)*(*dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_);
@@ -47,9 +50,14 @@ void Tracker::setInitialGuess(){
 
       dso_->frame_current_->assignPose( pose );
       break;}
-
-
+    case IG_GROUNDTRUTH:{
+      Camera* cam_gt = dso_->frame_current_->grountruth_camera_;
+      dso_->frame_current_->assignPose( *(cam_gt->frame_camera_wrt_world_) );
+      dso_->frame_current_->a_exposure_=cam_gt->a_exposure_;
+      dso_->frame_current_->b_exposure_=cam_gt->b_exposure_;
+      break;
     }
+  }
 
   // if(==POSE_CONSTANT){
   //   dso_->frame_current_->assignPose( *(dso_->cameras_container_->getSecondLastFrame()->frame_camera_wrt_world_) );
@@ -187,7 +195,7 @@ void Tracker::trackCam(){
         if(debug_tracking  && dso_->frame_current_idx_>=debug_start_frame){
 
           // std::cout << "level " << level << std::endl;
-          std::cout << "level " << level << ", chi (tracking) " << lin_sys_tracking.chi << std::endl;
+          std::cout << "level " << level << ", chi " << lin_sys_tracking.chi << ",a " << dso_->frame_current_->a_exposure_ << ",b " << dso_->frame_current_->b_exposure_ << std::endl;
 
           dso_->points_handler_->projectActivePointsOnLastFrame();
           // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");

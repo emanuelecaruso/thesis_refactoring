@@ -11,6 +11,9 @@ bool Meas::getPixelOfProjectedActivePoint(ActivePoint* active_point){
   if( !valid )
     return false;
 
+  if(cam_couple_->cam_m_->pyramid_==nullptr)
+    std::cout << "PORCODIO " << cam_couple_->cam_m_->name_ << std::endl;
+  assert(cam_couple_->cam_m_->pyramid_!=nullptr);
   cam_couple_->cam_m_->uv2pixelCoords( uv, pixel_, level_ );
   bool pixel_in_range = cam_couple_->cam_m_->pyramid_->getC(level_)->pixelInRange(pixel_);
 
@@ -123,7 +126,7 @@ bool Meas::init(ActivePoint* active_point){
 
   error=0;  // initialize error
   float error_intensity = getError( active_point, INTENSITY_ID);
-  if( abs(error_intensity) > active_point->cost_threshold_ba_intensity_*(1+(level_*6)) ){
+  if( abs(error_intensity) > active_point->cost_threshold_ba_intensity_*(1+(level_*10)) ){
     // std::cout << abs(error_intensity) << " " << active_point->cost_threshold_ba_intensity_ << std::endl;
     occlusion_ = true;
     return false;
@@ -132,7 +135,7 @@ bool Meas::init(ActivePoint* active_point){
 
   if(image_id==GRADIENT_ID){
     float error_gradient = getError( active_point, GRADIENT_ID);
-    if( abs(error_gradient) > active_point->cost_threshold_ba_gradient_*(1+(level_*6)) ){
+    if( abs(error_gradient) > active_point->cost_threshold_ba_gradient_*(1+(level_*10)) ){
       // std::cout << abs(error_gradient) << " " << active_point->cost_threshold_ba_gradient_ << std::endl;
       occlusion_ = true;
       return false;

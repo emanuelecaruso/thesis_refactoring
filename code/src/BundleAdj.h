@@ -131,10 +131,12 @@ class CamDataForBA{
     float b_exposure_0_;
 
     // ********** constructor **********
-    CamDataForBA():
+    CamDataForBA(CameraForMapping* cam):
     c_idx_(-1),
     c_marg_idx_(-1),
-    has_prior_(false)
+    has_prior_(false),
+    a_exposure_0_(cam->a_exposure_),
+    b_exposure_0_(cam->b_exposure_)
     {
       b_k_.setZero();
       H_kk_.setZero();

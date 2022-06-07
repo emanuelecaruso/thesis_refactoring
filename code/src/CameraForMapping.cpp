@@ -52,6 +52,6 @@ PointsContainer* CameraForMapping::initializePointsContainer(){
   return ptr;
 }
 CamDataForBA* CameraForMapping::initializeDataForBA(){
-  CamDataForBA* ptr = new CamDataForBA();
+  CamDataForBA* ptr = new CamDataForBA(this);
   return ptr;
 }
