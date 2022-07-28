@@ -477,7 +477,7 @@ bool CamCouple::getD2(float u1, float v1, float d1, float& d2){
 bool CamCouple::reprojection(const Eigen::Vector2f& uv1, float d1, Eigen::Vector2f& uv2, float& d2){
   Eigen::Vector3f p;
   cam_r_->pointAtDepth(uv1, d1, p);
-  cam_m_->projectPoint(p, uv2, d2 );
+  return cam_m_->projectPoint(p, uv2, d2 );
 }
 
 

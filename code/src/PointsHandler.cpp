@@ -353,6 +353,7 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
       return true;
     }
   }
+  return false;
 }
 
 float CandTracker::getStandardDeviation( ){

@@ -140,7 +140,9 @@ bool Dso::initialize(){
 
   // project candidates and active points on last frame
   candidates_activator_->activateCandidates();
+
   points_handler_->sampleCandidates(); // sample candidates as high gradient points
+
 
   bundle_adj_->optimize(true);
 

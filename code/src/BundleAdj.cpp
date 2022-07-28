@@ -390,7 +390,7 @@ void BundleAdj::updateState(LinSysBA& lin_sys_ba, bool only_pts){
 }
 
 
-bool BundleAdj::marginalizeOcclusionsInLastKeyframe(){
+void BundleAdj::marginalizeOcclusionsInLastKeyframe(){
 
   // marginalize points not in last cam
   // iterate through all keyframe with active points

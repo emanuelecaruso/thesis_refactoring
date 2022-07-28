@@ -55,7 +55,9 @@ float Meas::getError( ActivePoint* active_point, int image_type){
     return error;
 
   }
-
+  else{
+    exit(1);
+  }
 }
 
 // float Meas::getError( ActivePoint* active_point, int image_type){
@@ -296,6 +298,7 @@ bool LinSysBlocks::visualizeH(){
   waitkey(0);
   delete img_H;
 
+  return true;
 }
 
 
@@ -333,4 +336,5 @@ bool LinSysBlocks::visualizeB(){
     }
 
   }
+  return true;
 }

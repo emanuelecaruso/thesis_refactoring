@@ -211,7 +211,6 @@ Region* CandidatesActivator::updateRegion(Region* reg_old){
 }
 
 bool CandidatesActivator::updateLeafRegion(CandidateProjected* cand_proj){
-
   int row_new = (int)(trunc(cand_proj->pixel_.y()));
   int col_new = (int)(trunc(cand_proj->pixel_.x()));
 
@@ -223,6 +222,7 @@ bool CandidatesActivator::updateLeafRegion(CandidateProjected* cand_proj){
 
   // if region doesn't exists yet
   if(reg==nullptr){
+
     // create region
     reg = new Region(cand_proj);
     // push reg in regvec_mat_
@@ -233,15 +233,19 @@ bool CandidatesActivator::updateLeafRegion(CandidateProjected* cand_proj){
     reg->parent_=reg_new;
     assert(checkElementInVec(reg_new->subregions_, reg));
     assert(checkElementInVec(reg->parent_->subregions_, reg));
+
   }
   // otherwise
   else{
+
     if( cand_proj->cand_->invdepth_var_ < reg->var_ ){
+
       reg->cand_proj_ = cand_proj;
       reg->var_ = cand_proj->cand_->invdepth_var_;
     }
   }
 
+  return true;
 
 }
 
@@ -249,6 +253,7 @@ void CandidatesActivator::rebuild(){
 
   // iterate through all candidates proj
   for(int i=dso_->frame_current_->points_container_->candidates_projected_.size()-1; i>=0; i--  ){
+
     CandidateProjected* cand_proj = dso_->frame_current_->points_container_->candidates_projected_[i];
     updateLeafRegion(cand_proj);
 
@@ -398,7 +403,9 @@ void CandidatesActivator::insertRegInVec(Region* reg, std::vector<Region*>& v ){
 
 void CandidatesActivator::activateCandidates(){
 
+
   dso_->points_handler_->projectActivePointsOnLastFrame();
+
   dso_->points_handler_->projectCandidatesOnLastFrame();
 
   double t_start=getTime();
@@ -409,6 +416,7 @@ void CandidatesActivator::activateCandidates(){
   //   printActPresenceMat(a);
 
   rebuild();  // update all regions
+
 
   // for( RegionsMat* r : regmat_vec_.regionsmat_vec_)
   //   printRegionsMat(r);

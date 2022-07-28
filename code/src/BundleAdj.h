@@ -77,7 +77,7 @@ class BundleAdj{
     void marginalizePointsAndKeyframes();
     void updateState(LinSysBA& lin_sys_ba, bool only_pts=false);
     void updateBMarg(LinSysBA& lin_sys_ba);
-    bool marginalizeOcclusionsInLastKeyframe();
+    void marginalizeOcclusionsInLastKeyframe();
 };
 
 class CamHkuCouple{

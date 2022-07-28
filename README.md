@@ -1,57 +1,69 @@
-# DENSE TRACKING AND MAPPING
+# Emanuele Caruso - A direct VO based on Direct Sparse Odometry
 
-Application of the paper
+A direct visual odometry algorithm based on
 
-Dense Tracking and Mapping in Real-Time
+Direct Sparse Odometry
+J. Engel, D. Cremers
+2016 
 
-Richard A. Newcombe, Steven J. Lovegrove and Andrew J. Davison
-Department of Computing, Imperial College London, UK
-
-
-## INSTALL  (Ubuntu 18.04 LTS)
-
+## INSTALL  (Ubuntu 20.04 LTS)
 
 The following packages are required for the installation
 
-###### CMake 3.15:
+###### CMake 3.22:
+    
+```
+sudo apt install cmake
+```
 
-    install CMake 3.15
+###### Ninja 1.10.1
 
-        https://cmake.org/files/v3.15/
+```
+sudo apt install ninja-build
+```
 
-###### Eigen3 stable version 3.3.9:
+###### Python 3
 
-    download stable version 3.3.9 and install it with cmake
+```
+apt-get install python3-dev
+```
 
-        http://eigen.tuxfamily.org
+###### Eigen3 stable version 3.4.0:
 
-###### CUDA toolkit version 9.1
+download stable version 3.4.0 and install it with cmake
 
-    sudo apt install nvidia-cuda-toolkit=9.1.85-3ubuntu1
+go to http://eigen.tuxfamily.org
+download tar.gz file, extract it and open a terminal inside the folder
 
-###### OpenCV version 4.2 (with CUDA):
 
-    be sure that CUDA toolkit is already installed (previous step)
+```
+mkdir build
+cd build
+cmake ..
+make .
+sudo make install
+```
 
-    to install Opencv 4.2 with CUDA toolkit 9.2, use gcc and g++ version 6.5
 
-  	Disable CUDNN by removing these lines in the guide:
+###### OpenCV version 4.2:
 
-        -D CUDA_ARCH_BIN=7.5 \
-    	-D WITH_CUDNN=ON \
-        -D OPENCV_DNN_CUDA=ON \
+be sure that CUDA toolkit is already installed (previous step)
 
-  	be sure that the path to opencv_contrib-4.5.2/modules is correct in the guide
+```
+sudo apt install libopencv-dev python3-opencv
+```
 
-    installation guide:
+to verify the version installed
 
-        https://gist.github.com/raulqf/f42c718a658cddc16f9df07ecc627be7
+```
+python3 -c "import cv2; print(cv2.__version__)"
+```
 
 ###### (Optional) Blender 3.90
 
-    for generating new datasets, download and install Blender 3.90
+for generating new datasets, download and install Blender 3.90
 
-        https://download.blender.org/release/
+https://download.blender.org/release/
 
 
 ## COMPILATION
