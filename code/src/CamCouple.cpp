@@ -432,12 +432,12 @@ bool CamCouple::getUv(float u1, float v1, float d1, float& u2, float& v2 ){
 bool CamCouple::getD1(float u1, float v1, float& d1, float coord, bool u_or_v){
   // u2
   if (u_or_v){
-    d1=((-H_bu)*coord + D_bu)/(E_bu*coord*u1 + F_bu*coord*v1 + G_bu*coord + (-A_bu)*u1 + (-B_bu)*v1 - C_bu);
+    d1=( D_bu - H_bu*coord )/((E_bu*u1 + F_bu*v1 + G_bu)*coord - A_bu*u1  - B_bu*v1 - C_bu);
 
   }
   // v2
   else{
-    d1=((-H_bv)*coord + D_bv)/(E_bv*coord*u1 + F_bv*coord*v1 + G_bv*coord + (-A_bv)*u1 + (-B_bv)*v1 - C_bv);
+    d1=( D_bv - H_bv*coord )/((E_bv*u1 + F_bv*v1 + G_bv)*coord - A_bv *u1 - B_bv*v1 - C_bv);
   }
   // assert(std::isfinite(d1));
   if (std::isnan(d1) || std::isinf(d1) ){

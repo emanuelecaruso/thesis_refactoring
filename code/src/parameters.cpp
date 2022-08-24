@@ -20,6 +20,7 @@ bool magn_mean = true;
 bool do_marginalization = true;
 bool first_2_active_kfs_fixed = false;
 bool marg_pts_in_marg_kf = false;
+bool dso_original = false;
 bool first_est_jac = false;
 bool take_gt_poses=false;
 bool take_gt_points=false;

@@ -66,7 +66,7 @@ void Spectator::reinitSpectator(){
 
 void Spectator::renderPoints(){
   // iterate through all cameras
-  int num_kfs = dso_->frame_current_idx_+1;
+  int num_kfs = dso_->cameras_container_->frames_.size()-1;
   for ( int i = 0; i<num_kfs; i++){
     CameraForMapping* cam = dso_->cameras_container_->frames_[i];
     if (cam->keyframe_){
@@ -82,14 +82,11 @@ void Spectator::renderPoints(){
     CameraForMapping* cam = dso_->cameras_container_->frames_[i];
     if (cam->keyframe_){
       // render active points
-      std::vector<CameraForMapping*>& v = dso_->cameras_container_->keyframes_active_;
-      if (std::count(v.begin(), v.end(), cam)) {
-        int num_act_pts = cam->points_container_->active_points_.size();
-        for ( int j = num_act_pts-1; j>=0; j--){
-          ActivePoint* act_pt = cam->points_container_->active_points_.at(j);
+      int num_act_pts = cam->points_container_->active_points_.size();
+      for ( int j = num_act_pts-1; j>=0; j--){
+        ActivePoint* act_pt = cam->points_container_->active_points_.at(j);
 
-          plotPt(act_pt, magenta);
-        }
+        plotPt(act_pt, magenta);
       }
     }
   }

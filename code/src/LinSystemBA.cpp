@@ -19,14 +19,14 @@ void MeasBA::loadJacobians(ActivePoint* active_point){
     Eigen::Matrix<float,2,1> Jd_ = cam_couple_->getJd_(active_point);
 
 
-    // update J_m and error for intensity
+    // update J and error for intensity
     Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian( INTENSITY_ID);
     J_m.head<6>() += image_jacobian_intensity*Jm_;
     J_r.head<6>() += image_jacobian_intensity*Jr_;
     J_d += image_jacobian_intensity*Jd_;
 
 
-    // update J_m and error for gradient
+    // update J and error for gradient
     if(image_id==GRADIENT_ID){
       Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian( GRADIENT_ID);
       J_m.head<6>() += image_jacobian_gradient*Jm_;
@@ -369,13 +369,13 @@ void PriorMeas::loadJacobians(ActivePoint* active_point, std::shared_ptr<CamCoup
   // Eigen::Matrix<float,2,6> Jm_ = cam_couple_->getJm_old_(active_point);
   Eigen::Matrix<float,2,1> Jd_ = cam_couple_->getJd_(active_point);
 
-  // update J_m and error for intensity
+  // update J_and error for intensity
   Eigen::Matrix<float,1,2> image_jacobian_intensity = getImageJacobian( INTENSITY_ID);
   J_m.head<6>() += image_jacobian_intensity*Jm_;
   J_d += image_jacobian_intensity*Jd_;
 
 
-  // update J_m and error for gradient
+  // update J_and error for gradient
   if(image_id==GRADIENT_ID){
     Eigen::Matrix<float,1,2> image_jacobian_gradient = getImageJacobian( GRADIENT_ID);
     J_m.head<6>() += image_jacobian_gradient*Jm_;

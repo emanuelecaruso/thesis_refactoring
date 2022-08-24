@@ -29,6 +29,7 @@ extern bool do_marginalization;
 extern bool first_2_active_kfs_fixed;
 extern bool sat_separate;
 extern bool marg_pts_in_marg_kf;
+extern bool dso_original;
 extern bool first_est_jac;
 extern bool take_gt_poses;
 extern bool take_gt_points;
