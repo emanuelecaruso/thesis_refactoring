@@ -1,10 +1,16 @@
 #Name of the .blend file inside "blender_scenes" directory
 # dataset_name='bunny_scene'
-dataset_name='cube_scene'
+# dataset_name='cube_scene'
 # dataset_name='scene_roll'
 # dataset_name='bunny_scene_roll'
 # dataset_name='bunny_scene_zoom'
 # dataset_name='bunny_scene_exposure'
+
+dataset_name='bunny_1'
+# dataset_name='bunny_2'
+# dataset_name='bunny_3'
+# dataset_name='bunny_4'
+# dataset_name='bunny_5'
 
 #Number of samples for CYCLES pathtracer
 samples=128
