@@ -7,7 +7,8 @@
 bool Meas::getPixelOfProjectedActivePoint(ActivePoint* active_point){
   // project active point get pixel of projected active point
   Eigen::Vector2f uv;
-  bool valid = cam_couple_->getUv( active_point->uv_.x(),active_point->uv_.y(),1./active_point->invdepth_,uv.x(),uv.y() );
+  // bool valid = cam_couple_->getUv( active_point->uv_.x(),active_point->uv_.y(),1./active_point->invdepth_,uv.x(),uv.y() );
+  bool valid = cam_couple_->reprojection( active_point->uv_,1./active_point->invdepth_,uv );
   if( !valid )
     return false;
 
@@ -178,8 +179,8 @@ float Meas::getWeight(ActivePoint* active_point){
 
   assert(std::isfinite(weight_mest));
 
-  // float  weight = weight_mest*(1.0/var_);
-  float weight = weight_mest;
+  float  weight = weight_mest*(1.0/var_);
+  // float weight = weight_mest;
 
   // return weight;
   return weight;

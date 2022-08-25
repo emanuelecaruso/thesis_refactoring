@@ -38,7 +38,7 @@ float KeyframeHandler::getPercentuageMarg(CameraForMapping* keyframe){
   int num_non_active_pts = keyframe->points_container_->marginalized_points_.size()+keyframe->points_container_->n_active_points_removed_;
   int num_tot_pts = num_active_pts+num_non_active_pts;
 
-  float percentage_marg = 1;
+  float percentage_marg = 0;
   if(num_tot_pts>0){
     percentage_marg= (((float)num_active_pts)/((float)(num_tot_pts)));
   }
@@ -145,8 +145,10 @@ bool KeyframeHandler::getFlowDist(float& flow_dist){
 
       Eigen::Vector2f uv_curr, uv_last;
       pxl pxl_curr, pxl_last;
-      cam_couple_curr_frame->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_curr.x(),uv_curr.y() );
-      cam_couple_last_kf->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_last.x(),uv_last.y() );
+      // cam_couple_curr_frame->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_curr.x(),uv_curr.y() );
+      // cam_couple_last_kf->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_last.x(),uv_last.y() );
+      cam_couple_curr_frame->reprojection( active_pt->uv_,1./active_pt->invdepth_,uv_curr );
+      cam_couple_last_kf->reprojection( active_pt->uv_,1./active_pt->invdepth_,uv_last );
       pxl_curr = curr_frame->uv2pixelCoords(uv_curr, active_pt->level_);
       pxl_last = curr_frame->uv2pixelCoords(uv_last, active_pt->level_);
 

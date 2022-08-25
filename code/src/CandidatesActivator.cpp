@@ -407,6 +407,7 @@ void CandidatesActivator::activateCandidates(){
   dso_->points_handler_->projectActivePointsOnLastFrame();
 
   dso_->points_handler_->projectCandidatesOnLastFrame();
+  dso_->points_handler_->selfProjectCandidatesOnLastFrame();
 
   double t_start=getTime();
 

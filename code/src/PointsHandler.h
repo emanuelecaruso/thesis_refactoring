@@ -18,6 +18,7 @@ class PointsHandler{
     int n_cands_no_min_;
     int n_cands_tracked_;
     int n_cands_var_too_high_;
+    int n_cands_updated_;
 
     // ********** constructor **********
     PointsHandler(Dso* dso ):
@@ -29,6 +30,7 @@ class PointsHandler{
     n_cands_no_min_(0),
     n_cands_var_too_high_(0),
     n_cands_tracked_(0),
+    n_cands_updated_(0),
     dso_(dso)
     {};
 
@@ -44,14 +46,18 @@ class PointsHandler{
 
     bool sampleCandidates();
     void projectCandidatesOnLastFrame();
+    void selfProjectCandidatesOnLastFrame();
     void projectActivePointsOnLastFrame();
     void generateCoarseActivePoints();
     void projectCandidates(CameraForMapping* cam_r, CameraForMapping* cam_m );
     void projectActivePoints(CameraForMapping* cam_r, CameraForMapping* cam_m );
 
     void trackCandidates(bool groundtruth);
+    void trackCandidatesReverse(bool groundtruth);
+
+    void removeOcclusionsInLastKFGrountruth();
   protected:
-    void trackCandidates(CameraForMapping* keyframe, CameraForMapping* last_keyframe);
+    void trackCandidates(CameraForMapping* kf1, CameraForMapping* kf2, bool remove=true);
     void trackCandidatesGroundtruth(CameraForMapping* keyframe);
     bool trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> cam_couple);
 };
@@ -67,6 +73,7 @@ class CandTracker{
     Eigen::Vector2f uv_;
     pxl pixel_;
     float thresh_;
+    int n_valid_uvs_;
 
     // ********** constructor **********
     CandTracker( EpipolarLine& ep_segment,
@@ -75,18 +82,19 @@ class CandTracker{
             ):
               ep_segment_(ep_segment),
               cand_(cand),
-              cam_couple_(cam_couple)
+              cam_couple_(cam_couple),
+              n_valid_uvs_(0)
               {};
 
 
     // ********** methods **********
-    int searchMin( );
+    int searchMin();
     float getCostMagn(pxl& pixel_m);
     float getCostIntensity(pxl& pixel_m);
     float getCostGradient(pxl& pixel_m);
     bool getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, float& cost_phase);
     float getStandardDeviation( );
-    bool updateCand( );
+    bool updateCand( int max_pxls_inliers);
 
 
 };

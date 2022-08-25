@@ -38,6 +38,9 @@ class CamCouple{
     bool getD2(float u1, float v1, float d1, float& d2);
     bool getSlope(float u1, float v1, float& slope_m);
     bool reprojection(const Eigen::Vector2f& uv1, float d1, Eigen::Vector2f& uv2, float& d2);
+    bool reprojection(const Eigen::Vector2f& uv1, float d1, Eigen::Vector2f& uv2);
+    bool getUv_slow(float u1, float v1, float d1, float& u2, float& v2 );
+    bool getD2_slow(float u1, float v1, float d1, float& d2);
 
     void getJrParameters();
     Eigen::Matrix<float,2,1> getJd_(ActivePoint* active_pt);

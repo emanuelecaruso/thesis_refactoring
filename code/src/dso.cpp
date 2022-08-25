@@ -136,13 +136,18 @@ bool Dso::initialize(){
     spectator_->renderState();
     spectator_->showSpectator(0);
   }
+
+  points_handler_->sampleCandidates(); // sample candidates as high gradient points
+
   points_handler_->trackCandidates(take_gt_points); // track existing candidates
+  if(reverse_tracking)
+    points_handler_->trackCandidatesReverse(take_gt_points); // track existing candidates
 
   // project candidates and active points on last frame
   candidates_activator_->activateCandidates();
 
-  points_handler_->sampleCandidates(); // sample candidates as high gradient points
-
+  if(remove_occlusions_gt)
+    points_handler_->removeOcclusionsInLastKFGrountruth();
 
   bundle_adj_->optimize(true);
 
@@ -175,8 +180,13 @@ bool Dso::doDso(){
   bool kf_added = keyframe_handler_->addKeyframe(false); // add keyframe
   if(kf_added){
 
+    // sample new candidates
+    points_handler_->sampleCandidates(); // sample candidates as high gradient points
+
     // track existing candidates
     points_handler_->trackCandidates(take_gt_points);
+    if(reverse_tracking)
+      points_handler_->trackCandidatesReverse(take_gt_points);
 
     // points_handler_->projectCandidatesOnLastFrame();
     // points_handler_->showProjectedCandidates( "cands proj 0/1");
@@ -184,8 +194,6 @@ bool Dso::doDso(){
     // activate points
     candidates_activator_->activateCandidates();
 
-    // sample new candidates
-    points_handler_->sampleCandidates(); // sample candidates as high gradient points
 
     // debug mapping
     if(debug_mapping && frame_current_idx_>=debug_start_frame){
@@ -203,10 +211,17 @@ bool Dso::doDso(){
 
   if (cameras_container_->keyframes_active_.size()>2){
 
-    // marginalize points not in last camera
-    bundle_adj_->marginalize();
+
+    if(remove_occlusions_gt)
+      points_handler_->removeOcclusionsInLastKFGrountruth();
+
+
+    // // marginalize points not in last camera
+    // bundle_adj_->marginalize();
     // bundle adjustment optimization
     bundle_adj_->optimize();
+    // marginalize points not in last camera
+    bundle_adj_->marginalize();
   }
 
 

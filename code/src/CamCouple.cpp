@@ -422,11 +422,17 @@ bool CamCouple::getCoord(float u1, float v1, float d1, float& coord, bool u_or_v
   return true;
 }
 
+// bool CamCouple::getUv_slow(float u1, float v1, float d1, float& u2, float& v2 ){
+//   Eigen::Vector2f uv;
+//   reprojection(Eigen::Vector2f(u1,v1), d1, uv,  )
+//
+//   return (u2_valid&&v2_valid);
+// }
+
 bool CamCouple::getUv(float u1, float v1, float d1, float& u2, float& v2 ){
   bool u2_valid = getCoord(u1,v1,d1,u2,true);
   bool v2_valid = getCoord(u1,v1,d1,v2,false);
   return (u2_valid&&v2_valid);
-
 }
 
 bool CamCouple::getD1(float u1, float v1, float& d1, float coord, bool u_or_v){
@@ -480,6 +486,11 @@ bool CamCouple::reprojection(const Eigen::Vector2f& uv1, float d1, Eigen::Vector
   return cam_m_->projectPoint(p, uv2, d2 );
 }
 
+bool CamCouple::reprojection(const Eigen::Vector2f& uv1, float d1, Eigen::Vector2f& uv2){
+  Eigen::Vector3f p;
+  cam_r_->pointAtDepth(uv1, d1, p);
+  return cam_m_->projectPoint(p, uv2 );
+}
 
 void CamCoupleContainer::init(int type){
   type_=type;

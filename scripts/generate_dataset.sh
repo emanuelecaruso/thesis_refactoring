@@ -22,3 +22,6 @@ cd ./blender_scenes
 
 #Render with EEVEE engine
 blender --background ./${dataset_name}.blend --python ./python_scripts/script.py
+
+dataset_name='courtyard_3'
+blender --background ./${dataset_name}.blend --python ./python_scripts/script.py

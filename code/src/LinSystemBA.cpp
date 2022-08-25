@@ -323,9 +323,12 @@ void LinSysBA::updatePoints(){
         int n = col.rows()-(std::count(col.data(), col.data() + col.size(), 0));
         // float var = ( 1.0/ ( (H_pp_[active_pt->p_idx_]) ) )+10e-32;
         // float var = ( 1.0/ ( (H_pp_[active_pt->p_idx_]) ) )+0.00000000001;
-        float var = (1.0/( (omega_(active_pt->p_idx_)/(n/J_SZ)) +0.00001))+0.00001;
+        // float var = (1.0/( (omega_(active_pt->p_idx_)/(n/J_SZ)) +0.1))+0.1;
+        // float var = 1.0/( omega_(active_pt->p_idx_) );
+        float var = active_pt->invdepth_var_;
         // std::cout << var << " " << omega_(active_pt->p_idx_) << " " << n << std::endl;
         // std::cout << H_pp_[active_pt->p_idx_] << " " << var << " " << n <<  std::endl;
+        // std::cout << var << std::endl;
 
         active_pt->updateInvdepthVarAndP( new_invdepth , var );
       }

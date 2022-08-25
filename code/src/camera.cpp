@@ -259,7 +259,7 @@ void Camera::loadPoseFromJsonVal(nlohmann::basic_json<>::value_type f){
 
 void Camera::loadDepthMap(const std::string& path){
   invdepth_map_->image_=cv::imread(path, cv::IMREAD_ANYDEPTH);
-  invdepth_map_->image_/=1.0908;
+  invdepth_map_->image_/=1.11;
 }
 
 void Camera::showRGB(int image_scale) const {

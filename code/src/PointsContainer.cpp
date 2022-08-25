@@ -152,22 +152,46 @@ void PointsContainer::clearProjections(){
 // }
 
 void CandidateProjected::init(Candidate* cand, std::shared_ptr<CamCouple> cam_couple_){
-  cam_couple_->getUv( cand->uv_.x(),cand->uv_.y(),1./cand->invdepth_,uv_.x(),uv_.y() );
-  cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, cand->level_);
-  cam_=cam_couple_->cam_m_;
+
+  assert(cand->invdepth_!=-1);
+  // self projections
+  if(cam_couple_->cam_r_==cam_couple_->cam_m_){
+    uv_.x()=cand->uv_.x();
+    uv_.y()=cand->uv_.y();
+    invdepth_=cand->invdepth_;
+    level_=cand->level_;
+    cam_=cam_couple_->cam_m_;
+  }
+
   level_=cand->level_;
+  cam_=cam_couple_->cam_m_;
+
+  // cam_couple_->getUv( cand->uv_.x(),cand->uv_.y(),1./cand->invdepth_,uv_.x(),uv_.y() );
+  // cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, cand->level_);
+  // float depth;
+  // cam_couple_->getD2(cand->uv_.x(),cand->uv_.y(),1./cand->invdepth_,depth);
+  // invdepth_=1./depth;
+
   float depth;
-  cam_couple_->getD2(cand->uv_.x(),cand->uv_.y(),1./cand->invdepth_,depth);
+  cam_couple_->reprojection(cand->uv_, (1./cand->invdepth_) , uv_, depth);
   invdepth_=1./depth;
+  cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, cand->level_);
 }
 
 
 void ActivePointProjected::init(ActivePoint* active_pt, std::shared_ptr<CamCouple> cam_couple_){
-  cam_couple_->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_.x(),uv_.y() );
-  cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, active_pt->level_);
   float depth;
-  cam_couple_->getD2(active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,depth);
+  cam_couple_->reprojection(active_pt->uv_, (1./active_pt->invdepth_) , uv_, depth);
   invdepth_=1./depth;
+  cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, active_pt->level_);
+
+  // cam_couple_->getUv( active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,uv_.x(),uv_.y() );
+  // cam_couple_->cam_m_->uv2pixelCoords( uv_, pixel_, active_pt->level_);
+  // float depth;
+  // cam_couple_->getD2(active_pt->uv_.x(),active_pt->uv_.y(),1./active_pt->invdepth_,depth);
+  // invdepth_=1./depth;
+
+
 }
 
 bool ActivePointProjected::checkOutlier(){

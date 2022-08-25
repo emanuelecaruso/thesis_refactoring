@@ -25,7 +25,7 @@ width_millimeters=width_meters*1000
 render.resolution_x=resolution_x
 render.resolution_y=resolution_y
 
-cams_num=60
+cams_num=120
 scene.frame_start=0
 scene.frame_end=cams_num-1
 
@@ -90,58 +90,162 @@ def point_at(obj, target, roll=0):
     obj.matrix_world = quat @ rollMatrix
     obj.location = loc
 
+
+
+# status = "ellipse"
+# status = "ellipse+roll"
+status = "sinusoid"
+# status = "sinusoid+roll"
+# status = "line"
 for obj_ in bpy.data.objects:
     if obj_.type=="CAMERA":
+        match status:
+            case "ellipse":
+                ratio=i/cams_num
+                angle=(2*pi)*ratio
+                scl=0.03
 
-        ratio=i/cams_num
-        angle=(2*pi)*ratio
-        scl=0.03
+                #rays
+                Rx=0.3
+                Ry=1.5
+                Rz=0.3
 
-        #########################
-        #ELLIPSE
-        #rays
-        Rx=0.3
-        Ry=1.5
-        Rz=0.3
-        
-        #location
-        x_center=-2.5
-        y_center=0
-        z_center=1.
-        
-        x=math.cos(angle)*Rx+x_center
-        y=math.sin(angle)*Ry+y_center
-        z=math.cos(angle)*Rz+z_center
-        
-        roll=0
-        #########################
-#        #ROLL
-#        #rays
-#        Rx=0.1
-#        Ry=0.1
-#        Rz=0.1
+                #location
+                x_center=-2.5
+                y_center=0
+                z_center=1.
 
-#        #location
-#        x_center=-3
-#        y_center=0
-#        z_center=1.80
+                x=math.cos(angle)*Rx+x_center
+                y=math.sin(angle)*Ry+y_center
+                z=math.cos(angle)*Rz+z_center
 
-#        x=math.cos(angle)*Rx+x_center
-#        y=math.sin(angle)*Ry+y_center
-#        z=math.cos(angle)*Rz+z_center
+                roll=0
 
-#        roll=angle
-        #########################
+                obj_.location=(x,y,z)
+                obj_.rotation_mode='XYZ'
+
+                slide=0.5
+                tar_y=-slide+slide*2*math.sin(ratio*pi)
+                target=(0,tar_y,0.5)
+                point_at(obj_, target, roll)
+
+            case "ellipse+roll":
+                ratio=i/cams_num
+                angle=(2*pi)*ratio
+                scl=0.03
+
+                #rays
+                Rx=0.3
+                Ry=1.5
+                Rz=0.3
+
+                #location
+                x_center=-2.5
+                y_center=0
+                z_center=1.
+
+                x=math.cos(angle)*Rx+x_center
+                y=math.sin(angle)*Ry+y_center
+                z=math.cos(angle)*Rz+z_center
+
+                roll=angle
+
+                obj_.location=(x,y,z)
+                obj_.rotation_mode='XYZ'
 
 
-        obj_.location=(x,y,z)
-        obj_.rotation_mode='XYZ'
+                slide=0.5
+                tar_y=-slide+slide*2*math.sin(ratio*pi)
+                target=(0,tar_y,0.5)
+                point_at(obj_, target, roll)
 
 
-        slide=0.5
-        tar_y=-slide+slide*2*math.sin(ratio*pi)
-        target=(0,tar_y,0.5)
-        point_at(obj_, target, roll)
+            case "sinusoid":
+                ratio=i/cams_num
+                angle=(8*pi)*ratio
+                scl=0.03
+
+                #rays
+                Rx=0.3
+                Ry=1.5
+                Rz=0.3
+
+                #location
+                x_center=-2.5
+                y_center=0
+                z_center=1.
+
+                x=math.sin(angle)*Rx+x_center
+                y=-1.2*ratio
+                z=math.sin(angle)*Rz+z_center
+
+                roll=0
+
+                obj_.location=(x,y,z)
+                obj_.rotation_mode='XYZ'
+
+
+                slide=0.5
+                tar_y=-slide+slide*2*math.sin(ratio*pi)
+                target=(0,y,0.5)
+                point_at(obj_, target, roll)
+
+            case "sinusoid+roll":
+                ratio=i/cams_num
+                angle=(8*pi)*ratio
+                scl=0.03
+
+                #rays
+                Rx=0.3
+                Ry=1.5
+                Rz=0.3
+
+                #location
+                x_center=-2.5
+                y_center=0
+                z_center=1.
+
+                x=math.sin(angle)*Rx+x_center
+                y=-1.2*ratio
+                z=math.sin(angle)*Rz+z_center
+
+                roll=angle/4
+
+                obj_.location=(x,y,z)
+                obj_.rotation_mode='XYZ'
+
+
+                slide=0.5
+                tar_y=-slide+slide*2*math.sin(ratio*pi)
+                target=(0,y,0.5)
+                point_at(obj_, target, roll)
+            case "line":
+                ratio=i/cams_num
+                angle=(4*pi)*ratio
+                scl=0.03
+
+                #rays
+                Rx=0.3
+                Ry=1.5
+                Rz=0.3
+
+                x=-2.5
+                y=-1.5*ratio+0.2
+                z=1
+
+                roll=0
+
+                obj_.location=(x,y,z)
+                obj_.rotation_mode='XYZ'
+
+                slide=0.2
+                tar_y=-slide+slide*math.sin(angle)
+                tar_z=-slide+slide*math.cos(angle)
+                target=(0,y+tar_y,0.5+tar_z)
+                point_at(obj_, target, roll)
+
+
+
         obj_.scale=(scl,scl,scl)
 
         marker = bpy.data.scenes[0].timeline_markers.new('F_'+str(i), frame=i)

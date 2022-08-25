@@ -183,6 +183,10 @@ void PointsHandler::projectCandidatesOnLastFrame(){
   }
 }
 
+void PointsHandler::selfProjectCandidatesOnLastFrame(){
+  projectCandidates(dso_->frame_current_, dso_->frame_current_ );
+}
+
 void PointsHandler::projectActivePointsOnLastFrame(){
 
   for (ActivePointProjected* active_pt_proj : dso_->frame_current_->points_container_->active_points_projected_ )
@@ -216,7 +220,7 @@ void PointsHandler::projectCandidates(CameraForMapping* cam_r, CameraForMapping*
 void PointsHandler::projectActivePoints(CameraForMapping* cam_r, CameraForMapping* cam_m ){
   std::shared_ptr<CamCouple> cam_couple(new CamCouple(cam_r, cam_m) );
 
-  // iterate through candidates
+  // iterate through active points
   for(ActivePoint* active_pt : (cam_r->points_container_->active_points_)){
     if(active_pt->invdepth_==-1)
       continue;
@@ -227,16 +231,17 @@ void PointsHandler::projectActivePoints(CameraForMapping* cam_r, CameraForMappin
   }
 }
 
-void PointsHandler::trackCandidates(bool groundtruth){
+void PointsHandler::trackCandidatesReverse(bool groundtruth){
 
   double t_start=getTime();
 
-  sharedCoutDebug("   - Candidates tracking: ");
+  sharedCoutDebug("   - Candidates reverse tracking: ");
 
   CameraForMapping* last_keyframe = dso_->cameras_container_->getLastActiveKeyframe();
 
+  int counter = 0;
   // iterate through keyframes (except last)
-  for (int i=0; i<dso_->cameras_container_->keyframes_active_.size()-1; i++){
+  for (int i=dso_->cameras_container_->keyframes_active_.size()-2; i>=0; i--){
     CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
 
 
@@ -251,15 +256,91 @@ void PointsHandler::trackCandidates(bool groundtruth){
       n_cands_repeptitive_=0;
       n_cands_no_min_=0;
       n_cands_tracked_=0;
+      n_cands_ep_too_short_=0;
+      n_cands_no_clear_min_=0;
+      n_cands_updated_=0;
 
+      trackCandidates(last_keyframe, keyframe, counter<2);
+      // trackCandidates(keyframe, last_keyframe);
+
+      sharedCoutDebug("       - Keyframe: "+ keyframe->name_ );
+      sharedCoutDebug("           - total: " + std::to_string(n_cands_to_track_));
+      sharedCoutDebug("           - tracked: " + std::to_string(n_cands_tracked_));
+      sharedCoutDebug("               - updated: " + std::to_string(n_cands_updated_));
+      sharedCoutDebug("               - not_updated: " + std::to_string(n_cands_ep_too_short_));
+      sharedCoutDebug("           - removed: " + std::to_string(n_cands_removed_));
+      sharedCoutDebug("               - repetitive: " + std::to_string(n_cands_repeptitive_));
+      // sharedCoutDebug("               - ep segment too short: " + std::to_string(n_cands_ep_too_short_));
+      sharedCoutDebug("               - no clear min: " + std::to_string(n_cands_no_clear_min_));
+      sharedCoutDebug("               - var too high: " + std::to_string(n_cands_var_too_high_));
+      sharedCoutDebug("               - no min: " + std::to_string(n_cands_no_min_));
+    }
+
+    counter++;
+  }
+}
+
+void PointsHandler::removeOcclusionsInLastKFGrountruth(){
+  projectActivePointsOnLastFrame();
+
+
+  // iterate through active points projected
+  for(int i=dso_->frame_current_->points_container_->active_points_projected_.size()-1; i>=0; i--){
+    ActivePointProjected* active_pt_proj = dso_->frame_current_->points_container_->active_points_projected_[i];
+
+    // take invdepth gt
+    float invdepth_val = dso_->frame_current_->grountruth_camera_->invdepth_map_->evalPixel(active_pt_proj->pixel_);
+    float invdepth_gt = invdepth_val/dso_->frame_current_->cam_parameters_->min_depth;
+
+    // take current invdepth
+    float invdepth_pred = active_pt_proj->invdepth_;
+
+    if (1/invdepth_pred > (1/invdepth_gt)+0.2)
+      active_pt_proj->active_pt_->remove();
+
+  }
+}
+
+
+void PointsHandler::trackCandidates(bool groundtruth){
+
+  double t_start=getTime();
+
+  sharedCoutDebug("   - Candidates tracking: ");
+
+  CameraForMapping* last_keyframe = dso_->cameras_container_->getLastActiveKeyframe();
+
+  // iterate through keyframes (except last)
+  for (int i=dso_->cameras_container_->keyframes_active_.size()-2; i>=0; i--){
+    CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[i];
+
+
+    if(groundtruth){
+      trackCandidatesGroundtruth(keyframe);
+    }
+    else{
+
+      n_cands_removed_=0;
+      n_cands_to_track_=0;
+      n_cands_var_too_high_=0;
+      n_cands_repeptitive_=0;
+      n_cands_no_min_=0;
+      n_cands_tracked_=0;
+      n_cands_ep_too_short_=0;
+      n_cands_no_clear_min_=0;
+      n_cands_updated_=0;
+
+      // trackCandidates(last_keyframe, keyframe);
       trackCandidates(keyframe, last_keyframe);
 
       sharedCoutDebug("       - Keyframe: "+ keyframe->name_ );
       sharedCoutDebug("           - total: " + std::to_string(n_cands_to_track_));
       sharedCoutDebug("           - tracked: " + std::to_string(n_cands_tracked_));
+      sharedCoutDebug("               - updated: " + std::to_string(n_cands_updated_));
+      sharedCoutDebug("               - not_updated: " + std::to_string(n_cands_ep_too_short_));
       sharedCoutDebug("           - removed: " + std::to_string(n_cands_removed_));
       sharedCoutDebug("               - repetitive: " + std::to_string(n_cands_repeptitive_));
-      sharedCoutDebug("               - ep segment too short: " + std::to_string(n_cands_ep_too_short_));
+      // sharedCoutDebug("               - ep segment too short: " + std::to_string(n_cands_ep_too_short_));
       sharedCoutDebug("               - no clear min: " + std::to_string(n_cands_no_clear_min_));
       sharedCoutDebug("               - var too high: " + std::to_string(n_cands_var_too_high_));
       sharedCoutDebug("               - no min: " + std::to_string(n_cands_no_min_));
@@ -284,16 +365,16 @@ void PointsHandler::trackCandidatesGroundtruth(CameraForMapping* keyframe){
 
 }
 
-void PointsHandler::trackCandidates(CameraForMapping* keyframe, CameraForMapping* last_keyframe){
+void PointsHandler::trackCandidates(CameraForMapping* kf1, CameraForMapping* kf2, bool remove){
 
-  std::shared_ptr<CamCouple> cam_couple =  std::make_shared<CamCouple>(keyframe,last_keyframe);
+  std::shared_ptr<CamCouple> cam_couple =  std::make_shared<CamCouple>(kf1,kf2);
 
-  n_cands_to_track_+= keyframe->points_container_->candidates_.size();
+  n_cands_to_track_+= kf1->points_container_->candidates_.size();
   // iterate through candidates
-  for (int i=keyframe->points_container_->candidates_.size()-1; i>=0; i--){
-    Candidate* cand = keyframe->points_container_->candidates_.at(i);
+  for (int i=kf1->points_container_->candidates_.size()-1; i>=0; i--){
+    Candidate* cand = kf1->points_container_->candidates_.at(i);
 
-    if( !trackCandidate(cand, cam_couple) ){
+    if( !trackCandidate(cand, cam_couple) && remove ){
       cand->remove();
       n_cands_removed_++;
     }
@@ -305,39 +386,35 @@ void PointsHandler::trackCandidates(CameraForMapping* keyframe, CameraForMapping
 bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> cam_couple){
   // get uv of min and max depth
   Eigen::Vector2f uv_min, uv_max;
-  cam_couple->getUv(cand->uv_.x(),cand->uv_.y(),cand->depth_min_,uv_min.x(),uv_min.y());
-  cam_couple->getUv(cand->uv_.x(),cand->uv_.y(),cand->depth_max_,uv_max.x(),uv_max.y());
+  // cam_couple->getUv(cand->uv_.x(),cand->uv_.y(),cand->depth_min_,uv_min.x(),uv_min.y());
+  // cam_couple->getUv(cand->uv_.x(),cand->uv_.y(),cand->depth_max_,uv_max.x(),uv_max.y());
+  cam_couple->reprojection(cand->uv_,cand->depth_min_,uv_min);
+  cam_couple->reprojection(cand->uv_,cand->depth_max_,uv_max);
 
   // check if dp/dinvdpth is too small
   float der = (uv_min-uv_max).norm()/((1.0/cand->depth_min_)-(1.0/cand->depth_max_));
-  if(der<der_threshold){
-    n_cands_var_too_high_++;
-    return false;
-  }
+  // if(der<der_threshold){
+  //   n_cands_var_too_high_++;
+  //   return false;
+  // }
 
   // create epipolar line
   EpipolarLine ep_segment( cam_couple->cam_m_, uv_min, uv_max, cand->level_) ;
 
-  // if epipolar segment is too short
-  if (ep_segment.uvs.size()<=3){
-    n_cands_ep_too_short_++;
-    return false;
-  }
 
   // search pixel in epipolar line
   CandTracker CandTracker(ep_segment, cand, cam_couple );
   int min_found = CandTracker.searchMin();
+
   switch (min_found){
     case 0:{
-      if(CandTracker.updateCand()){
-        n_cands_tracked_++;
-        return true;
+      n_cands_tracked_++;
+      n_cands_updated_++;
+      if (debug_mapping_match && dso_->frame_current_idx_>=debug_start_frame){
+        cand->showCandidate();
+        CandTracker.ep_segment_.showEpipolarWithMin(CandTracker.pixel_, red, cand->level_, 2);
       }
-      else{
-        n_cands_var_too_high_++;
-        return false;
-      }
-
+      return true;
     }
     case 1:{
       n_cands_repeptitive_++;
@@ -350,6 +427,15 @@ bool PointsHandler::trackCandidate(Candidate* cand, std::shared_ptr<CamCouple> c
     }
     case 3:{
       n_cands_no_clear_min_++;
+      return false;
+    }
+    case 4:{
+      n_cands_var_too_high_++;
+      return false;
+    }
+    case 5:{
+      n_cands_ep_too_short_++;
+      n_cands_tracked_++;
       return true;
     }
   }
@@ -395,7 +481,7 @@ float CandTracker::getStandardDeviation( ){
 }
 
 
-bool CandTracker::updateCand(){
+bool CandTracker::updateCand(int max_pxls_inliers){
 
   float coord;
   if(ep_segment_.u_or_v)
@@ -409,7 +495,9 @@ bool CandTracker::updateCand(){
   cand_->invdepth_=1./depth;
 
   // get standard deviation
-  float standard_deviation = getStandardDeviation();
+  // float standard_deviation = getStandardDeviation();
+  // float standard_deviation = cand_->cam_->cam_parameters_->pixel_width*max_pxls_inliers;
+  float standard_deviation = cand_->cam_->cam_parameters_->pixel_width;
 
   // update bounds
   float bound_min, bound_max;
@@ -422,7 +510,11 @@ bool CandTracker::updateCand(){
   if(!valid_d || !valid_min || !valid_max)
     return false;
 
-  cand_->invdepth_var_= pow(((1./cand_->depth_min_)-(1./cand_->depth_max_))*0.5,2);
+  cand_->invdepth_var_= pow(((1./cand_->depth_min_)-(1./cand_->depth_max_))*0.5,2)*1000+0.1;
+  // cand_->invdepth_var_= ((1./cand_->depth_min_)-(1./cand_->depth_max_))*500;
+
+  // cand_->invdepth_var_= max_pxls_inliers*0.2;
+  // cand_->invdepth_var_= 1;
 
   if(cand_->invdepth_var_>var_threshold){
     return false;
@@ -443,6 +535,8 @@ int CandTracker::searchMin( ){
 
     if(!cam_couple_->cam_m_->pyramid_->getC(cand_->level_)->pixelInRange(pixel_m))
       continue;
+
+    n_valid_uvs_++;
 
     float cost_magn = getCostMagn(pixel_m);
     float cost_phase=0;
@@ -484,16 +578,18 @@ int CandTracker::searchMin( ){
     }
   }
 
+  if (n_valid_uvs_<=3){
+    return 5;
+  }
+
   // no mins
   if(!min_segment_reached)
     return 2;
 
-  if (debug_mapping_match){
-    cand_->showCandidate();
-    ep_segment_.showEpipolarWithMin(pixel_, red, cand_->level_, 2);
-  }
-
-  return 0;
+  if(updateCand(max_pxls_inliers))
+    return 0;
+  else
+    return 4;
 }
 
 float CandTracker::getCostMagn(pxl& pixel){
@@ -546,7 +642,9 @@ bool CandTracker::getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, fl
 
   Eigen::Vector2f tip_m, direction_m;
 
-  cam_couple_->getUv(tip_to_project.x(), tip_to_project.y(), d1, tip_m.x(), tip_m.y() );
+  // cam_couple_->getUv(tip_to_project.x(), tip_to_project.y(), d1, tip_m.x(), tip_m.y() );
+  float depth;
+  cam_couple_->reprojection(tip_to_project, d1, tip_m, depth );
 
   direction_m=tip_m-uv_m;
 

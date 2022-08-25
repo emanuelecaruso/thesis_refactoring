@@ -167,19 +167,19 @@ void Tracker::trackCam(){
             // get measurement
             MeasTracking measurement(MeasTracking(active_point, cam_couple, level ));
 
-            if( measurement.valid_){
-            // if( level>0 && measurement.valid_){
-            // if(measurement.valid_ && !measurement.occlusion_){
-              // update linear system with that measurement
-              measurement.loadJacobians(active_point);
-              lin_sys_tracking.addMeasurement(measurement);
-              n_meas++;
-            }
-            // else if( level==0 && measurement.valid_ && !measurement.occlusion_){
+            // if( measurement.valid_){
+            // // if( level>0 && measurement.valid_){
+            // // if(measurement.valid_ && !measurement.occlusion_){
+            //   // update linear system with that measurement
             //   measurement.loadJacobians(active_point);
             //   lin_sys_tracking.addMeasurement(measurement);
             //   n_meas++;
             // }
+            if( measurement.valid_ && !measurement.occlusion_){
+              measurement.loadJacobians(active_point);
+              lin_sys_tracking.addMeasurement(measurement);
+              n_meas++;
+            }
 
           }
 
@@ -227,6 +227,95 @@ void Tracker::trackCam(){
 
       chi_history_.clear();
     }
+
+
+    // // for (int level=0; level<1 ; level++){
+    //
+    // int iterations_increment = max_iterations_ls;
+    // for(int iteration=0; iteration<max_iterations_ls; iteration++){
+    // // while(true){
+    //   double t_start=getTime();
+    //
+    //   int n_meas =0;
+    //
+    //   // iterate through keyframes (except last)
+    //   for( int i=0; i<dso_->cameras_container_->frames_with_active_pts_.size() ; i++){
+    //     CameraForMapping* cam_r = dso_->cameras_container_->frames_with_active_pts_[i];
+    //
+    //     std::shared_ptr<CamCouple> cam_couple = std::make_shared<CamCouple>( cam_r, cam_m ) ;
+    //
+    //
+    //     // select active points vector
+    //     // std::vector<ActivePoint*>& active_points = cam_r->points_container_->getActivePoints(level);
+    //     std::vector<ActivePoint*>& active_points = cam_r->points_container_->active_points_;
+    //
+    //     // iterate through active points (at current coarse level)
+    //     for (int j=0; j<active_points.size(); j++){
+    //
+    //       ActivePoint* active_point = active_points[j];
+    //
+    //       // get measurement
+    //       MeasTracking measurement(MeasTracking(active_point, cam_couple, 0 ));
+    //
+    //       // if( measurement.valid_){
+    //       // // if( level>0 && measurement.valid_){
+    //       // // if(measurement.valid_ && !measurement.occlusion_){
+    //       //   // update linear system with that measurement
+    //       //   measurement.loadJacobians(active_point);
+    //       //   lin_sys_tracking.addMeasurement(measurement);
+    //       //   n_meas++;
+    //       // }
+    //       if( measurement.valid_ && !measurement.occlusion_){
+    //         measurement.loadJacobians(active_point);
+    //         lin_sys_tracking.addMeasurement(measurement);
+    //         n_meas++;
+    //       }
+    //
+    //     }
+    //
+    //
+    //   }
+    //
+    //   lin_sys_tracking.chi /= (float)n_meas;
+    //
+    //   // assert(n_meas>0);
+    //   lin_sys_tracking.updateCameraPose();
+    //
+    //
+    //   double t_end=getTime();
+    //   deltaTime_tot+=(t_end-t_start);
+    //
+    //   if(debug_tracking  && dso_->frame_current_idx_>=debug_start_frame){
+    //
+    //     // std::cout << "level " << level << std::endl;
+    //     std::cout << "level 0+, chi (tracking) " << lin_sys_tracking.chi << "a: " << dso_->frame_current_->a_exposure_ << ", b: " << dso_->frame_current_->b_exposure_ << std::endl;
+    //
+    //     dso_->points_handler_->projectActivePointsOnLastFrame();
+    //     // dso_->points_handler_->showProjectedActivePoints("active pts proj during tracking");
+    //     showProjectedActivePoints(0);
+    //     dso_->spectator_->renderState();
+    //     dso_->spectator_->showSpectator();
+    //
+    //   }
+    //   // cam_couple_container.update();
+    //
+    //   bool stop = false;
+    //
+    //
+    //   if (checkConvergence(lin_sys_tracking.chi, 0)){
+    //     stop=iteration;
+    //     iterations_increment=iteration+1;
+    //     break;
+    //   }
+    //
+    //
+    //   lin_sys_tracking.clear();
+    //
+    //
+    // }
+    // iterations+=iterations_increment;
+    //
+    // chi_history_.clear();
 
     sharedCoutDebug("   - Frame tracked, " + std::to_string(iterations) + " iterations, "+std::to_string((int)deltaTime_tot)+" ms");
 
