@@ -145,20 +145,11 @@ bool Dso::initialize(){
 
   points_handler_->sampleCandidates(frame_current_); // sample candidates as high gradient points
 
-  int n_upd = points_handler_->trackCandidatesReverse(take_gt_points);
-
-    // points_handler_->trackCandidates(frame_current_, cameras_container_->keyframes_active_[0], true); // track existing candidates
-
-  // if(n_upd<max_num_active_points/5){
-  //   std::cout << "Frame not valid for initialization" << std::endl;
-  //   cameras_container_->removeActiveKeyframe(frame_current_);
-  //   return false;
-  // }
 
 
-  points_handler_->trackCandidates(take_gt_points); // track existing candidates
   if(reverse_tracking)
     points_handler_->trackCandidatesReverse(take_gt_points); // track existing candidates
+  points_handler_->trackCandidates(take_gt_points); // track existing candidates
 
   // project candidates and active points on last frame
   candidates_activator_->activateCandidates();
@@ -293,16 +284,13 @@ void Dso::testInvdepths(){
 
       // sample new candidates
       points_handler_->sampleCandidates(frame_current_); // sample candidates as high gradient points
-
-
-      // track existing candidates
-      // points_handler_->trackCandidates(take_gt_points);
+      points_handler_->removeOcclusionsInLastKFGrountruthCands();
 
 
       points_handler_->collectInvdepths();
 
-      // points_handler_->projectCandidatesOnLastFrame();
-      // points_handler_->showProjectedCandidates( "cands proj");
+      points_handler_->projectCandidatesOnLastFrame();
+      points_handler_->showProjectedCandidates( "cands proj");
 
     }
 
@@ -326,14 +314,6 @@ bool Dso::doDso(){
     // sample new candidates
     points_handler_->sampleCandidates(frame_current_); // sample candidates as high gradient points
 
-    // track existing candidates
-    points_handler_->trackCandidates(take_gt_points);
-    points_handler_->trackCandidatesReverse(take_gt_points);
-
-    // activate points
-    candidates_activator_->activateCandidates();
-
-
     // debug mapping
     if(debug_mapping && frame_current_idx_>=debug_start_frame){
       points_handler_->projectCandidatesOnLastFrame();
@@ -341,6 +321,27 @@ bool Dso::doDso(){
       points_handler_->showProjectedCandidates( "cands proj");
       points_handler_->showProjectedActivePoints(" act pts proj");
     }
+    if(reverse_tracking)
+      points_handler_->trackCandidatesReverse(take_gt_points);
+    // debug mapping
+    if(debug_mapping && frame_current_idx_>=debug_start_frame){
+      points_handler_->projectCandidatesOnLastFrame();
+      points_handler_->projectActivePointsOnLastFrame();
+      points_handler_->showProjectedCandidates( "cands proj");
+      points_handler_->showProjectedActivePoints(" act pts proj");
+    }
+      // track existing candidates
+    points_handler_->trackCandidates(take_gt_points);
+    if(debug_mapping && frame_current_idx_>=debug_start_frame){
+      points_handler_->projectCandidatesOnLastFrame();
+      points_handler_->projectActivePointsOnLastFrame();
+      points_handler_->showProjectedCandidates( "cands proj");
+      points_handler_->showProjectedActivePoints(" act pts proj");
+    }
+    // activate points
+    candidates_activator_->activateCandidates();
+
+
   }
 
 
@@ -348,13 +349,6 @@ bool Dso::doDso(){
   if (cameras_container_->keyframes_active_.size()>2){
     if(remove_occlusions_gt)
       points_handler_->removeOcclusionsInLastKFGrountruth();
-
-
-
-
-    if(remove_occlusions_gt)
-      points_handler_->removeOcclusionsInLastKFGrountruth();
-
 
     // marginalize points not in last camera
     bundle_adj_->marginalize();

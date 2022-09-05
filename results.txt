@@ -5,84 +5,88 @@ X: multiplier
 Y:n.iterations
 (right convergence has to be checked)
 
-0
-angle error: 0.00362579
-position error norm: 0.016889
-Total iterations avg 144.041
-
-3
-angle error: 0.0036851
-position error norm: 0.0153698
-Total iterations avg 87.2144
-
-5
-Total error poses
-angle error: 0.00397135
-position error norm: 0.0144983
-Total iterations avg 80.8005
-
-10
-angle error: 0.00385758
-position error norm: 0.0159464
-Total iterations avg 72.408
-
-20
-angle error: 0.00371853
-position error norm: 0.0156567
-Total iterations avg 59.7065
-
-50
-angle error: 0.00380197
-position error norm: 0.0145675
-Total iterations avg 51.9871
-
-75
-ngle error: 0.00390889
-position error norm: 0.0149463
-Total iterations avg 47.8313
-
+----------
+linear
+0_ 144.041
+3_ 87.2144
+5_ 80.8005
+10_ 72.408
+20_ 59.7065
+50_ 51.9871
+75_ 47.8313
 100 out
+
+###############################################à
 
 Comparison (table)
 X={ Tracking, Tracking+reverse1, Tracking+reverse2  }
 Y=accuracy
 
+none
+angle error: 0.00338144
+position error norm: 0.020287
+
+0
+
+1
+angle error: 0.00225911
+position error norm: 0.0156259
+
+2
+angle error: 0.00302847
+position error norm: 0.0143785
+
+3
+angle error: 0.00310427
+position error norm: 0.0198338
+
+###############################################à
 Comparison (table)
 X={marg, non marg}
 Y=accuracy
 
 non marg
-angle error: 0.00367088
-position error norm: 0.0157623
+angle error: 0.00421909
+position error norm: 0.0263689
 
 marg
-angle error: 0.0116366
-position error norm: 0.0506524
+angle error: 0.00746662
+position error norm: 0.0645813
+
+###############################################à
 
 N act pts
 X= n. act pts
 Y= accuracy
 
-250
-out
+200
+angle error: 0.00707734
+position error norm: 0.0310238
+
+300
+angle error: 0.00652233
+position error norm: 0.0266904
 
 500
-angle error: 0.00583738
-position error norm: 0.0210734
+angle error: 0.00502709
+position error norm: 0.0225387
+
+750
+angle error: 0.00502405
+position error norm: 0.0184046
 
 1000
-angle error: 0.00461361
-position error norm: 0.0167851
-Total iterations avg 79.3164
+angle error: 0.00453335
+position error norm: 0.0181459
 
 2000
-angle error: 0.00367088
-position error norm: 0.0157623
+angle error: 0.00321852
+position error norm: 0.0124563
 
 3000
-angle error: 0.00515851
-position error norm: 0.0245328
+angle error: 0.00301012
+position error norm: 0.0111724
 
 4000
-angle error: 0.00534011
-position error norm: 0.0247122
+angle error: 0.0030435
+position error norm: 0.0115143

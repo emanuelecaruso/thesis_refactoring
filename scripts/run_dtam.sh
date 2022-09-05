@@ -10,8 +10,8 @@ cd code
 # dataset_name='bunny_2'
 # dataset_name='bunny_3'
 # dataset_name='bunny_4'
-dataset_name='bunny_5'
-# dataset_name='courtyard_1'
+# dataset_name='bunny_5'
+dataset_name='courtyard_1'
 # dataset_name='courtyard_2'
 # dataset_name='courtyard_3'
 # dataset_name='courtyard_4'
@@ -37,5 +37,5 @@ dataset_name='bunny_5'
 
 # run
 # ./build/executables/test_dso ${dataset_name}
-./build/executables/test_coeffs ${dataset_name}
-# ./build/executables/test_tracking ${dataset_name}
+# ./build/executables/test_coeffs ${dataset_name}
+./build/executables/test_tracking ${dataset_name}

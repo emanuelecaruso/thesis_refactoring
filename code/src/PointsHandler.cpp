@@ -236,27 +236,33 @@ void PointsHandler::collectInvdepths(){
 
 
   CameraForMapping* last_keyframe = dso_->cameras_container_->getLastActiveKeyframe();
-  CameraForMapping* keyframe = dso_->cameras_container_->keyframes_active_[dso_->cameras_container_->keyframes_active_.size()-2];
+  int n_kfs = std::fmin(n_reverse_min,dso_->cameras_container_->keyframes_active_.size()-1);
+  for( int j=0; j<n_kfs; j++){
+    CameraForMapping* kf = dso_->cameras_container_->keyframes_active_[dso_->cameras_container_->keyframes_active_.size()-j-2];
+    std::shared_ptr<CamCouple> cam_couple =  std::make_shared<CamCouple>(last_keyframe,kf);
 
-  std::shared_ptr<CamCouple> cam_couple =  std::make_shared<CamCouple>(keyframe,last_keyframe);
+    // iterate through candidates
+    for (int i=last_keyframe->points_container_->candidates_.size()-1; i>=0; i--){
+      Candidate* cand = last_keyframe->points_container_->candidates_.at(i);
+      bool min_found = trackCandidate(cand, cam_couple);
 
-  // iterate through candidates
-  for (int i=keyframe->points_container_->candidates_.size()-1; i>=0; i--){
-    Candidate* cand = keyframe->points_container_->candidates_.at(i);
+      if(j==n_kfs-1){
 
-    bool min_found = trackCandidate(cand, cam_couple);
+        if(min_found && cand->invdepth_var_!=-1){
+          assert(std::is_sorted(dso_->gradients.begin(),dso_->gradients.end()));
 
-    if(min_found && cand->invdepth_var_!=-1){
-      assert(std::is_sorted(dso_->gradients.begin(),dso_->gradients.end()));
-
-      auto it= std::upper_bound (dso_->gradients.begin(), dso_->gradients.end(), cand->magn_cd_);
-      unsigned long idx = it - dso_->gradients.begin();
-      dso_->invdepth_errors.insert( dso_->invdepth_errors.begin()+idx, cand->getInvdepthErr() );
-      dso_->gradients.insert( it, cand->magn_cd_ );
+          auto it= std::upper_bound (dso_->gradients.begin(), dso_->gradients.end(), cand->magn_cd_);
+          unsigned long idx = it - dso_->gradients.begin();
+          dso_->invdepth_errors.insert( dso_->invdepth_errors.begin()+idx, cand->getInvdepthErr() );
+          dso_->gradients.insert( it, cand->magn_cd_ );
+        }
+        else
+          cand->remove();
+      }
 
     }
-
   }
+
 }
 
 
@@ -289,7 +295,7 @@ int PointsHandler::trackCandidatesReverse(bool groundtruth){
       n_cands_no_clear_min_=0;
       n_cands_updated_=0;
 
-      trackCandidates(last_keyframe, keyframe, counter<2);
+      trackCandidates(last_keyframe, keyframe, counter<n_reverse_min);
       // trackCandidates(keyframe, last_keyframe);
 
       sharedCoutDebug("       - Keyframe: "+ keyframe->name_ );
@@ -312,6 +318,27 @@ int PointsHandler::trackCandidatesReverse(bool groundtruth){
   sharedCoutDebug("   - Candidates tracked: " + std::to_string((int)(t_end-t_start)) + " ms");
 
   return n_cands_updated_;
+}
+
+void PointsHandler::removeOcclusionsInLastKFGrountruthCands(){
+  projectCandidatesOnLastFrame();
+
+
+  // iterate through active points projected
+  for(int i=dso_->frame_current_->points_container_->candidates_projected_.size()-1; i>=0; i--){
+    CandidateProjected* cand_proj = dso_->frame_current_->points_container_->candidates_projected_[i];
+
+    // take invdepth gt
+    float invdepth_val = dso_->frame_current_->grountruth_camera_->invdepth_map_->evalPixel(cand_proj->pixel_);
+    float invdepth_gt = invdepth_val/dso_->frame_current_->cam_parameters_->min_depth;
+
+    // take current invdepth
+    float invdepth_pred = cand_proj->invdepth_;
+
+    if (1/invdepth_pred > (1/invdepth_gt)+0.2)
+      cand_proj->cand_->remove();
+
+  }
 }
 
 void PointsHandler::removeOcclusionsInLastKFGrountruth(){
@@ -513,7 +540,7 @@ float CandTracker::getStandardDeviation( ){
 }
 
 
-bool CandTracker::updateCand(int max_pxls_inliers){
+bool CandTracker::updateCand(int n_pxls_inliers){
 
   float coord;
   if(ep_segment_.u_or_v)
@@ -528,8 +555,8 @@ bool CandTracker::updateCand(int max_pxls_inliers){
 
   // get standard deviation
   // float standard_deviation = getStandardDeviation();
-  // float standard_deviation = cand_->cam_->cam_parameters_->pixel_width*max_pxls_inliers;
-  float standard_deviation = cand_->cam_->cam_parameters_->pixel_width;
+  float standard_deviation = cand_->cam_->cam_parameters_->pixel_width*n_pxls_inliers*0.75;
+  // float standard_deviation = cand_->cam_->cam_parameters_->pixel_width;
 
   // update bounds
   float bound_min, bound_max;
@@ -631,7 +658,7 @@ int CandTracker::searchMin( ){
   if(!min_segment_reached)
     return 2;
 
-  if(updateCand(max_pxls_inliers))
+  if(updateCand(n_pxls_inliers))
     return 0;
   else
     return 4;

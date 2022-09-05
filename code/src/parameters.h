@@ -55,6 +55,7 @@ extern int coarsest_level_pyr;
 extern int reg_level;
 extern float grad_threshold;
 extern int num_candidates;
+extern int n_reverse_min;
 
 
 extern int num_active_keyframes;

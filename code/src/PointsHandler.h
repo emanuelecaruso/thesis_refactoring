@@ -57,6 +57,7 @@ class PointsHandler{
     void collectInvdepths();
 
     void removeOcclusionsInLastKFGrountruth();
+    void removeOcclusionsInLastKFGrountruthCands();
     void trackCandidates(CameraForMapping* kf1, CameraForMapping* kf2, bool remove=true);
   protected:
     void trackCandidatesGroundtruth(CameraForMapping* keyframe);
@@ -95,7 +96,7 @@ class CandTracker{
     float getCostGradient(pxl& pixel_m);
     bool getPhaseCostContribute(pxl& pixel_m, Eigen::Vector2f& uv_m, float& cost_phase);
     float getStandardDeviation( );
-    bool updateCand( int max_pxls_inliers);
+    bool updateCand( int n_pxls_inliers);
 
 
 };

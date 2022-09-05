@@ -9,7 +9,7 @@ bool debug_mapping_match = false;
 bool debug_tracking=false;
 bool debug_optimization= false;
 bool debug_gt_error= false;
-int debug_start_frame = 3;
+int debug_start_frame = 0;
 bool use_spectator= true;
 
 // tests
@@ -49,7 +49,8 @@ int coarsest_lev_magn = candidate_level+3;
 int reg_level=candidate_level+5;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
 // float grad_threshold=0.1;
 float grad_threshold=0.005;
-int num_candidates=2000;
+int max_num_active_points=1500;
+int num_candidates=max_num_active_points;
 
 
 // keyframe selection
@@ -61,7 +62,6 @@ float percentage_marg_pts_threshold= 0.05;
 
 // optimization
 int max_iterations_ba=10;
-int max_num_active_points=2000;
 float intensity_coeff_ba= 0.2;
 float gradient_coeff_ba=0.8;
 // float intensity_coeff_ba= 0.9;
@@ -79,7 +79,7 @@ float sat_coeff=1;
 float huber_coeff=0.05;
 float occlusion_coeff=0.5;
 float fixed_thresh = 0.05;
-float occlusion_valid_ratio_thresh= 0.3;
+float occlusion_valid_ratio_thresh= 0.5;
 // float occlusion_valid_ratio_thresh= 0.6;
 float valid_ratio_thresh= 0.2;
 float level_error_multiplier= 2;
@@ -93,14 +93,15 @@ float variance= 0.1;
 int robustifier_dofs=1;
 float ratio_for_convergence= 0.1;
 // float conv_threshold= 0.00001;
-float conv_threshold= (intensity_coeff_ba+gradient_coeff_ba)*0.000001;
+float conv_threshold= 0.000001;
 // float conv_threshold= (intensity_coeff_ba+gradient_coeff_ba)*0.00000000001;
-float level_error_multiplier_conv=10;
+float level_error_multiplier_conv=50;
 int coarsest_level_pyr=std::max(coarsest_level,coarsest_lev_magn);
+int n_reverse_min = 1;
 
 
 // mapping
-// float cost_threshold=0.7;
+// float cost_threshold=0.7;Bidirectional
 // float var_threshold= 1000;
 float var_threshold= 1000;
 // float der_threshold=0.0001;
@@ -124,7 +125,7 @@ int max_pxls_inliers = 5;
 
 //  video streaming
 int start_frame=0;
-int end_frame=500;
+int end_frame=2000;
 int fps=30;
 
 

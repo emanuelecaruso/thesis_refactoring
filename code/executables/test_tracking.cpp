@@ -12,42 +12,42 @@ using namespace std;
 int main (int argc, char * argv[]) {
 
   debug_initialization=false;
-  debug_mapping=false;
+  debug_mapping=true;
   debug_mapping_match = false;
   debug_tracking=false;
   debug_optimization= false;
   use_spectator=true;
-  // debug_gt_error= false;
-  // take_gt_poses=false;
-  // take_gt_points=false;
-  // take_gt_initialization=true;
-  // remove_occlusions_gt=false;
-  // max_iterations_ba=10;
-  // max_iterations_ls=1000;
-  // test_track=true;
+  debug_gt_error= false;
+  take_gt_poses=false;
+  take_gt_points=false;
+  take_gt_initialization=true;
+  remove_occlusions_gt=false;
+  max_iterations_ba=10;
+  max_iterations_ls=1000;
+  test_track=true;
 
   // read arguments
   const std::vector<std::string> datasets = {
     "bunny_1",
     "bunny_2",
     "bunny_3",
-    "bunny_4",
+    // "bunny_4",
     "bunny_5",
     "courtyard_1",
-    "courtyard_2",
-    "courtyard_3",
-    "courtyard_4",
-    "courtyard_5",
-    "cube_1",
-    "cube_2",
-    "cube_3",
-    "cube_4",
-    "cube_5",
+    // "courtyard_2",
+    // "courtyard_3",
+    // "courtyard_4",
+    // "courtyard_5",
+    // "cube_1",
+    // "cube_2",
+    // "cube_3",
+    // "cube_4",
+    // "cube_5",
     "spaceship_1",
     "spaceship_2",
-    "spaceship_3",
-    "spaceship_4",
-    "spaceship_5"
+    // "spaceship_3",
+    // "spaceship_4",
+    // "spaceship_5"
   };
   std::string path =  "./dataset/";
 
