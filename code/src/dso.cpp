@@ -45,8 +45,9 @@ void Dso::startSequential(){
     else{
       if(collect_invdepth_errs)
         testInvdepths();
-      else
+      else{
         doDso();
+      }
     }
 
     counter++;
@@ -56,6 +57,8 @@ void Dso::startSequential(){
     // sharedCoutDebug("\nFrame "+std::to_string(frame_current_idx_)+" ("+frame_current_->name_+") , frame delay: "+std::to_string(frame_delay));
 
   }
+  video_spec_.release();
+  video_proj_.release();
 }
 
 
@@ -314,22 +317,9 @@ bool Dso::doDso(){
     // sample new candidates
     points_handler_->sampleCandidates(frame_current_); // sample candidates as high gradient points
 
-    // debug mapping
-    if(debug_mapping && frame_current_idx_>=debug_start_frame){
-      points_handler_->projectCandidatesOnLastFrame();
-      points_handler_->projectActivePointsOnLastFrame();
-      points_handler_->showProjectedCandidates( "cands proj");
-      points_handler_->showProjectedActivePoints(" act pts proj");
-    }
     if(reverse_tracking)
       points_handler_->trackCandidatesReverse(take_gt_points);
-    // debug mapping
-    if(debug_mapping && frame_current_idx_>=debug_start_frame){
-      points_handler_->projectCandidatesOnLastFrame();
-      points_handler_->projectActivePointsOnLastFrame();
-      points_handler_->showProjectedCandidates( "cands proj");
-      points_handler_->showProjectedActivePoints(" act pts proj");
-    }
+
       // track existing candidates
     points_handler_->trackCandidates(take_gt_points);
     if(debug_mapping && frame_current_idx_>=debug_start_frame){
@@ -337,6 +327,7 @@ bool Dso::doDso(){
       points_handler_->projectActivePointsOnLastFrame();
       points_handler_->showProjectedCandidates( "cands proj");
       points_handler_->showProjectedActivePoints(" act pts proj");
+
     }
     // activate points
     candidates_activator_->activateCandidates();
@@ -365,12 +356,26 @@ bool Dso::doDso(){
     spectator_->renderState();
     spectator_->showSpectator(1);
     frame_current_->points_container_->clearProjections();
+
+    if(save_video){
+      points_handler_->projectActivePointsOnLastFrame();
+      cv::Mat img = spectator_->spectator_image_->image_*255;
+      cv::Mat img_out;
+      img.convertTo(img_out, CV_8UC3);
+      video_spec_.write(img_out);
+      Image<colorRGB>* frame = frame_current_->points_container_->getProjectedActivePoints("video");
+      frame->image_*=255;
+      frame->image_.convertTo(img_out, CV_8UC3);
+      video_proj_.write(img_out);
+      delete frame;
+    }
   }
 
   if(!kf_added){
     frame_current_->cam_free_mem();
     delete frame_current_->points_container_;
   }
+
 
   return true;
 

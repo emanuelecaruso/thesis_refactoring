@@ -5,8 +5,6 @@ X: multiplier
 Y:n.iterations
 (right convergence has to be checked)
 
-----------
-linear
 0_ 144.041
 3_ 87.2144
 5_ 80.8005
@@ -16,29 +14,64 @@ linear
 75_ 47.8313
 100 out
 
+###############################################
+
+huber
+
+0.001
+angle error: 0.00292708
+position error norm: 0.014375
+Total iterations avg 48.3285
+
+0.01
+angle error: 0.00266783
+position error norm: 0.0133163
+Total iterations avg 39.2482
+
+0.08
+angle error: 0.00260037
+position error norm: 0.0143341
+Total iterations avg 26.7873
+
+0.1
+angle error: 0.00239733
+position error norm: 0.0148659
+Total iterations avg 27.5605
+
+0.11
+angle error: 0.0025371
+position error norm: 0.0148877
+Total iterations avg 26.2756
+
+0.15
+angle error: 0.00285335
+position error norm: 0.0144325
+Total iterations avg 27.3337
+
+0.2
+angle error: 0.00298427
+position error norm: 0.0216478
+Total iterations avg 29.1521
+
+no
+angle error: 0.0031016
+position error norm: 0.019066
+Total iterations avg 50.8071
+
 ###############################################à
 
 Comparison (table)
-X={ Tracking, Tracking+reverse1, Tracking+reverse2  }
+X={ Unidir, Bidir }
 Y=accuracy
 
-none
+Unidir
 angle error: 0.00338144
 position error norm: 0.020287
 
-0
-
-1
+Bidir
 angle error: 0.00225911
 position error norm: 0.0156259
 
-2
-angle error: 0.00302847
-position error norm: 0.0143785
-
-3
-angle error: 0.00310427
-position error norm: 0.0198338
 
 ###############################################à
 Comparison (table)

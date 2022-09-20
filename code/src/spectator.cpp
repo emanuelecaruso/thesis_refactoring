@@ -100,7 +100,8 @@ void Spectator::renderCamsAndKFs(){
     CameraForMapping* cam = dso_->cameras_container_->frames_[i];
 
     if (cam->grountruth_camera_->frame_camera_wrt_world_!=nullptr){
-      plotCam(cam->grountruth_camera_, orange);
+      // plotCam(cam->grountruth_camera_, orange);
+      plotCam(cam->grountruth_camera_, black);
     }
 
     if (cam->keyframe_){
@@ -110,7 +111,7 @@ void Spectator::renderCamsAndKFs(){
         plotCam(cam, red);
       }
       else{
-        plotCam(cam, green);
+        plotCam(cam, magenta);
       }
     }
     else if (!cam->discarded_during_initialization){
@@ -171,7 +172,9 @@ bool Spectator::plotPt(Eigen::Vector3f& pt, const colorRGB& color, pxl& pixel){
   spectator_cam_->uv2pixelCoords(uv, pixel);
 
   if(spectator_image_->pixelInRange(pixel)){
-    spectator_image_->drawCircle( color, pixel,1,2);
+    spectator_image_->drawCircle(  spectator_cam_->cam_parameters_->invdepthToRgb( 1.0/(depth-spec_distance*1) ) , pixel,1,2);
+    // spectator_image_->drawCircle(  spectator_cam_->cam_parameters_->depthToRgb( depth-spec_distance ) , pixel,1,2);
+    // spectator_image_->drawCircle( color, pixel,1,2);
     return true;
   }
   return false;

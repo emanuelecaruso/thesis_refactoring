@@ -318,6 +318,46 @@ struct CamParameters{
     return color;
   }
 
+
+  inline colorRGB depthToRgb( const float depth) const {
+
+    float depth_normalized = depth/max_depth;
+
+    float H = 230*(depth_normalized);
+
+    float s = 1;
+    float v = 0.7;
+    float C = s*v;
+    float X = C*(1-abs(fmod(H/60.0, 2)-1));
+    float m = v-C;
+    float r,g,b;
+    if(H >= 0 && H < 60){
+        r = C,g = X,b = 0;
+    }
+    else if(H >= 60 && H < 120){
+        r = X,g = C,b = 0;
+    }
+    else if(H >= 120 && H < 180){
+        r = 0,g = C,b = X;
+    }
+    else if(H >= 180 && H < 240){
+        r = 0,g = X,b = C;
+    }
+    else if(H >= 240 && H < 300){
+        r = X,g = 0,b = C;
+    }
+    else{
+        r = C,g = 0,b = X;
+    }
+    int R = (r+m);
+    int G = (g+m);
+    int B = (b+m);
+
+    colorRGB color = colorRGB(b,g,r);
+
+    return color;
+  }
+
 };
 
 static bool debug_mode = 1;

@@ -59,7 +59,7 @@ class Candidate : public Point{
 
   float cost_threshold_mapping_;
   float cost_threshold_ba_;
-  
+
   // CameraForMapping* cam_;
   // int level_;
   // pxl pixel_;
@@ -293,6 +293,7 @@ class PointsContainer{
     void showProjectedCandidates();
     void showProjectedCandidates( const std::string& name );
     void showActivePoints();
+    Image<colorRGB>* getProjectedActivePoints(const std::string& name);
     void showProjectedActivePoints( int wtk=0);
     void showProjectedActivePoints( const std::string& name, int wtk=0 );
     void clearProjections();

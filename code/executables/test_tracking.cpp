@@ -12,7 +12,7 @@ using namespace std;
 int main (int argc, char * argv[]) {
 
   debug_initialization=false;
-  debug_mapping=true;
+  debug_mapping=false;
   debug_mapping_match = false;
   debug_tracking=false;
   debug_optimization= false;

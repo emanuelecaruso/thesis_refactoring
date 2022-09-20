@@ -17,6 +17,7 @@ bool collect_invdepth_errs=false;
 bool test_track=false;
 
 // code parameters
+bool save_video = true;
 bool free_mem = true;
 bool adaptive_thresh = true;
 bool reverse_tracking = true;
@@ -46,17 +47,17 @@ bool get_current_frame=false;
 // candidate selection
 int candidate_level= 0;
 int coarsest_lev_magn = candidate_level+3;
-int reg_level=candidate_level+5;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
-// float grad_threshold=0.1;
+int reg_level=candidate_level+6;     // e.g. level = 3 -> 0,1,2,*3* (fourth level)
+// float grad_threshold=0.05;
 float grad_threshold=0.005;
-int max_num_active_points=1500;
+int max_num_active_points=2000;
 int num_candidates=max_num_active_points;
 
 
 // keyframe selection
 int num_active_keyframes=7;
 float flow_dist_threshold=5;
-float percentage_marg_pts_threshold= 0.05;
+float percentage_marg_pts_threshold= 0.1;
 // float percentage_marg_pts_threshold= 0.5;
 
 
@@ -76,7 +77,8 @@ float damp_exposure= 0;
 float lambda_a= 0;
 float lambda_b= 0;
 float sat_coeff=1;
-float huber_coeff=0.05;
+// float huber_coeff=0.05;
+float huber_coeff=0.1;
 float occlusion_coeff=0.5;
 float fixed_thresh = 0.05;
 float occlusion_valid_ratio_thresh= 0.5;

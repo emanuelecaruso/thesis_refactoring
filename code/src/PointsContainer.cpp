@@ -104,14 +104,7 @@ void PointsContainer::showActivePoints(){
 
 }
 
-void PointsContainer::showProjectedActivePoints( int wtk){
-  std::string name = cam_->name_+" , "+std::to_string(active_points_projected_.size())+" projected active points";
-  showProjectedActivePoints(name,wtk);
-}
-
-void PointsContainer::showProjectedActivePoints(const std::string& name, int wtk){
-  double alpha = 1;
-
+Image<colorRGB>* PointsContainer::getProjectedActivePoints(const std::string& name){
   Image<colorRGB>* show_img( cam_->pyramid_->getC(candidate_level)->returnColoredImgFromIntensityImg(name) );
 
   // iterate through active points projected
@@ -119,6 +112,19 @@ void PointsContainer::showProjectedActivePoints(const std::string& name, int wtk
     ActivePointProjected* active_pt_proj = active_points_projected_[i];
     drawPoint(active_pt_proj,show_img);
   }
+
+  return show_img;
+}
+
+
+void PointsContainer::showProjectedActivePoints( int wtk){
+  std::string name = cam_->name_+" , "+std::to_string(active_points_projected_.size())+" projected active points";
+  showProjectedActivePoints(name,wtk);
+}
+
+void PointsContainer::showProjectedActivePoints(const std::string& name, int wtk){
+
+  Image<colorRGB>* show_img = getProjectedActivePoints(name);
 
   show_img->show(pow(1,candidate_level));
   cv::waitKey(wtk);

@@ -25,6 +25,7 @@ extern bool use_spectator;
 extern bool collect_invdepth_errs;
 extern bool test_track;
 
+extern bool save_video;
 extern bool free_mem;
 extern bool magn_mean;
 extern bool adaptive_thresh;

@@ -33,6 +33,8 @@ class Dso{
     Initializer* initializer_;
     CandidatesActivator* candidates_activator_;
     Spectator* spectator_;
+    cv::VideoWriter video_spec_;
+    cv::VideoWriter video_proj_;
 
     // flags for dso phases
     bool first_frame_to_set_ = true;
@@ -67,6 +69,8 @@ class Dso{
       ,initializer_( new Initializer(this) )
       ,candidates_activator_( new CandidatesActivator(this) )
       ,spectator_( new Spectator(this, white) )
+      ,video_spec_("videos/"+environment_->dataset_name_+"_spec.mp4", cv::VideoWriter::fourcc('M', 'P', '4', 'V'), 10, cv::Size(spectator_->spectator_params_->resolution_x,spectator_->spectator_params_->resolution_y))
+      ,video_proj_("videos/"+environment_->dataset_name_+"_proj.mp4", cv::VideoWriter::fourcc('M', 'P', '4', 'V'), 10, cv::Size(cam_parameters_->resolution_x,cam_parameters_->resolution_y))
       {};
 
     // Dso();
