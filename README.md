@@ -90,4 +90,3 @@ inside "generate_dataset.sh" you can choose:
     the dataset by assigning to "dataset_name" variable the name of the .blend file
 
     the engine (CYCLES = pathtracer) and the number of samples for CYCLES
-# thesis
