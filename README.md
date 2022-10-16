@@ -93,7 +93,7 @@ Notice that for different set of cameras, "create_cameras_in_scene.py" has to be
 
 After the file .blend is saved, to generate the dataset for dtam, run "generate_dataset.sh" inside directory: "scripts"
 
-inside "generate_dataset.sh" we can choose:
+inside "generate_dataset.sh" you can choose:
 
     the dataset by assigning to "dataset_name" variable the name of the .blend file
 
