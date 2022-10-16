@@ -47,16 +47,8 @@ sudo make install
 
 ###### OpenCV version 4.2:
 
-be sure that CUDA toolkit is already installed (previous step)
-
 ```
 sudo apt install libopencv-dev python3-opencv
-```
-
-to verify the version installed
-
-```
-python3 -c "import cv2; print(cv2.__version__)"
 ```
 
 ###### (Optional) Blender 3.90
